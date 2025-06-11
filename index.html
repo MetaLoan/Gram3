@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>Gram3 - 炫酷的下一代 Telegram 客户端</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <style>
+    html, body { height: 100%; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      font-family: 'Segoe UI', 'Arial', sans-serif;
+      background: linear-gradient(135deg, #0f2027 0%, #2c5364 100%);
+      color: #fff;
+      overflow-x: hidden;
+    }
+    .bg-anim {
+      position: fixed;
+      z-index: 0;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .circle {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.12;
+      animation: move 16s linear infinite;
+    }
+    .circle1 { width: 340px; height: 340px; left: 10%; top: 10%; background: #64ffda; animation-delay: 0s;}
+    .circle2 { width: 220px; height: 220px; left: 70%; top: 60%; background: #00bcd4; animation-delay: 4s;}
+    .circle3 { width: 150px; height: 150px; left: 60%; top: 20%; background: #0091ea; animation-delay: 8s;}
+    @keyframes move {
+      0% {transform: translateY(0) scale(1);}
+      50% {transform: translateY(-40px) scale(1.1);}
+      100% {transform: translateY(0) scale(1);}
+    }
+    header {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 32px 8vw 0 8vw;
+    }
+    .logo {
+      font-size: 2.3rem;
+      font-weight: bold;
+      background: linear-gradient(90deg,#64ffda 30%,#00bcd4 70%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      margin-left: 36px;
+      font-size: 1.1rem;
+      position: relative;
+      transition: color 0.2s;
+    }
+    nav a::after {
+      content: '';
+      display: block;
+      height: 2px;
+      width: 0;
+      background: #64ffda;
+      transition: width 0.3s;
+      position: absolute;
+      left: 0; bottom: -4px;
+    }
+    nav a:hover {
+      color: #64ffda;
+    }
+    nav a:hover::after {
+      width: 100%;
+    }
+    .hero {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 70vh;
+      text-align: center;
+      margin-top: 60px;
+    }
+    .hero-title {
+      font-size: 3.5rem;
+      font-weight: bold;
+      background: linear-gradient(90deg,#64ffda 30%,#00bcd4 70%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 20px;
+      letter-spacing: 1px;
+      text-shadow: 0 0 30px #00bcd4bb;
+      animation: glow 2s infinite alternate;
+    }
+    @keyframes glow {
+      from {text-shadow: 0 0 20px #64ffda55;}
+      to {text-shadow: 0 0 40px #64ffda;}
+    }
+    .hero-desc {
+      font-size: 1.3rem;
+      opacity: 0.88;
+      margin-bottom: 38px;
+      max-width: 520px;
+    }
+    .hero-btns {
+      display: flex;
+      gap: 22px;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+    .btn {
+      font-size: 1.15rem;
+      padding: 15px 38px;
+      border-radius: 32px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      background: linear-gradient(90deg,#64ffda 30%,#00bcd4 70%);
+      color: #0f2027;
+      box-shadow: 0 4px 24px #64ffda44;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn::before {
+      content: '';
+      position: absolute;
+      left: -60%;
+      top: 0;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg,transparent 0%,#fff8 100%);
+      transform: skewX(-25deg);
+      transition: left 0.5s;
+    }
+    .btn:hover {
+      transform: translateY(-4px) scale(1.04);
+      box-shadow: 0 8px 32px #64ffda88;
+    }
+    .btn:hover::before {
+      left: 120%;
+    }
+    .btn-outline {
+      background: transparent;
+      color: #64ffda;
+      border: 2px solid #64ffda;
+      box-shadow: none;
+    }
+    .features-section {
+      z-index: 2;
+      position: relative;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 90px 8vw 30px 8vw;
+    }
+    .features-title {
+      text-align: center;
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin-bottom: 46px;
+      background: linear-gradient(90deg,#64ffda 30%,#00bcd4 70%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .features-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px,1fr));
+      gap: 38px;
+    }
+    .feature-card {
+      background: rgba(255,255,255,0.06);
+      border-radius: 20px;
+      padding: 38px 28px 32px 28px;
+      box-shadow: 0 2px 18px #00bcd411;
+      border: 1.5px solid rgba(100,255,218,0.13);
+      text-align: center;
+      transition: transform 0.18s, box-shadow 0.18s;
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-card:hover {
+      transform: translateY(-8px) scale(1.03);
+      box-shadow: 0 10px 30px #64ffda33;
+    }
+    .feature-icon {
+      font-size: 2.5rem;
+      margin-bottom: 18px;
+      color: #64ffda;
+      filter: drop-shadow(0 0 12px #64ffda77);
+    }
+    .feature-title {
+      font-size: 1.25rem;
+      font-weight: bold;
+      margin-bottom: 14px;
+    }
+    .feature-desc {
+      font-size: 1.05rem;
+      opacity: 0.87;
+    }
+    .download-section {
+      position: relative;
+      z-index: 2;
+      padding: 80px 8vw 60px 8vw;
+      text-align: center;
+    }
+    .download-title {
+      font-size: 2.2rem;
+      font-weight: bold;
+      background: linear-gradient(90deg,#64ffda 30%,#00bcd4 70%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 24px;
+    }
+    .download-btns {
+      display: flex;
+      justify-content: center;
+      gap: 22px;
+      flex-wrap: wrap;
+      margin-top: 30px;
+    }
+    .down-btn {
+      background: rgba(255,255,255,0.09);
+      border: 2px solid #64ffda;
+      color: #fff;
+      border-radius: 15px;
+      padding: 16px 28px;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      margin-bottom: 12px;
+      transition: background 0.2s, color 0.2s, transform 0.2s;
+    }
+    .down-btn:hover {
+      background: #64ffda;
+      color: #0f2027;
+      transform: scale(1.07);
+    }
+    footer {
+      position: relative;
+      z-index: 2;
+      padding: 48px 0 20px 0;
+      text-align: center;
+      color: #b6eaff;
+      font-size: 1rem;
+      border-top: 1px solid rgba(100,255,218,0.10);
+      margin-top: 30px;
+    }
+    @media (max-width: 900px) {
+      .features-section { padding: 60px 4vw 20px 4vw; }
+      .download-section { padding: 50px 4vw 30px 4vw; }
+    }
+    @media (max-width: 600px) {
+      header { flex-direction: column; align-items: flex-start; padding: 24px 4vw 0 4vw;}
+      .hero-title { font-size: 2.1rem; }
+      .features-title, .download-title { font-size: 1.3rem; }
+      .features-list { grid-template-columns: 1fr; gap: 24px;}
+      .download-btns { flex-direction: column; gap: 12px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-anim">
+    <div class="circle circle1"></div>
+    <div class="circle circle2"></div>
+    <div class="circle circle3"></div>
+  </div>
+  <header>
+    <div class="logo">Gram3</div>
+    <nav>
+      <a href="#features">特性</a>
+      <a href="#download">下载</a>
+      <a href="#contact">联系</a>
+    </nav>
+  </header>
+  <section class="hero">
+    <div class="hero-title">Gram3</div>
+    <div class="hero-desc">
+      体验全新升级的 Telegram 客户端，<br>
+      Web3 集成、极速安全、AI 助手，<br>
+      定义下一代社交通讯新范式。
+    </div>
+    <div class="hero-btns">
+      <a href="#download" class="btn">立即下载</a>
+      <a href="#features" class="btn btn-outline">了解特性</a>
+    </div>
+  </section>
+  <section class="features-section" id="features">
+    <div class="features-title">核心特性</div>
+    <div class="features-list">
+      <div class="feature-card">
+        <div class="feature-icon">🚀</div>
+        <div class="feature-title">极速消息</div>
+        <div class="feature-desc">极致优化，消息传递和加载速度远超原版，沟通更畅快。</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <div class="feature-title">Web3 安全</div>
+        <div class="feature-desc">集成加密钱包和端到端加密，保护隐私与数字资产。</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <div class="feature-title">AI 聊天助手</div>
+        <div class="feature-desc">智能回复、翻译、内容生成，AI 让沟通更高效。</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎨</div>
+        <div class="feature-title">个性化主题</div>
+        <div class="feature-desc">多种酷炫主题和自定义选项，打造专属聊天空间。</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💎</div>
+        <div class="feature-title">NFT & 资产集成</div>
+        <div class="feature-desc">原生展示 NFT，便捷转账和资产管理，玩转数字时代。</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌐</div>
+        <div class="feature-title">多端同步</div>
+        <div class="feature-desc">手机、桌面、网页无缝切换，随时随地畅聊。</div>
+      </div>
+    </div>
+  </section>
+  <section class="download-section" id="download">
+    <div class="download-title">多平台畅享 Gram3</div>
+    <div class="download-btns">
+      <a href="#" class="down-btn">📱 iOS 版</a>
+      <a href="#" class="down-btn">🤖 Android 版</a>
+      <a href="#" class="down-btn">💻 Windows 桌面</a>
+      <a href="#" class="down-btn">🍎 macOS 桌面</a>
+    </div>
+  </section>
+  <footer id="contact">
+    <div>
+      &copy; 2024 Gram3. All rights reserved. | 联系邮箱：hello@gram3.app
+    </div>
+  </footer>
+</body>
+</html>
