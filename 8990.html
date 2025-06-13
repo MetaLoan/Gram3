@@ -175,7 +175,7 @@
 
     async function exportFrames(){if(!lottieAnimation){alert('请先加载动画');return;}const total=Math.floor(lottieAnimation.getDuration(true));const canvas=document.querySelector('#lottieContainer canvas');if(!canvas){alert('Canvas未找到');return;}const zip=new JSZip();showSuccess(`开始导出 ${total} 帧，请稍候...`);
       for(let i=0;i<=total;i++){lottieAnimation.goToAndStop(i,true);await new Promise(r=>setTimeout(r,30));const dataUrl=canvas.toDataURL('image/png');zip.file(`frame_${i.toString().padStart(4,'0')}.png`,dataUrl.split(',')[1],{base64:true});}
-      const blob=await zip.generateAsync({type:'blob'});saveAs(blob,'frames.zip`);
+      const blob=await zip.generateAsync({type:'blob'});saveAs(blob,'frames.zip');
       showSuccess('PNG帧序列已打包并下载完成！');
     }
 
