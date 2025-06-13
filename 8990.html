@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lottie实时预览控制器 + PNG帧导出</title>
+  <style>
+      *{margin:0;padding:0;box-sizing:border-box}
+      body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;padding:20px}
+      .container{max-width:1200px;margin:0 auto;background:#fff;border-radius:15px;box-shadow:0 20px 40px rgba(0,0,0,.1);overflow:hidden}
+      .header{background:linear-gradient(135deg,#4facfe 0%,#00f2fe 100%);color:#fff;padding:30px;text-align:center}
+      .header h1{font-size:2.5em;margin-bottom:10px;font-weight:700}
+      .header p{font-size:1.1em;opacity:.9}
+      .content{padding:40px}
+      .input-section{background:#f8f9fa;padding:25px;border-radius:10px;margin-bottom:30px}
+      .url-input{width:100%;padding:15px;border:2px solid #ddd;border-radius:8px;font-size:1em;font-family:monospace;margin-bottom:15px}
+      .url-input:focus{outline:none;border-color:#4facfe}
+      .btn{background:linear-gradient(135deg,#4facfe 0%,#00f2fe 100%);color:#fff;border:none;padding:12px 30px;border-radius:25px;font-size:1em;cursor:pointer;transition:all .3s;font-weight:600}
+      .btn:hover{transform:translateY(-2px);box-shadow:0 5px 15px rgba(79,172,254,.4)}
+      .btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+      .main-content{display:grid;grid-template-columns:1fr 350px;gap:30px;margin-top:30px}
+      .preview-section{background:#f8f9fa;border-radius:10px;padding:20px;text-align:center}
+      .preview-container{background:#fff;border-radius:8px;padding:20px;margin-bottom:20px;min-height:400px;display:flex;align-items:center;justify-content:center;position:relative;border:2px dashed #ddd}
+      .preview-container.loaded{border:2px solid #4facfe}
+      #lottieContainer{width:100%;height:400px}
+      .placeholder{color:#999;font-size:1.2em}
+      .controls{display:flex;justify-content:center;gap:10px;margin-bottom:15px}
+      .control-btn{background:#6c757d;color:#fff;border:none;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:.9em}
+      .control-btn:hover{background:#5a6268}
+      .speed-control{display:flex;align-items:center;gap:10px;justify-content:center}
+      .speed-slider{width:100px}
+      .layers-panel{background:#f8f9fa;border-radius:10px;padding:20px}
+      .layer-list{max-height:500px;overflow-y:auto}
+      .layer-item{background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:15px;margin-bottom:10px;transition:all .3s}
+      .layer-item:hover{border-color:#4facfe;box-shadow:0 2px 8px rgba(79,172,254,.1)}
+      .layer-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+      .layer-name{font-weight:600;color:#333;font-size:.95em}
+      .layer-type{background:#e9ecef;color:#6c757d;padding:2px 8px;border-radius:12px;font-size:.8em}
+      .layer-controls{display:flex;align-items:center;gap:15px}
+      .visibility-toggle{display:flex;align-items:center;gap:8px;cursor:pointer}
+      .toggle-switch{position:relative;width:40px;height:20px;background:#ccc;border-radius:20px;transition:background .3s}
+      .toggle-switch.on{background:#4facfe}
+      .toggle-slider{position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform .3s}
+      .toggle-switch.on .toggle-slider{transform:translateX(20px)}
+      .opacity-control{display:flex;align-items:center;gap:8px}
+      .opacity-slider{width:80px}
+      .opacity-value{font-size:.8em;color:#666;min-width:30px}
+      .layer-info{font-size:.8em;color:#888;margin-top:8px}
+      .quick-actions{margin-bottom:20px}
+      .quick-btn{background:#6c757d;color:#fff;border:none;padding:8px 12px;border-radius:15px;cursor:pointer;font-size:.85em;margin:2px}
+      .quick-btn:hover{background:#5a6268}
+      .quick-btn.danger{background:#dc3545}
+      .quick-btn.danger:hover{background:#c82333}
+      .quick-btn.success{background:#28a745}
+      .quick-btn.success:hover{background:#218838}
+      .loading{display:flex;align-items:center;justify-content:center;gap:10px;color:#666}
+      .spinner{width:20px;height:20px;border:2px solid #f3f3f3;border-top:2px solid #4facfe;border-radius:50%;animation:spin 1s linear infinite}
+      @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+      .error{background:#f8d7da;color:#721c24;padding:15px;border-radius:8px;margin:10px 0;border:1px solid #f5c6cb}
+      .success{background:#d4edda;color:#155724;padding:15px;border-radius:8px;margin:10px 0;border:1px solid #c3e6cb}
+      .export-section{margin-top:20px;padding-top:20px;border-top:1px solid #e0e0e0}
+      .export-btn{background:linear-gradient(135deg,#28a745 0%,#20c997 100%);width:100%;padding:12px;margin-bottom:10px}
+      @media(max-width:768px){.main-content{grid-template-columns:1fr}.container{margin:10px;border-radius:10px}.content{padding:20px}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎨 Lottie实时预览控制器</h1>
+      <p>动态控制图层 + PNG帧导出</p>
+    </div>
+    <div class="content">
+      <div class="input-section">
+        <h3>🔗 输入Lottie地址</h3>
+        <input type="text" id="lottieUrl" class="url-input" placeholder="https://example.com/anim.lottie.json" value="https://nft.fragment.com/gift/lootbag-11217.lottie.json">
+        <button class="btn" id="loadBtn" onclick="loadLottie()">🚀 加载动画</button>
+      </div>
+      <div id="mainContent" class="main-content" style="display:none;">
+        <div class="preview-section">
+          <h3>🎬 动画预览</h3>
+          <div id="previewContainer" class="preview-container">
+            <div id="lottieContainer"></div>
+            <div id="placeholder" class="placeholder">等待加载动画...</div>
+          </div>
+          <div class="controls">
+            <button class="control-btn" id="playBtn" onclick="playPause()">▶️ 播放</button>
+            <button class="control-btn" onclick="restart()">🔄 重播</button>
+            <button class="control-btn" id="loopBtn" onclick="toggleLoop()">🔁 循环</button>
+          </div>
+          <div class="speed-control">
+            <span>速度:</span>
+            <input type="range" id="speedSlider" class="speed-slider" min="0.1" max="3" step="0.1" value="1" onchange="setSpeed(this.value)">
+            <span id="speedValue">1x</span>
+          </div>
+        </div>
+        <div class="layers-panel">
+          <h3>🎛️ 图层控制</h3>
+          <div class="quick-actions">
+            <button class="quick-btn success" onclick="showAllLayers()">显示全部</button>
+            <button class="quick-btn danger" onclick="hideAllLayers()">隐藏全部</button>
+            <button class="quick-btn" onclick="resetAllOpacity()">重置透明度</button>
+            <button class="quick-btn" onclick="hideCommonLayers()">隐藏常见图层</button>
+          </div>
+          <div id="layerList" class="layer-list"><div class="placeholder">加载动画后显示图层列表</div></div>
+          <div class="export-section">
+            <button class="btn export-btn" onclick="exportModifiedJson()">下载修改后的JSON</button>
+            <button class="btn export-btn" onclick="exportFrames()">导出PNG序列帧</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- libs -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.0/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+  <script>
+    let lottieAnimation=null,originalJsonData=null,layerVisibility={},layerOpacity={},isPlaying=false,isLooping=true;
+
+    function convertToDownloadUrl(url){
+      if(url.includes('.lottie.json'))return url;
+      if(url.includes('fragment.com/gift/')){
+        const m=url.match(/gift\/([^?&#]+)/);if(m)return `https://nft.fragment.com/gift/${m[1]}.lottie.json`;
+      }
+      return url;
+    }
+
+    async function loadLottie(){
+      const urlInput=document.getElementById('lottieUrl');
+      let url=urlInput.value.trim();if(!url){alert('请输入Lottie地址');return;}
+      url=convertToDownloadUrl(url);
+      const loadBtn=document.getElementById('loadBtn');const placeholder=document.getElementById('placeholder');
+      try{
+        loadBtn.disabled=true;loadBtn.innerHTML='<div class="spinner"></div> 加载中...';
+        placeholder.innerHTML='<div class="loading"><div class="spinner"></div>正在加载动画...</div>';
+        const res=await fetch(url);
+        if(!res.ok)throw new Error(`HTTP ${res.status}`);
+        originalJsonData=await res.json();
+        initializeLayerStates();
+        loadAnimation();
+        document.getElementById('mainContent').style.display='grid';
+        generateLayerList();
+        showSuccess('动画加载成功!');
+      }catch(e){console.error(e);showError('加载失败: '+e.message);}
+      finally{loadBtn.disabled=false;loadBtn.innerHTML='🚀 加载动画';}
+    }
+
+    function initializeLayerStates(){layerVisibility={};layerOpacity={};if(originalJsonData.layers){originalJsonData.layers.forEach((l,i)=>{const id=l.ind||i;layerVisibility[id]=true;layerOpacity[id]=l.ks?.o?.k??100;});}}
+
+    function loadAnimation(){const container=document.getElementById('lottieContainer'),placeholder=document.getElementById('placeholder'),preview=document.getElementById('previewContainer');if(lottieAnimation)lottieAnimation.destroy();const data=getModifiedJsonData();lottieAnimation=lottie.loadAnimation({container,renderer:'canvas',loop:isLooping,autoplay:false,animationData:data});lottieAnimation.addEventListener('complete',()=>{if(!isLooping){isPlaying=false;updatePlayButton();}});placeholder.style.display='none';preview.classList.add('loaded');}
+
+    function getModifiedJsonData(){const clone=JSON.parse(JSON.stringify(originalJsonData));if(clone.layers){clone.layers.forEach((l,i)=>{const id=l.ind||i;if(!layerVisibility[id]){l.ks=l.ks||{};l.ks.o={a:0,k:0};}else{const op=layerOpacity[id];if(op!==undefined&&op!==100){l.ks=l.ks||{};l.ks.o={a:0,k:op};}}});}return clone;}
+
+    function generateLayerList(){const list=document.getElementById('layerList');list.innerHTML='';if(!originalJsonData.layers||!originalJsonData.layers.length){list.innerHTML='<div class="placeholder">未找到图层</div>';return;}originalJsonData.layers.forEach((l,i)=>{const id=l.ind||i;const name=l.nm||`Layer ${i+1}`;const type=getLayerType(l.ty);const item=document.createElement('div');item.className='layer-item';item.innerHTML=`<div class='layer-header'><div class='layer-name'>${name}</div><div class='layer-type'>${type}</div></div><div class='layer-controls'><div class='visibility-toggle' onclick='toggleLayerVisibility(${id})'><span>显示</span><div id='toggle-${id}' class='toggle-switch ${layerVisibility[id]?'on':''}'><div class='toggle-slider'></div></div></div><div class='opacity-control'><span>透明度</span><input id='opacity-${id}' type='range' class='opacity-slider' min='0' max='100' value='${layerOpacity[id]??100}' onchange='setLayerOpacity(${id},this.value)'><span id='opacity-value-${id}' class='opacity-value'>${layerOpacity[id]??100}%</span></div></div><div class='layer-info'>ID:${id} | 索引:${i}</div>`;list.appendChild(item);});}
+
+    function getLayerType(t){return{0:'预合成',1:'纯色',2:'图像',3:'空对象',4:'形状',5:'文本'}[t]||`类型${t}`;}
+
+    function toggleLayerVisibility(id){layerVisibility[id]=!layerVisibility[id];document.getElementById(`toggle-${id}`).classList.toggle('on',layerVisibility[id]);loadAnimation();}
+    function setLayerOpacity(id,val){layerOpacity[id]=parseInt(val);document.getElementById(`opacity-value-${id}`).textContent=val+'%';loadAnimation();}
+
+    function playPause(){if(!lottieAnimation)return;if(isPlaying){lottieAnimation.pause();isPlaying=false;}else{lottieAnimation.play();isPlaying=true;}updatePlayButton();}
+    function updatePlayButton(){document.getElementById('playBtn').textContent=isPlaying?'⏸️ 暂停':'▶️ 播放';}
+    function restart(){if(lottieAnimation){lottieAnimation.goToAndPlay(0);isPlaying=true;updatePlayButton();}}
+    function toggleLoop(){isLooping=!isLooping;document.getElementById('loopBtn').textContent=isLooping?'🔁 循环':'➡️ 单次';if(lottieAnimation)lottieAnimation.loop=isLooping;}
+    function setSpeed(s){if(lottieAnimation){lottieAnimation.setSpeed(parseFloat(s));document.getElementById('speedValue').textContent=s+'x';}}
+
+    function showAllLayers(){Object.keys(layerVisibility).forEach(id=>{layerVisibility[id]=true;const t=document.getElementById(`toggle-${id}`);if(t)t.classList.add('on');});loadAnimation();}
+    function hideAllLayers(){Object.keys(layerVisibility).forEach(id=>{layerVisibility[id]=false;const t=document.getElementById(`toggle-${id}`);if(t)t.classList.remove('on');});loadAnimation();}
+    function resetAllOpacity(){Object.keys(layerOpacity).forEach(id=>{layerOpacity[id]=100;const s=document.getElementById(`opacity-${id}`),v=document.getElementById(`opacity-value-${id}`);if(s)s.value=100;if(v)v.textContent='100%';});loadAnimation();}
+    function hideCommonLayers(){const keywords=['Color Icon','Background','BG','背景','图标'];originalJsonData.layers.forEach((l,i)=>{const id=l.ind||i;const n=l.nm||'';if(keywords.some(k=>n.includes(k))){layerVisibility[id]=false;const t=document.getElementById(`toggle-${id}`);if(t)t.classList.remove('on');}});loadAnimation();}
+
+    function exportModifiedJson(){if(!originalJsonData){alert('请先加载动画');return;}const data=getModifiedJsonData();const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});saveAs(blob,'modified-lottie.json');showSuccess('JSON文件已下载');}
+
+    async function exportFrames(){if(!lottieAnimation){alert('请先加载动画');return;}const total=Math.floor(lottieAnimation.getDuration(true));const canvas=document.querySelector('#lottieContainer canvas');if(!canvas){alert('Canvas未找到');return;}const zip=new JSZip();showSuccess(`开始导出 ${total} 帧，请稍候...`);
+      for(let i=0;i<=total;i++){lottieAnimation.goToAndStop(i,true);await new Promise(r=>setTimeout(r,30));const dataUrl=canvas.toDataURL('image/png');zip.file(`frame_${i.toString().padStart(4,'0')}.png`,dataUrl.split(',')[1],{base64:true});}
+      const blob=await zip.generateAsync({type:'blob'});saveAs(blob,'frames.zip`);
+      showSuccess('PNG帧序列已打包并下载完成！');
+    }
+
+    function showError(msg) {
+      const container = document.getElementById('layerList');
+      container.innerHTML = `<div class="error">${msg}</div>`;
+    }
+
+    function showSuccess(msg) {
+      const container = document.getElementById('layerList');
+      const div = document.createElement('div');
+      div.className = 'success';
+      div.textContent = msg;
+      container.prepend(div);
+      setTimeout(() => div.remove(), 5000);
+    }
+  </script>
+</body>
+</html>
+
