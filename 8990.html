@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8" />
-  <title>AI 生成 Demo - OpenAI 文生文 / 文生图</title>
+  <title>AI 生成 Demo - ChatAnywhere API 转发</title>
   <style>
     body {
       font-family: system-ui, sans-serif;
@@ -55,10 +55,10 @@
   </style>
 </head>
 <body>
-  <h2>🌟 AI 生成 Demo：OpenAI 文生文 / 文生图</h2>
+  <h2>🌟 AI 生成 Demo（ChatAnywhere 转发版）</h2>
 
   <label>🔑 API Key（必填）</label>
-  <input type="password" id="apikey" placeholder="请输入你的 OpenAI API Key，例如 sk-xxxx..." />
+  <input type="password" id="apikey" placeholder="请输入你的 API Key，例如 sk-xxxx..." />
 
   <label>📝 提示词</label>
   <textarea id="prompt" placeholder="请输入你想生成的内容，如：一个穿西装跳舞的机器人"></textarea>
@@ -77,8 +77,9 @@
   <div id="debug">这里会显示请求体、返回内容、错误信息等</div>
 
   <script>
-    const API_URL_TEXT = "https://api.openai.com/v1/chat/completions";
-    const API_URL_IMAGE = "https://api.openai.com/v1/images/generations";
+    // 使用 ChatAnywhere 的国内转发地址（也可以换成 .org）
+    const API_URL_TEXT = "https://api.chatanywhere.tech/v1/chat/completions";
+    const API_URL_IMAGE = "https://api.chatanywhere.tech/v1/images/generations";
 
     async function generate() {
       const apiKey = document.getElementById("apikey").value.trim();
@@ -93,7 +94,7 @@
       }
 
       output.innerHTML = "⏳ 正在生成，请稍候...";
-      debug.innerText = "🔍 正在请求 OpenAI 接口...";
+      debug.innerText = "🔍 正在请求接口...";
 
       try {
         let url = "";
@@ -124,8 +125,9 @@
 
         const data = await response.json();
 
-        // 显示主输出
-        if (mode === "text") {
+        if (data.error) {
+          output.innerText = `❌ 出错：${data.error.message || "未知错误"}`;
+        } else if (mode === "text") {
           output.innerText = data.choices?.[0]?.message?.content || "❌ 无法获取返回文本";
         } else {
           const imageUrl = data.data?.[0]?.url;
@@ -134,12 +136,10 @@
             : "❌ 图像生成失败";
         }
 
-        // 显示调试信息
         debug.innerText =
           `🔗 请求地址：${url}\n\n` +
           `📤 请求体：\n${JSON.stringify(body, null, 2)}\n\n` +
           `📥 返回内容：\n${JSON.stringify(data, null, 2)}`;
-
       } catch (err) {
         output.innerText = "❌ 请求失败：" + err.message;
         debug.innerText = `❗ 错误信息：${err.message}`;
