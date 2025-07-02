@@ -2,12 +2,12 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8" />
-  <title>AI 生成 Demo - ChatAnywhere API 转发</title>
+  <title>AI 换装生图小游戏 - ChatAnywhere API 转发</title>
   <style>
     body {
       font-family: system-ui, sans-serif;
       padding: 40px;
-      max-width: 800px;
+      max-width: 900px;
       margin: auto;
       background-color: #f4f4f4;
     }
@@ -26,6 +26,7 @@
       border: none;
       font-weight: bold;
       transition: background-color 0.3s ease;
+      cursor: pointer;
     }
     button:hover {
       background-color: #0056b3;
@@ -46,65 +47,389 @@
     }
     label {
       font-weight: bold;
+      display: block;
+      margin-top: 10px;
     }
     #debug {
       background: #fef9e7;
       font-size: 13px;
       color: #333;
     }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .option-group {
+      margin-bottom: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.05);
+    }
+    .option-title {
+      font-size: 18px;
+      margin-top: 0;
+      margin-bottom: 15px;
+      color: #007bff;
+    }
+    .avatar-preview {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      margin: 10px 0;
+      border: 3px solid #007bff;
+    }
+    .history-item {
+      margin-bottom: 15px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .history-item:hover {
+      background-color: #f0f0f0;
+    }
+    .history-image {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+    .tab {
+      overflow: hidden;
+      border: 1px solid #ccc;
+      background-color: #f1f1f1;
+      border-radius: 5px 5px 0 0;
+    }
+    .tab button {
+      background-color: inherit;
+      float: left;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 14px 16px;
+      transition: 0.3s;
+      width: auto;
+      color: #333;
+      font-weight: normal;
+    }
+    .tab button:hover {
+      background-color: #ddd;
+    }
+    .tab button.active {
+      background-color: #007bff;
+      color: white;
+    }
+    .tabcontent {
+      display: none;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-top: none;
+      border-radius: 0 0 5px 5px;
+      background-color: white;
+    }
+    #historyTab {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+    }
   </style>
 </head>
 <body>
-  <h2>🌟 AI 生成 Demo（ChatAnywhere 转发版）</h2>
+  <h2>🎮 AI 换装生图小游戏（ChatAnywhere 转发版）</h2>
+  
+  <div class="tab">
+    <button class="tablinks active" onclick="openTab(event, 'generatorTab')">生成器</button>
+    <button class="tablinks" onclick="openTab(event, 'historyTab')">历史记录</button>
+  </div>
 
-  <label>🔑 API Key（必填）</label>
-  <input type="password" id="apikey" placeholder="请输入你的 API Key，例如 sk-xxxx..." />
+  <div id="generatorTab" class="tabcontent" style="display: block;">
+    <label>🔑 API Key（必填）</label>
+    <input type="password" id="apikey" placeholder="请输入你的 API Key，例如 sk-xxxx..." />
 
-  <label>📝 提示词</label>
-  <textarea id="prompt" placeholder="请输入你想生成的内容，如：一个穿西装跳舞的机器人"></textarea>
+    <div class="grid">
+      <div class="option-group">
+        <h3 class="option-title">👤 头像设置</h3>
+        <label for="avatarUpload">上传自定义头像（可选）</label>
+        <input type="file" id="avatarUpload" accept="image/*" onchange="previewAvatar()" />
+        <img id="avatarPreview" class="avatar-preview" src="https://via.placeholder.com/150?text=预览" alt="头像预览" />
+        <button onclick="clearAvatar()">清除头像</button>
+      </div>
 
-  <label>⚙️ 模式选择</label>
-  <select id="mode">
-    <option value="text">文生文（ChatGPT）</option>
-    <option value="image">文生图（DALL·E）</option>
-  </select>
+      <div class="option-group">
+        <h3 class="option-title">👫 基本属性</h3>
+        <label for="gender">性别</label>
+        <select id="gender">
+          <option value="男性">男性</option>
+          <option value="女性">女性</option>
+          <option value="中性">中性</option>
+        </select>
+        
+        <label for="style">艺术风格</label>
+        <select id="style">
+          <option value="写实风格">写实风格</option>
+          <option value="卡通风格">卡通风格</option>
+          <option value="动漫风格">动漫风格</option>
+          <option value="赛博朋克">赛博朋克</option>
+          <option value="水彩画风">水彩画风</option>
+          <option value="油画风格">油画风格</option>
+        </select>
+      </div>
 
-  <button onclick="generate()">🚀 生成</button>
+      <div class="option-group">
+        <h3 class="option-title">👔 着装选择</h3>
+        <label for="clothing">服装类型</label>
+        <select id="clothing">
+          <option value="休闲装">休闲装</option>
+          <option value="正装西服">正装西服</option>
+          <option value="运动装">运动装</option>
+          <option value="传统服饰">传统服饰</option>
+          <option value="制服">制服</option>
+          <option value="奇幻服装">奇幻服装</option>
+          <option value="未来科技装">未来科技装</option>
+        </select>
+        
+        <label for="clothingColor">服装颜色</label>
+        <select id="clothingColor">
+          <option value="红色">红色</option>
+          <option value="蓝色">蓝色</option>
+          <option value="绿色">绿色</option>
+          <option value="黑色">黑色</option>
+          <option value="白色">白色</option>
+          <option value="紫色">紫色</option>
+          <option value="黄色">黄色</option>
+        </select>
+        
+        <label for="clothingDetail">服装细节（可选）</label>
+        <input type="text" id="clothingDetail" placeholder="例如：带花纹、有徽章、破洞牛仔等" />
+      </div>
 
-  <div id="output">🔍 生成内容将在这里显示...</div>
+      <div class="option-group">
+        <h3 class="option-title">🌍 环境设置</h3>
+        <label for="environment">场景环境</label>
+        <select id="environment">
+          <option value="城市街道">城市街道</option>
+          <option value="自然风景">自然风景</option>
+          <option value="海滩">海滩</option>
+          <option value="办公室">办公室</option>
+          <option value="咖啡厅">咖啡厅</option>
+          <option value="科幻场景">科幻场景</option>
+          <option value="奇幻世界">奇幻世界</option>
+          <option value="太空">太空</option>
+        </select>
+        
+        <label for="timeOfDay">时间</label>
+        <select id="timeOfDay">
+          <option value="白天">白天</option>
+          <option value="黄昏">黄昏</option>
+          <option value="夜晚">夜晚</option>
+          <option value="黎明">黎明</option>
+        </select>
+        
+        <label for="weather">天气</label>
+        <select id="weather">
+          <option value="晴朗">晴朗</option>
+          <option value="雨天">雨天</option>
+          <option value="雪天">雪天</option>
+          <option value="多云">多云</option>
+          <option value="雾天">雾天</option>
+        </select>
+      </div>
+      
+      <div class="option-group">
+        <h3 class="option-title">🎭 动作姿势</h3>
+        <label for="pose">动作</label>
+        <select id="pose">
+          <option value="站立">站立</option>
+          <option value="行走">行走</option>
+          <option value="跑步">跑步</option>
+          <option value="跳跃">跳跃</option>
+          <option value="舞蹈">舞蹈</option>
+          <option value="坐着">坐着</option>
+          <option value="躺着">躺着</option>
+          <option value="战斗姿势">战斗姿势</option>
+        </select>
+        
+        <label for="expression">表情</label>
+        <select id="expression">
+          <option value="微笑">微笑</option>
+          <option value="大笑">大笑</option>
+          <option value="严肃">严肃</option>
+          <option value="惊讶">惊讶</option>
+          <option value="沉思">沉思</option>
+          <option value="悲伤">悲伤</option>
+          <option value="愤怒">愤怒</option>
+        </select>
+      </div>
+      
+      <div class="option-group">
+        <h3 class="option-title">🎁 道具选择</h3>
+        <label for="prop1">主要道具</label>
+        <select id="prop1">
+          <option value="无">无</option>
+          <option value="手机">手机</option>
+          <option value="书本">书本</option>
+          <option value="背包">背包</option>
+          <option value="相机">相机</option>
+          <option value="武器">武器</option>
+          <option value="魔法棒">魔法棒</option>
+          <option value="乐器">乐器</option>
+          <option value="宠物">宠物</option>
+        </select>
+        
+        <label for="prop2">次要道具（可选）</label>
+        <select id="prop2">
+          <option value="无">无</option>
+          <option value="眼镜">眼镜</option>
+          <option value="帽子">帽子</option>
+          <option value="围巾">围巾</option>
+          <option value="手表">手表</option>
+          <option value="耳机">耳机</option>
+          <option value="项链">项链</option>
+          <option value="手套">手套</option>
+        </select>
+      </div>
+    </div>
 
-  <h3>🐞 调试信息</h3>
-  <div id="debug">这里会显示请求体、返回内容、错误信息等</div>
+    <label for="additionalDetails">额外细节描述（可选）</label>
+    <textarea id="additionalDetails" placeholder="添加任何其他你想要的细节描述..."></textarea>
+
+    <button onclick="generateImage()">🚀 生成我的形象</button>
+
+    <div id="output">🔍 生成的图像将在这里显示...</div>
+
+    <h3>🐞 调试信息</h3>
+    <div id="debug">这里会显示请求体、返回内容、错误信息等</div>
+  </div>
+
+  <div id="historyTab" class="tabcontent">
+    <h3>历史生成记录</h3>
+    <div id="historyContainer">
+      <!-- 历史记录将在这里动态生成 -->
+      <p>暂无历史记录</p>
+    </div>
+  </div>
 
   <script>
-    // 使用 ChatAnywhere 的国内转发地址（也可以换成 .org）
+    // 使用 ChatAnywhere 的国内转发地址
     const API_URL_TEXT = "https://api.chatanywhere.tech/v1/chat/completions";
     const API_URL_IMAGE = "https://api.chatanywhere.tech/v1/images/generations";
+    const API_URL_IMAGE_EDIT = "https://api.chatanywhere.tech/v1/images/edits";
 
-    async function generate() {
-      const apiKey = document.getElementById("apikey").value.trim();
-      const prompt = document.getElementById("prompt").value.trim();
-      const mode = document.getElementById("mode").value;
-      const output = document.getElementById("output");
-      const debug = document.getElementById("debug");
+    // 存储历史记录
+    let generationHistory = JSON.parse(localStorage.getItem('imageHistory')) || [];
+    
+    // 头像相关变量
+    let avatarFile = null;
+    let avatarBase64 = null;
 
-      if (!apiKey || !prompt) {
-        alert("⚠️ 请填写 API Key 和提示词！");
+    // 预览上传的头像
+    function previewAvatar() {
+      const fileInput = document.getElementById('avatarUpload');
+      const preview = document.getElementById('avatarPreview');
+      
+      if (fileInput.files && fileInput.files[0]) {
+        avatarFile = fileInput.files[0];
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+          preview.src = e.target.result;
+          avatarBase64 = e.target.result;
+        }
+        
+        reader.readAsDataURL(avatarFile);
+      }
+    }
+    
+    // 清除头像
+    function clearAvatar() {
+      document.getElementById('avatarUpload').value = '';
+      document.getElementById('avatarPreview').src = 'https://via.placeholder.com/150?text=预览';
+      avatarFile = null;
+      avatarBase64 = null;
+    }
+
+    // 生成提示词
+    function generatePrompt() {
+      const gender = document.getElementById('gender').value;
+      const clothing = document.getElementById('clothing').value;
+      const clothingColor = document.getElementById('clothingColor').value;
+      const clothingDetail = document.getElementById('clothingDetail').value;
+      const environment = document.getElementById('environment').value;
+      const timeOfDay = document.getElementById('timeOfDay').value;
+      const weather = document.getElementById('weather').value;
+      const pose = document.getElementById('pose').value;
+      const expression = document.getElementById('expression').value;
+      const prop1 = document.getElementById('prop1').value;
+      const prop2 = document.getElementById('prop2').value;
+      const style = document.getElementById('style').value;
+      const additionalDetails = document.getElementById('additionalDetails').value;
+
+      let prompt = `一个${gender}角色，穿着${clothingColor}${clothing}`;
+      
+      if (clothingDetail) {
+        prompt += `，${clothingDetail}`;
+      }
+      
+      prompt += `，在${timeOfDay}${weather}的${environment}中${pose}`;
+      
+      if (expression) {
+        prompt += `，表情${expression}`;
+      }
+      
+      if (prop1 !== '无') {
+        prompt += `，手持${prop1}`;
+      }
+      
+      if (prop2 !== '无') {
+        prompt += `，佩戴着${prop2}`;
+      }
+      
+      prompt += `，${style}`;
+      
+      if (additionalDetails) {
+        prompt += `，${additionalDetails}`;
+      }
+      
+      prompt += '，高质量，细节丰富，4K';
+      
+      return prompt;
+    }
+
+    // 生成图像
+    async function generateImage() {
+      const apiKey = document.getElementById('apikey').value.trim();
+      const output = document.getElementById('output');
+      const debug = document.getElementById('debug');
+      
+      if (!apiKey) {
+        alert('⚠️ 请填写 API Key！');
         return;
       }
-
-      output.innerHTML = "⏳ 正在生成，请稍候...";
-      debug.innerText = "🔍 正在请求接口...";
-
+      
+      const prompt = generatePrompt();
+      output.innerHTML = '⏳ 正在生成，请稍候...';
+      debug.innerText = '🔍 正在准备请求...';
+      
       try {
-        let url = "";
+        let url = '';
         let body = {};
-        if (mode === "text") {
-          url = API_URL_TEXT;
-          body = {
-            model: "gpt-3.5-turbo",
-            messages: [{ role: "user", content: prompt }]
-          };
+        let formData = null;
+        
+        // 判断是否使用图生图模式
+        if (avatarFile) {
+          url = API_URL_IMAGE_EDIT;
+          formData = new FormData();
+          formData.append('image', avatarFile);
+          formData.append('prompt', prompt);
+          formData.append('n', 1);
+          formData.append('size', '1024x1024');
+          
+          debug.innerText = `🔗 请求地址：${url}\n\n📤 请求体：图生图模式，上传头像 + "${prompt}"`;
         } else {
           url = API_URL_IMAGE;
           body = {
@@ -112,39 +437,130 @@
             n: 1,
             size: "1024x1024"
           };
+          
+          debug.innerText = `🔗 请求地址：${url}\n\n📤 请求体：\n${JSON.stringify(body, null, 2)}`;
         }
-
-        const response = await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${apiKey}`
-          },
-          body: JSON.stringify(body)
-        });
-
+        
+        let response;
+        
+        if (formData) {
+          response = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${apiKey}`
+            },
+            body: formData
+          });
+        } else {
+          response = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify(body)
+          });
+        }
+        
         const data = await response.json();
-
+        
         if (data.error) {
-          output.innerText = `❌ 出错：${data.error.message || "未知错误"}`;
-        } else if (mode === "text") {
-          output.innerText = data.choices?.[0]?.message?.content || "❌ 无法获取返回文本";
+          output.innerText = `❌ 出错：${data.error.message || '未知错误'}`;
+          debug.innerText += `\n\n📥 返回错误：\n${JSON.stringify(data, null, 2)}`;
         } else {
           const imageUrl = data.data?.[0]?.url;
-          output.innerHTML = imageUrl
-            ? `<img src="${imageUrl}" alt="生成图像" />`
-            : "❌ 图像生成失败";
+          
+          if (imageUrl) {
+            output.innerHTML = `<img src="${imageUrl}" alt="生成图像" />`;
+            
+            // 保存到历史记录
+            const timestamp = new Date().toLocaleString();
+            const historyItem = {
+              id: Date.now(),
+              imageUrl: imageUrl,
+              prompt: prompt,
+              timestamp: timestamp,
+              settings: {
+                gender: document.getElementById('gender').value,
+                clothing: document.getElementById('clothing').value,
+                environment: document.getElementById('environment').value,
+                pose: document.getElementById('pose').value,
+                style: document.getElementById('style').value
+              }
+            };
+            
+            generationHistory.unshift(historyItem);
+            if (generationHistory.length > 50) generationHistory.pop(); // 限制历史记录数量
+            localStorage.setItem('imageHistory', JSON.stringify(generationHistory));
+            updateHistoryDisplay();
+          } else {
+            output.innerText = '❌ 图像生成失败';
+          }
+          
+          debug.innerText += `\n\n📥 返回内容：\n${JSON.stringify(data, null, 2)}`;
         }
-
-        debug.innerText =
-          `🔗 请求地址：${url}\n\n` +
-          `📤 请求体：\n${JSON.stringify(body, null, 2)}\n\n` +
-          `📥 返回内容：\n${JSON.stringify(data, null, 2)}`;
       } catch (err) {
-        output.innerText = "❌ 请求失败：" + err.message;
-        debug.innerText = `❗ 错误信息：${err.message}`;
+        output.innerText = '❌ 请求失败：' + err.message;
+        debug.innerText += `\n\n❗ 错误信息：${err.message}`;
       }
     }
+    
+    // 更新历史记录显示
+    function updateHistoryDisplay() {
+      const container = document.getElementById('historyContainer');
+      
+      if (generationHistory.length === 0) {
+        container.innerHTML = '<p>暂无历史记录</p>';
+        return;
+      }
+      
+      container.innerHTML = '';
+      
+      generationHistory.forEach(item => {
+        const historyCard = document.createElement('div');
+        historyCard.className = 'history-item';
+        historyCard.innerHTML = `
+          <img src="${item.imageUrl}" class="history-image" alt="历史图像" />
+          <div>
+            <small>${item.timestamp}</small>
+            <p>${item.settings.gender} | ${item.settings.clothing} | ${item.settings.environment}</p>
+          </div>
+        `;
+        
+        historyCard.addEventListener('click', () => {
+          document.getElementById('output').innerHTML = `<img src="${item.imageUrl}" alt="历史图像" />`;
+          document.getElementById('debug').innerText = `从历史记录加载：\n${item.prompt}`;
+          
+          // 切换到生成器标签
+          document.querySelectorAll('.tablinks')[0].click();
+        });
+        
+        container.appendChild(historyCard);
+      });
+    }
+    
+    // 标签页切换功能
+    function openTab(evt, tabName) {
+      const tabcontent = document.getElementsByClassName('tabcontent');
+      for (let i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = 'none';
+      }
+      
+      const tablinks = document.getElementsByClassName('tablinks');
+      for (let i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(' active', '');
+      }
+      
+      document.getElementById(tabName).style.display = 'block';
+      evt.currentTarget.className += ' active';
+      
+      if (tabName === 'historyTab') {
+        updateHistoryDisplay();
+      }
+    }
+    
+    // 初始化
+    updateHistoryDisplay();
   </script>
 </body>
 </html>
