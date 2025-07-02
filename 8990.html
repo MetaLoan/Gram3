@@ -137,6 +137,28 @@
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 15px;
     }
+    .loading {
+      display: inline-block;
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(0,123,255,.3);
+      border-radius: 50%;
+      border-top-color: #007bff;
+      animation: spin 1s ease-in-out infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .loading-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    .loading-text {
+      margin-top: 10px;
+      color: #007bff;
+    }
   </style>
 </head>
 <body>
@@ -412,13 +434,24 @@
       }
       
       const prompt = generatePrompt();
-      output.innerHTML = '⏳ 正在生成，请稍候...';
+      
+      // 显示加载动画
+      output.innerHTML = `
+        <div class="loading-container">
+          <div class="loading"></div>
+          <div class="loading-text">⏳ 正在生成，请稍候...</div>
+        </div>
+      `;
+      
       debug.innerText = '🔍 正在准备请求...';
       
       try {
         let url = '';
         let body = {};
         let formData = null;
+        let headers = {
+          'Authorization': `Bearer ${apiKey}`
+        };
         
         // 判断是否使用图生图模式
         if (avatarFile) {
@@ -428,6 +461,7 @@
           formData.append('prompt', prompt);
           formData.append('n', 1);
           formData.append('size', '1024x1024');
+          formData.append('response_format', 'b64_json'); // 确保返回base64格式
           
           debug.innerText = `🔗 请求地址：${url}\n\n📤 请求体：图生图模式，上传头像 + "${prompt}"`;
         } else {
@@ -435,9 +469,11 @@
           body = {
             prompt: prompt,
             n: 1,
-            size: "1024x1024"
+            size: "1024x1024",
+            response_format: "b64_json" // 确保返回base64格式
           };
           
+          headers['Content-Type'] = 'application/json';
           debug.innerText = `🔗 请求地址：${url}\n\n📤 请求体：\n${JSON.stringify(body, null, 2)}`;
         }
         
@@ -446,18 +482,13 @@
         if (formData) {
           response = await fetch(url, {
             method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${apiKey}`
-            },
+            headers: headers,
             body: formData
           });
         } else {
           response = await fetch(url, {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${apiKey}`
-            },
+            headers: headers,
             body: JSON.stringify(body)
           });
         }
@@ -468,16 +499,19 @@
           output.innerText = `❌ 出错：${data.error.message || '未知错误'}`;
           debug.innerText += `\n\n📥 返回错误：\n${JSON.stringify(data, null, 2)}`;
         } else {
-          const imageUrl = data.data?.[0]?.url;
+          // 处理返回的base64图像数据
+          const b64Image = data.data?.[0]?.b64_json;
           
-          if (imageUrl) {
+          if (b64Image) {
+            // 创建图像URL
+            const imageUrl = `data:image/png;base64,${b64Image}`;
             output.innerHTML = `<img src="${imageUrl}" alt="生成图像" />`;
             
             // 保存到历史记录
             const timestamp = new Date().toLocaleString();
             const historyItem = {
               id: Date.now(),
-              imageUrl: imageUrl,
+              imageUrl: imageUrl, // 保存base64图像
               prompt: prompt,
               timestamp: timestamp,
               settings: {
@@ -494,10 +528,15 @@
             localStorage.setItem('imageHistory', JSON.stringify(generationHistory));
             updateHistoryDisplay();
           } else {
-            output.innerText = '❌ 图像生成失败';
+            output.innerText = '❌ 图像生成失败 - 未收到有效的图像数据';
           }
           
-          debug.innerText += `\n\n📥 返回内容：\n${JSON.stringify(data, null, 2)}`;
+          // 限制调试信息长度，避免显示太长的base64字符串
+          let debugData = JSON.parse(JSON.stringify(data));
+          if (debugData.data && debugData.data[0] && debugData.data[0].b64_json) {
+            debugData.data[0].b64_json = debugData.data[0].b64_json.substring(0, 100) + '... [截断]';
+          }
+          debug.innerText += `\n\n📥 返回内容：\n${JSON.stringify(debugData, null, 2)}`;
         }
       } catch (err) {
         output.innerText = '❌ 请求失败：' + err.message;
