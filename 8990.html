@@ -7,7 +7,7 @@
     body {
       font-family: system-ui, sans-serif;
       padding: 40px;
-      max-width: 720px;
+      max-width: 800px;
       margin: auto;
       background-color: #f4f4f4;
     }
@@ -30,12 +30,12 @@
     button:hover {
       background-color: #0056b3;
     }
-    #output {
+    #output, #debug {
       margin-top: 20px;
       padding: 15px;
       background: white;
       border-radius: 8px;
-      min-height: 100px;
+      min-height: 80px;
       white-space: pre-wrap;
       box-shadow: 0 0 8px rgba(0,0,0,0.05);
     }
@@ -46,6 +46,11 @@
     }
     label {
       font-weight: bold;
+    }
+    #debug {
+      background: #fef9e7;
+      font-size: 13px;
+      color: #333;
     }
   </style>
 </head>
@@ -68,6 +73,9 @@
 
   <div id="output">🔍 生成内容将在这里显示...</div>
 
+  <h3>🐞 调试信息</h3>
+  <div id="debug">这里会显示请求体、返回内容、错误信息等</div>
+
   <script>
     const API_URL_TEXT = "https://api.openai.com/v1/chat/completions";
     const API_URL_IMAGE = "https://api.openai.com/v1/images/generations";
@@ -77,6 +85,7 @@
       const prompt = document.getElementById("prompt").value.trim();
       const mode = document.getElementById("mode").value;
       const output = document.getElementById("output");
+      const debug = document.getElementById("debug");
 
       if (!apiKey || !prompt) {
         alert("⚠️ 请填写 API Key 和提示词！");
@@ -84,47 +93,56 @@
       }
 
       output.innerHTML = "⏳ 正在生成，请稍候...";
+      debug.innerText = "🔍 正在请求 OpenAI 接口...";
 
       try {
-        let response;
+        let url = "";
+        let body = {};
         if (mode === "text") {
-          response = await fetch(API_URL_TEXT, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${apiKey}`
-            },
-            body: JSON.stringify({
-              model: "gpt-3.5-turbo",
-              messages: [{ role: "user", content: prompt }]
-            })
-          });
+          url = API_URL_TEXT;
+          body = {
+            model: "gpt-3.5-turbo",
+            messages: [{ role: "user", content: prompt }]
+          };
+        } else {
+          url = API_URL_IMAGE;
+          body = {
+            prompt: prompt,
+            n: 1,
+            size: "512x512"
+          };
+        }
 
-          const data = await response.json();
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}`
+          },
+          body: JSON.stringify(body)
+        });
+
+        const data = await response.json();
+
+        // 显示主输出
+        if (mode === "text") {
           output.innerText = data.choices?.[0]?.message?.content || "❌ 无法获取返回文本";
-
-        } else if (mode === "image") {
-          response = await fetch(API_URL_IMAGE, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${apiKey}`
-            },
-            body: JSON.stringify({
-              prompt: prompt,
-              n: 1,
-              size: "512x512"
-            })
-          });
-
-          const data = await response.json();
+        } else {
           const imageUrl = data.data?.[0]?.url;
           output.innerHTML = imageUrl
             ? `<img src="${imageUrl}" alt="生成图像" />`
             : "❌ 图像生成失败";
         }
+
+        // 显示调试信息
+        debug.innerText =
+          `🔗 请求地址：${url}\n\n` +
+          `📤 请求体：\n${JSON.stringify(body, null, 2)}\n\n` +
+          `📥 返回内容：\n${JSON.stringify(data, null, 2)}`;
+
       } catch (err) {
         output.innerText = "❌ 请求失败：" + err.message;
+        debug.innerText = `❗ 错误信息：${err.message}`;
       }
     }
   </script>
