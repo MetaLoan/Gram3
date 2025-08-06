@@ -3,23 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OnlyGram - Web3 Telegram Client</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>MeFree - TRON Energy Rental Platform</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto+Mono&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #00A3FF;
-      --primary-light: #B4E1FF;
-      --primary-dark: #0076B9;
-      --secondary: #273852;
-      --background: #F5F7FA;
-      --text: #273852;
-      --text-light: #5E6B81;
-      --accent: #E27625;
-      --white: #FFFFFF;
-      --gray-light: #E9EDF2;
-      --gray: #C4C9D4;
+      --primary-color: #0071e3;
+      --secondary-color: #00a3ff;
+      --dark-color: #333333;
+      --gray-color: #777777;
+      --light-color: #f5f5f7;
+      --success-color: #34c759;
+      --warning-color: #ff9500;
+      --danger-color: #ff3b30;
     }
     
     * {
@@ -29,11 +25,10 @@
     }
     
     body {
-      font-family: 'Inter', sans-serif;
-      color: var(--text);
-      background-color: var(--background);
+      font-family: 'Poppins', sans-serif;
+      color: var(--dark-color);
       line-height: 1.6;
-      overflow-x: hidden;
+      background-color: #f5f5f7;
     }
     
     .container {
@@ -44,41 +39,34 @@
     
     /* Header */
     header {
-      background-color: transparent;
-      position: absolute;
+      background-color: white;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      position: fixed;
       top: 0;
       left: 0;
       width: 100%;
-      z-index: 100;
-      padding: 30px 0;
+      z-index: 1000;
     }
     
     .header-container {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding: 15px 0;
     }
     
     .logo {
       display: flex;
       align-items: center;
-      font-weight: 700;
       font-size: 24px;
-      color: var(--white);
+      font-weight: 700;
+      color: var(--primary-color);
       text-decoration: none;
     }
     
-    .logo-icon {
-      width: 36px;
-      height: 36px;
-      background-color: var(--primary);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .logo i {
       margin-right: 10px;
-      color: white;
-      font-weight: bold;
+      font-size: 28px;
     }
     
     nav ul {
@@ -91,1293 +79,2156 @@
     }
     
     nav ul li a {
+      color: var(--dark-color);
       text-decoration: none;
-      color: var(--white);
       font-weight: 500;
-      font-size: 16px;
-      transition: opacity 0.3s;
-      opacity: 0.8;
+      transition: color 0.3s ease;
     }
     
     nav ul li a:hover {
-      opacity: 1;
+      color: var(--primary-color);
     }
     
-    .header-buttons {
+    .header-right {
       display: flex;
-      gap: 16px;
-    }
-    
-    .primary-button {
-      background-color: var(--white);
-      color: var(--primary);
-      border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 16px;
-      cursor: pointer;
-      transition: all 0.3s;
-      text-decoration: none;
-      display: inline-flex;
       align-items: center;
     }
     
-    .primary-button:hover {
-      background-color: rgba(255, 255, 255, 0.9);
-      transform: translateY(-2px);
+    .language-selector {
+      margin-right: 20px;
+      position: relative;
     }
     
-    .secondary-button {
-      background-color: transparent;
-      color: var(--white);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 16px;
+    .language-selector select {
+      appearance: none;
+      background: transparent;
+      border: 1px solid #e1e1e1;
+      border-radius: 5px;
+      padding: 8px 30px 8px 10px;
+      font-size: 14px;
+      color: var(--dark-color);
       cursor: pointer;
-      transition: all 0.3s;
+    }
+    
+    .language-selector::after {
+      content: '▼';
+      font-size: 10px;
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+    
+    .cta-button {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-weight: 500;
       text-decoration: none;
-      display: inline-flex;
-      align-items: center;
+      transition: background-color 0.3s ease;
     }
     
-    .secondary-button:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-      transform: translateY(-2px);
+    .cta-button:hover {
+      background-color: #005bbf;
     }
     
-    .mobile-menu-button {
+    .mobile-menu-btn {
       display: none;
-      background: none;
-      border: none;
-      color: var(--white);
       font-size: 24px;
       cursor: pointer;
     }
     
     /* Hero Section */
     .hero {
-      background: linear-gradient(135deg, var(--secondary) 0%, #1A2539 100%);
-      padding: 180px 0 120px;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .hero::before {
-      content: '';
-      position: absolute;
-      width: 800px;
-      height: 800px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(0, 163, 255, 0.2) 0%, rgba(0, 163, 255, 0) 70%);
-      top: -400px;
-      right: -200px;
-      z-index: 1;
-    }
-    
-    .hero::after {
-      content: '';
-      position: absolute;
-      width: 600px;
-      height: 600px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(0, 163, 255, 0.15) 0%, rgba(0, 163, 255, 0) 70%);
-      bottom: -300px;
-      left: -100px;
-      z-index: 1;
-    }
-    
-    .hero-container {
-      position: relative;
-      z-index: 2;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    
-    .hero-content {
-      max-width: 600px;
-      color: var(--white);
+      background: linear-gradient(135deg, #f5f9ff 0%, #ecf5fe 100%);
+      padding: 150px 0 100px;
+      text-align: center;
     }
     
     .hero h1 {
-      font-size: 56px;
-      line-height: 1.2;
-      margin-bottom: 24px;
-      font-weight: 700;
-    }
-    
-    .hero h1 span {
-      color: var(--primary);
+      font-size: 48px;
+      margin-bottom: 20px;
+      color: var(--dark-color);
     }
     
     .hero p {
-      font-size: 20px;
-      margin-bottom: 40px;
-      opacity: 0.8;
-      font-weight: 400;
-    }
-    
-    .hero-stats {
-      display: flex;
-      gap: 40px;
-      margin-top: 60px;
-    }
-    
-    .stat-item {
-      display: flex;
-      flex-direction: column;
-    }
-    
-    .stat-value {
-      font-size: 32px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-    
-    .stat-label {
-      font-size: 16px;
-      opacity: 0.6;
-    }
-    
-    .hero-image {
-      position: relative;
-      width: 450px;
-      height: 450px;
-      background: linear-gradient(135deg, rgba(0, 163, 255, 0.1) 0%, rgba(0, 163, 255, 0.05) 100%);
-      border-radius: 24px;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      animation: float 6s ease-in-out infinite;
-    }
-    
-    @keyframes float {
-      0% {
-        transform: translateY(0px);
-      }
-      50% {
-        transform: translateY(-20px);
-      }
-      100% {
-        transform: translateY(0px);
-      }
-    }
-    
-    .hero-image-inner {
-      width: 80%;
-      height: 80%;
-      background-color: var(--primary);
-      border-radius: 16px;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .hero-image-inner::before {
-      content: '';
-      position: absolute;
-      width: 150%;
-      height: 150%;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-      top: -25%;
-      left: -25%;
-      transform: rotate(45deg);
-      animation: shine 4s linear infinite;
-    }
-    
-    @keyframes shine {
-      0% {
-        transform: translateX(-100%) rotate(45deg);
-      }
-      100% {
-        transform: translateX(100%) rotate(45deg);
-      }
-    }
-    
-    /* Features Section */
-    .features {
-      padding: 120px 0;
-    }
-    
-    .section-header {
-      text-align: center;
-      margin-bottom: 80px;
-    }
-    
-    .section-header h2 {
-      font-size: 42px;
-      color: var(--text);
-      margin-bottom: 16px;
-      font-weight: 700;
-    }
-    
-    .section-header p {
       font-size: 18px;
-      color: var(--text-light);
-      max-width: 600px;
-      margin: 0 auto;
+      color: var(--gray-color);
+      max-width: 700px;
+      margin: 0 auto 40px;
     }
     
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 30px;
-    }
-    
-    .feature-card {
-      background-color: var(--white);
-      border-radius: 16px;
-      padding: 40px 30px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-      transition: all 0.3s;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .feature-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    }
-    
-    .feature-card::before {
-      content: '';
-      position: absolute;
-      width: 100px;
-      height: 100px;
-      background: radial-gradient(circle, var(--primary-light) 0%, rgba(180, 225, 255, 0) 70%);
-      top: -50px;
-      right: -50px;
-      border-radius: 50%;
-    }
-    
-    .feature-icon {
-      width: 64px;
-      height: 64px;
-      background-color: var(--primary-light);
-      border-radius: 16px;
+    .hero-buttons {
       display: flex;
-      align-items: center;
       justify-content: center;
-      margin-bottom: 24px;
+      gap: 20px;
     }
     
-    .feature-icon svg {
-      width: 32px;
-      height: 32px;
-      fill: var(--primary);
-    }
-    
-    .feature-card h3 {
-      font-size: 24px;
-      margin-bottom: 16px;
-      color: var(--text);
-      font-weight: 600;
-    }
-    
-    .feature-card p {
-      color: var(--text-light);
+    .hero-buttons .cta-button {
+      padding: 15px 30px;
       font-size: 16px;
-      margin-bottom: 24px;
     }
     
-    .feature-link {
-      display: inline-flex;
-      align-items: center;
-      color: var(--primary);
-      font-weight: 600;
+    .hero-buttons .secondary-button {
+      background-color: white;
+      color: var(--primary-color);
+      padding: 15px 30px;
+      border-radius: 5px;
+      font-weight: 500;
       text-decoration: none;
-      font-size: 16px;
-      transition: all 0.3s;
+      transition: background-color 0.3s ease;
+      border: 1px solid var(--primary-color);
     }
     
-    .feature-link:hover {
-      color: var(--primary-dark);
+    .hero-buttons .secondary-button:hover {
+      background-color: #f0f7ff;
     }
     
-    .feature-link svg {
-      width: 20px;
-      height: 20px;
-      margin-left: 8px;
-      transition: transform 0.3s;
-    }
-    
-    .feature-link:hover svg {
-      transform: translateX(5px);
-    }
-    
-    /* How It Works */
-    .how-it-works {
-      padding: 120px 0;
-      background-color: var(--white);
+    .section-title {
+      text-align: center;
+      font-size: 36px;
+      margin-bottom: 50px;
+      color: var(--dark-color);
       position: relative;
+      padding-bottom: 15px;
+    }
+    
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 3px;
+      background-color: var(--primary-color);
+      border-radius: 3px;
+    }
+    
+    /* Energy Rental Section - Enhanced Animation */
+    .energy-rental {
+      padding: 60px 0;
+      background-color: white;
+      border-radius: 30px;
+      margin: 60px 20px;
       overflow: hidden;
-    }
-    
-    .how-it-works::before {
-      content: '';
-      position: absolute;
-      width: 600px;
-      height: 600px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(0, 163, 255, 0.05) 0%, rgba(0, 163, 255, 0) 70%);
-      top: -200px;
-      left: -200px;
-    }
-    
-    .how-it-works::after {
-      content: '';
-      position: absolute;
-      width: 400px;
-      height: 400px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(0, 163, 255, 0.05) 0%, rgba(0, 163, 255, 0) 70%);
-      bottom: -100px;
-      right: -100px;
-    }
-    
-    .steps-container {
       position: relative;
-      z-index: 2;
     }
     
-    .steps {
+    .energy-rental::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 50% 50%, rgba(0, 113, 227, 0.03) 0%, transparent 70%);
+      z-index: 0;
+    }
+    
+    .energy-rental .container {
+      position: relative;
+      z-index: 1;
+    }
+    
+    .rental-steps {
       display: flex;
       justify-content: space-between;
+      margin-bottom: 60px;
       position: relative;
-      margin-top: 80px;
     }
     
-    .steps::before {
+    /* Progress line */
+    .rental-steps::before {
       content: '';
       position: absolute;
       top: 40px;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background-color: var(--gray-light);
-      z-index: -1;
+      left: 15%;
+      width: 70%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+      z-index: 1;
+      transform: translateY(-50%);
+      border-radius: 2px;
     }
     
     .step {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      flex: 1;
       text-align: center;
-      width: 200px;
+      padding: 0 20px;
       position: relative;
+      z-index: 2;
+      transition: transform 0.3s ease;
+    }
+    
+    .step:hover {
+      transform: translateY(-10px);
     }
     
     .step-number {
-      width: 80px;
-      height: 80px;
-      background-color: var(--white);
-      border: 2px solid var(--primary);
-      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--primary);
-      margin-bottom: 24px;
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--primary-color), #4286f5);
+      color: white;
+      border-radius: 50%;
+      font-size: 30px;
+      font-weight: 600;
+      margin: 0 auto 25px;
       position: relative;
-      z-index: 1;
-      transition: all 0.3s;
+      box-shadow: 0 10px 20px rgba(0, 113, 227, 0.2);
+      transition: all 0.3s ease;
+      overflow: hidden;
     }
     
     .step:hover .step-number {
-      background-color: var(--primary);
-      color: var(--white);
+      box-shadow: 0 15px 30px rgba(0, 113, 227, 0.3);
       transform: scale(1.1);
     }
     
-    .step h3 {
-      font-size: 20px;
-      margin-bottom: 12px;
-      color: var(--text);
-      font-weight: 600;
-    }
-    
-    .step p {
-      color: var(--text-light);
-      font-size: 16px;
-    }
-    
-    /* Ecosystem Section */
-    .ecosystem {
-      padding: 120px 0;
-      background-color: var(--background);
-    }
-    
-    .ecosystem-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 24px;
-      margin-top: 60px;
-    }
-    
-    .ecosystem-card {
-      background-color: var(--white);
-      border-radius: 16px;
-      padding: 30px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-      transition: all 0.3s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
-    
-    .ecosystem-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    }
-    
-    .ecosystem-logo {
-      width: 80px;
-      height: 80px;
-      background-color: var(--gray-light);
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-    
-    .ecosystem-card h3 {
-      font-size: 18px;
-      margin-bottom: 12px;
-      color: var(--text);
-      font-weight: 600;
-    }
-    
-    .ecosystem-card p {
-      color: var(--text-light);
-      font-size: 14px;
-      margin-bottom: 20px;
-    }
-    
-    .ecosystem-link {
-      color: var(--primary);
-      font-weight: 500;
-      text-decoration: none;
-      font-size: 14px;
-      transition: all 0.3s;
-    }
-    
-    .ecosystem-link:hover {
-      color: var(--primary-dark);
-    }
-    
-    /* Stats Section */
-    .stats {
-      padding: 120px 0;
-      background: linear-gradient(135deg, var(--secondary) 0%, #1A2539 100%);
-      color: var(--white);
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .stats::before {
+    /* Pulse effect */
+    .step-number::after {
       content: '';
       position: absolute;
-      width: 600px;
-      height: 600px;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.3);
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(0, 163, 255, 0.1) 0%, rgba(0, 163, 255, 0) 70%);
-      top: -300px;
-      right: -200px;
+      z-index: 1;
+      animation: pulse 2s infinite;
+      opacity: 0;
     }
     
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 30px;
-      position: relative;
-      z-index: 2;
-    }
-    
-    .stat-card {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      padding: 30px;
-      text-align: center;
-      transition: all 0.3s;
-    }
-    
-    .stat-card:hover {
-      transform: translateY(-10px);
-      background: rgba(255, 255, 255, 0.1);
-    }
-    
-    .stat-card h3 {
-      font-size: 36px;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
-    
-    .stat-card p {
-      font-size: 16px;
-      opacity: 0.7;
-    }
-    
-    /* CTA Section */
-    .cta {
-      padding: 120px 0;
-      background-color: var(--white);
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .cta::before {
-      content: '';
-      position: absolute;
-      width: 500px;
-      height: 500px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(0, 163, 255, 0.05) 0%, rgba(0, 163, 255, 0) 70%);
-      bottom: -250px;
-      left: -100px;
-    }
-    
-    .cta-container {
-      position: relative;
-      z-index: 2;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    
-    .cta-content {
-      max-width: 500px;
-    }
-    
-    .cta h2 {
-      font-size: 42px;
-      line-height: 1.2;
-      margin-bottom: 24px;
-      color: var(--text);
-      font-weight: 700;
-    }
-    
-    .cta p {
-      font-size: 18px;
-      color: var(--text-light);
-      margin-bottom: 40px;
-    }
-    
-    .cta-buttons {
-      display: flex;
-      gap: 16px;
-    }
-    
-    .cta-image {
-      width: 500px;
-      height: 400px;
-      background-color: var(--primary-light);
-      border-radius: 24px;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .cta-image::before {
-      content: '';
-      position: absolute;
-      width: 150%;
-      height: 150%;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.05) 100%);
-      top: -25%;
-      left: -25%;
-      transform: rotate(45deg);
-      animation: shine 4s linear infinite;
-    }
-    
-    /* Footer */
-    footer {
-      background-color: var(--secondary);
-      color: var(--white);
-      padding: 80px 0 40px;
-    }
-    
-    .footer-container {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr;
-      gap: 60px;
-      margin-bottom: 60px;
-    }
-    
-    .footer-logo {
-      display: flex;
-      align-items: center;
-      font-weight: 700;
-      font-size: 24px;
-      color: var(--white);
-      margin-bottom: 20px;
-      text-decoration: none;
-    }
-    
-    .footer-about p {
-      color: rgba(255, 255, 255, 0.7);
-      margin-bottom: 24px;
-      font-size: 16px;
-    }
-    
-    .social-links {
-      display: flex;
-      gap: 16px;
-    }
-    
-    .social-icon {
-      width: 40px;
-      height: 40px;
-      background-color: rgba(255, 255, 255, 0.1);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s;
-    }
-    
-    .social-icon:hover {
-      background-color: var(--primary);
-      transform: translateY(-5px);
-    }
-    
-    .social-icon svg {
-      width: 20px;
-      height: 20px;
-      fill: var(--white);
-    }
-    
-    .footer-links h4 {
-      font-size: 18px;
-      margin-bottom: 24px;
-      font-weight: 600;
-    }
-    
-    .footer-links ul {
-      list-style: none;
-    }
-    
-    .footer-links ul li {
-      margin-bottom: 12px;
-    }
-    
-    .footer-links ul li a {
-      color: rgba(255, 255, 255, 0.7);
-      text-decoration: none;
-      transition: all 0.3s;
-      font-size: 16px;
-    }
-    
-    .footer-links ul li a:hover {
-      color: var(--white);
-      padding-left: 5px;
-    }
-    
-    .footer-bottom {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-top: 40px;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    .copyright {
-      color: rgba(255, 255, 255, 0.5);
-      font-size: 14px;
-    }
-    
-    .footer-nav {
-      display: flex;
-      gap: 24px;
-    }
-    
-    .footer-nav a {
-      color: rgba(255, 255, 255, 0.7);
-      text-decoration: none;
-      font-size: 14px;
-      transition: color 0.3s;
-    }
-    
-    .footer-nav a:hover {
-      color: var(--white);
-    }
-    
-    /* Animations */
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    
-    .fade-in {
-      animation: fadeIn 0.8s ease forwards;
-    }
-    
-    .delay-1 {
-      animation-delay: 0.2s;
-    }
-    
-    .delay-2 {
-      animation-delay: 0.4s;
-    }
-    
-    .delay-3 {
+    .step:nth-child(2) .step-number::after {
       animation-delay: 0.6s;
     }
     
-    /* Responsive */
-    @media (max-width: 1200px) {
-      .hero-container {
-        flex-direction: column;
-        text-align: center;
+    .step:nth-child(3) .step-number::after {
+      animation-delay: 1.2s;
+    }
+    
+    @keyframes pulse {
+      0% {
+        transform: scale(0.95);
+        opacity: 0;
       }
-      
-      .hero-content {
-        margin-bottom: 60px;
-        max-width: 100%;
+      50% {
+        opacity: 0.6;
       }
-      
-      .hero-stats {
-        justify-content: center;
-      }
-      
-      .features-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      
-      .ecosystem-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      
-      .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      
-      .cta-container {
-        flex-direction: column;
-        text-align: center;
-      }
-      
-      .cta-content {
-        margin-bottom: 60px;
-        max-width: 100%;
-      }
-      
-      .cta-buttons {
-        justify-content: center;
-      }
-      
-      .footer-container {
-        grid-template-columns: 1fr 1fr;
-        gap: 40px;
+      100% {
+        transform: scale(1.8);
+        opacity: 0;
       }
     }
     
-    @media (max-width: 768px) {
-      .header-container {
-        padding: 0 20px;
-      }
-      
-      nav {
-        display: none;
-      }
-      
-      .mobile-menu-button {
-        display: block;
-      }
-      
-      .header-buttons {
-        display: none;
-      }
-      
-      .hero h1 {
-        font-size: 42px;
-      }
-      
-      .hero p {
-        font-size: 18px;
-      }
-      
-      .hero-image {
-        width: 100%;
-        height: 350px;
-      }
-      
-      .features-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .steps {
-        flex-direction: column;
-        align-items: center;
-        gap: 40px;
-      }
-      
-      .steps::before {
-        display: none;
-      }
-      
-      .ecosystem-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .stats-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .cta-image {
-        width: 100%;
-        height: 300px;
-      }
-      
-      .footer-container {
-        grid-template-columns: 1fr;
-      }
-      
-      .footer-bottom {
-        flex-direction: column;
-        gap: 20px;
-        text-align: center;
-      }
+    .step-icon {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 3;
     }
-  </style>
+    
+    .step:hover .step-icon {
+      opacity: 1;
+    }
+    
+    .step:hover .step-number-text {
+      opacity: 0;
+    }
+    
+    .step-number-text {
+      position: relative;
+      z-index: 2;
+      transition: opacity 0.3s ease;
+    }
+    
+    .step h3 {
+      font-size: 22px;
+      margin-bottom: 15px;
+      color: var(--primary-color);
+      position: relative;
+      display: inline-block;
+    }
+    
+    .step h3::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: var(--primary-color);
+      transition: width 0.3s ease;
+    }
+    
+    .step:hover h3::after {
+      width: 100%;
+    }
+    
+    .step p {
+      color: var(--gray-color);
+      font-size: 16px;
+      line-height: 1.6;
+      max-width: 220px;
+      margin: 0 auto;
+      transition: all 0.3s ease;
+    }
+    
+    .step:hover p {
+      color: var(--dark-color);
+    }
+    
+    /* Floating particles */
+    .particles-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 0;
+    }
+    
+    .particle {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: rgba(0, 113, 227, 0.1);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    
+    /* Form enhancements */
+    .rental-form {
+      background: linear-gradient(135deg, #ffffff, #f5f9ff);
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 600px;
+      margin: 0 auto;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.05);
+      position: relative;
+      z-index: 2;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .rental-form:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    }
+    
+    .form-group {
+      margin-bottom: 25px;
+      position: relative;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 500;
+      color: var(--dark-color);
+      transition: color 0.3s ease;
+    }
+    
+    .form-group:focus-within label {
+      color: var(--primary-color);
+    }
+    
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e1e1e1;
+      border-radius: 12px;
+      font-size: 16px;
+      outline: none;
+      transition: all 0.3s ease;
+      background-color: white;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+    }
+    
+    .form-group input:hover,
+    .form-group select:hover {
+      border-color: #c1c1c1;
+    }
+    
+    /* Custom select arrow */
+    .form-group.select-container {
+      position: relative;
+    }
+    
+    .form-group.select-container::after {
+      content: '▼';
+      font-size: 12px;
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(5px);
+      color: var(--gray-color);
+      pointer-events: none;
+      transition: transform 0.3s ease;
+    }
+    
+    .form-group.select-container:focus-within::after {
+      transform: translateY(5px) rotate(180deg);
+      color: var(--primary-color);
+    }
+    
+    .price-display {
+      background: linear-gradient(135deg, #f0f7ff, #ffffff);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: transform 0.3s ease;
+      border: 2px solid rgba(0, 113, 227, 0.1);
+    }
+    
+    .price-display:hover {
+      transform: scale(1.02);
+    }
+    
+    .price-display .price-label {
+      font-size: 16px;
+      color: var(--gray-color);
+    }
+    
+    .price-display .price {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      margin-top: 5px;
+    }
+    
+    .price-display .price i {
+      margin-right: 5px;
+      font-size: 20px;
+    }
+    
+    .price-display .discount {
+      background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+      color: #2e7d32;
+      padding: 8px 15px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(46, 125, 50, 0.1);
+      transition: transform 0.3s ease;
+    }
+    
+    .price-display .discount:hover {
+      transform: translateY(-3px);
+    }
+    
+    .price-display .discount i {
+      margin-right: 5px;
+    }
+    
+    .submit-btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary-color), #4286f5);
+      color: white;
+      border: none;
+      padding: 16px;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 20px rgba(0, 113, 227, 0.2);
+    }
+    
+    .submit-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.7s ease;
+    }
+    
+    .submit-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 30px rgba(0, 113, 227, 0.3);
+    }
+    
+    .submit-btn:hover::before {
+      left: 100%;
+    }
+    
+    .wallet-address {
+      text-align: center;
+      margin-top: 35px;
+      padding: 25px;
+      background: linear-gradient(135deg, rgba(0, 113, 227, 0.05), rgba(66, 134, 245, 0.05));
+      border-radius: 15px;
+      position: relative;
+      border: 1px dashed rgba(0, 113, 227, 0.2);
+      transition: all 0.3s ease;
+    }
+    
+    .wallet-address:hover {
+      background: linear-gradient(135deg, rgba(0, 113, 227, 0.08), rgba(66, 134, 245, 0.08));
+      border-color: rgba(0, 113, 227, 0.3);
+    }
+    
+    .wallet-address h4 {
+      margin-bottom: 15px;
+      color: var(--dark-color);
+      font-size: 18px;
+      position: relative;
+      display: inline-block;
+    }
+    
+    .wallet-address h4::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 25%;
+      width: 50%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+    }
+    
+    .address-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: white;
+      padding: 15px;
+      border-radius: 12px;
+      border: 2px solid rgba(0, 113, 227, 0.1);
+      margin-bottom: 15px;
+      transition: all 0.3s ease;
+    }
+    
+    .address-box:hover {
+      border-color: var(--primary-color);
+      box-shadow: 0 5px 15px rgba(0, 113, 227, 0.1);
+    }
+    
+    .address-box p {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 16px;
+      margin-right: 15px;
+      color: var(--dark-color);
+      letter-spacing: 0.5px;
+    }
+    
+    .copy-btn {
+      background-color: var(--light-color);
+      border: none;
+      border-radius: 8px;
+      padding: 8px 15px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+    
+    .copy-btn i {
+      margin-right: 5px;
+    }
+    
+    .copy-btn:hover {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .wallet-address p {
+      color: var(--gray-color);
+      font-size: 14px;
+      margin-top: 10px;
+    }
+    
+    /* Exchange Section */
+    .exchange {
+      padding: 60px 0;
+      background-color: white;
+      border-radius: 30px;
+      margin: 60px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .exchange::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 30% 70%, rgba(0, 163, 255, 0.03) 0%, transparent 70%);
+      z-index: 0;
+    }
+    
+    .exchange-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .exchange-form {
+      flex: 1;
+      min-width: 300px;
+      background: linear-gradient(135deg, #ffffff, #f5f9ff);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .exchange-form:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    }
+    
+    .exchange-form h3 {
+      font-size: 24px;
+      margin-bottom: 30px;
+      color: var(--dark-color);
+      position: relative;
+      display: inline-block;
+    }
+    
+    .exchange-form h3::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 40px;
+      height: 3px;
+      background-color: var(--primary-color);
+      border-radius: 3px;
+    }
+    
+    .currency-inputs {
+      display: flex;
+      align-items: center;
+      margin-bottom: 30px;
+      position: relative;
+    }
+    
+    .currency-inputs::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 40px;
+      height: 40px;
+      background-color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      z-index: 2;
+    }
+    
+    .currency-inputs::before {
+      content: '→';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: var(--primary-color);
+      font-size: 20px;
+      font-weight: 700;
+      z-index: 3;
+    }
+    
+    .currency-inputs input {
+      flex: 1;
+      padding: 15px;
+      border: 2px solid #e1e1e1;
+      font-size: 16px;
+      outline: none;
+      transition: all 0.3s ease;
+      background-color: white;
+    }
+    
+    .currency-inputs input:first-child {
+      border-radius: 12px 0 0 12px;
+      border-right: none;
+      text-align: right;
+      padding-right: 30px;
+    }
+    
+    .currency-inputs input:last-child {
+      border-radius: 0 12px 12px 0;
+      border-left: none;
+      padding-left: 30px;
+    }
+    
+    .currency-inputs input:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+    }
+    
+    .currency-inputs input:hover {
+      border-color: #c1c1c1;
+    }
+    
+    .currency-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    
+    .currency-labels span {
+      font-weight: 500;
+      color: var(--dark-color);
+    }
+    
+    .exchange-rate {
+      background: linear-gradient(135deg, #f0f7ff, #ffffff);
+      border-radius: 15px;
+      padding: 15px;
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 2px solid rgba(0, 113, 227, 0.1);
+      transition: transform 0.3s ease;
+    }
+    
+    .exchange-rate:hover {
+      transform: scale(1.02);
+    }
+    
+    .exchange-rate-label {
+      font-size: 14px;
+      color: var(--gray-color);
+    }
+    
+    .exchange-rate-value {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--dark-color);
+    }
+    
+    .exchange-btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+      color: white;
+      border: none;
+      padding: 16px;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 20px rgba(0, 113, 227, 0.2);
+    }
+    
+    .exchange-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.7s ease;
+    }
+    
+    .exchange-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 30px rgba(0, 113, 227, 0.3);
+    }
+    
+    .exchange-btn:hover::before {
+      left: 100%;
+    }
+    
+    .exchange-info {
+      flex: 1;
+      min-width: 300px;
+    }
+    
+    .exchange-info h3 {
+      font-size: 24px;
+      margin-bottom: 30px;
+      color: var(--dark-color);
+      position: relative;
+      display: inline-block;
+    }
+    
+    .exchange-info h3::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 40px;
+      height: 3px;
+      background-color: var(--primary-color);
+      border-radius: 3px;
+    }
+    
+    .exchange-info ul {
+      list-style: none;
+      margin-bottom: 40px;
+    }
+    
+    .exchange-info ul li {
+      margin-bottom: 15px;
+      padding-left: 30px;
+      position: relative;
+      color: var(--gray-color);
+      transition: transform 0.3s ease, color 0.3s ease;
+    }
+    
+    .exchange-info ul li:hover {
+      transform: translateX(5px);
+      color: var(--dark-color);
+    }
+    
+    .exchange-info ul li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: var(--primary-color);
+      font-weight: 700;
+    }
+    
+    .recent-exchanges {
+      background: linear-gradient(135deg, #ffffff, #f5f9ff);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .recent-exchanges:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    }
+    
+    .recent-exchanges h4 {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: var(--dark-color);
+    }
+    
+    .exchange-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .exchange-table th,
+    .exchange-table td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #eaeaea;
+    }
+    
+    .exchange-table th {
+      font-weight: 600;
+      color: var(--dark-color);
+      background-color: rgba(0, 113, 227, 0.05);
+    }
+    
+    .exchange-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .exchange-table tr {
+      transition: background-color 0.3s ease;
+    }
+    
+    .exchange-table tr:hover td {
+      background-color: rgba(0, 113, 227, 0.03);
+    }
+    
+    /* About Section */
+.about {
+  padding: 60px 0;
+  background-color: white;
+  border-radius: 30px;
+  margin: 60px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.about::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 70% 30%, rgba(0, 113, 227, 0.03) 0%, transparent 70%);
+  z-index: 0;
+}
+
+.about-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 60px;
+  position: relative;
+  z-index: 1;
+}
+
+.about-content {
+  flex: 1;
+  min-width: 300px;
+}
+
+.about-content h3 {
+  font-size: 32px;
+  margin-bottom: 25px;
+  color: var(--dark-color);
+}
+
+.about-content p {
+  color: var(--gray-color);
+  font-size: 16px;
+  line-height: 1.8;
+  margin-bottom: 25px;
+}
+
+.about-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.stat-item {
+  background: linear-gradient(135deg, #ffffff, #f5f9ff);
+  border-radius: 15px;
+  padding: 25px;
+  min-width: 180px;
+  flex: 1;
+  text-align: center;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.03);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid rgba(0, 113, 227, 0.05);
+}
+
+.stat-item:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 113, 227, 0.1);
+}
+
+.stat-value {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 10px;
+  position: relative;
+  display: inline-block;
+}
+
+.stat-value::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 25%;
+  width: 50%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+}
+
+.stat-label {
+  color: var(--gray-color);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.about-image {
+  flex: 1;
+  min-width: 300px;
+  position: relative;
+}
+
+.about-img-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.about-img-container:hover {
+  transform: scale(1.02);
+}
+
+.about-img-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.about-img-container:hover img {
+  transform: scale(1.05);
+}
+
+.about-img-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+  display: flex;
+  align-items: flex-end;
+  padding: 30px;
+}
+
+.about-img-text {
+  color: white;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+/* FAQ Section */
+.faq {
+  padding: 60px 0;
+  background-color: white;
+  border-radius: 30px;
+  margin: 60px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.faq::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 20% 80%, rgba(0, 113, 227, 0.03) 0%, transparent 70%);
+  z-index: 0;
+}
+
+.faq-container {
+  position: relative;
+  z-index: 1;
+}
+
+.faq-intro {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 50px;
+}
+
+.faq-intro p {
+  color: var(--gray-color);
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.accordion {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.accordion-item {
+  margin-bottom: 20px;
+  border-radius: 15px;
+  background-color: #f5f9ff;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0, 113, 227, 0.1);
+}
+
+.accordion-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+.accordion-header {
+  padding: 20px 25px;
+  background-color: #f5f9ff;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.3s ease;
+}
+
+.accordion-header:hover {
+  background-color: #e8f1ff;
+}
+
+.accordion-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--dark-color);
+}
+
+.accordion-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: rgba(0, 113, 227, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-color);
+  transition: all 0.3s ease;
+}
+
+.accordion-content {
+  padding: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  background-color: white;
+}
+
+.accordion-content-inner {
+  padding: 0 25px 25px;
+  color: var(--gray-color);
+  line-height: 1.6;
+}
+
+.accordion-item.active .accordion-header {
+  background-color: #e8f1ff;
+}
+
+.accordion-item.active .accordion-icon {
+  transform: rotate(45deg);
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.accordion-item.active .accordion-content {
+  max-height: 300px;
+}
+
+/* Contact Section */
+.contact {
+  padding: 60px 0;
+  background-color: white;
+  border-radius: 30px 30px 0 0;
+  margin: 60px 20px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.contact::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 80% 20%, rgba(0, 113, 227, 0.03) 0%, transparent 70%);
+  z-index: 0;
+}
+
+.contact-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  position: relative;
+  z-index: 1;
+}
+
+.contact-info {
+  flex: 1;
+  min-width: 300px;
+}
+
+.contact-info h3 {
+  font-size: 32px;
+  margin-bottom: 25px;
+  color: var(--dark-color);
+}
+
+.contact-info p {
+  color: var(--gray-color);
+  font-size: 16px;
+  line-height: 1.8;
+  margin-bottom: 30px;
+}
+
+.contact-methods {
+  margin-bottom: 40px;
+}
+
+.contact-method {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  transition: transform 0.3s ease;
+}
+
+.contact-method:hover {
+  transform: translateX(10px);
+}
+
+.contact-icon {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, var(--primary-color), #4286f5);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+  margin-right: 20px;
+  box-shadow: 0 10px 20px rgba(0, 113, 227, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.contact-method:hover .contact-icon {
+  transform: scale(1.1);
+}
+
+.contact-text h4 {
+  font-size: 18px;
+  color: var(--dark-color);
+  margin-bottom: 5px;
+}
+
+.contact-text p {
+  font-size: 16px;
+  color: var(--gray-color);
+  margin-bottom: 0;
+}
+
+.social-links {
+  display: flex;
+  gap: 15px;
+}
+
+.social-link {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background-color: #f5f9ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-color);
+  font-size: 18px;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0, 113, 227, 0.1);
+}
+
+.social-link:hover {
+  transform: translateY(-5px);
+  background-color: var(--primary-color);
+  color: white;
+  box-shadow: 0 10px 20px rgba(0, 113, 227, 0.2);
+}
+
+.contact-form-container {
+  flex: 1;
+  min-width: 300px;
+}
+
+.contact-form {
+  background: linear-gradient(135deg, #ffffff, #f5f9ff);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.contact-form:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+.contact-form h3 {
+  font-size: 24px;
+  margin-bottom: 30px;
+  color: var(--dark-color);
+  position: relative;
+  display: inline-block;
+}
+
+.contact-form h3::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 40px;
+  height: 3px;
+  background-color: var(--primary-color);
+  border-radius: 3px;
+}
+
+.contact-form .form-group {
+  margin-bottom: 25px;
+}
+
+.contact-form textarea {
+  width: 100%;
+  padding: 15px;
+  border: 2px solid #e1e1e1;
+  border-radius: 12px;
+  font-size: 16px;
+  outline: none;
+  transition: all 0.3s ease;
+  background-color: white;
+  min-height: 150px;
+  resize: vertical;
+  font-family: 'Poppins', sans-serif;
+}
+
+.contact-form textarea:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+}
+
+.contact-form textarea:hover {
+  border-color: #c1c1c1;
+}
+
+/* Footer */
+footer {
+  background-color: #1a1a1a;
+  color: white;
+  padding: 60px 0 30px;
+}
+
+.footer-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  margin-bottom: 50px;
+}
+
+.footer-col {
+  flex: 1;
+  min-width: 200px;
+}
+
+.footer-col h4 {
+  font-size: 18px;
+  margin-bottom: 25px;
+  color: white;
+  position: relative;
+  display: inline-block;
+  padding-bottom: 10px;
+}
+
+.footer-col h4::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 30px;
+  height: 2px;
+  background-color: var(--primary-color);
+}
+
+.footer-col p {
+  color: #b0b0b0;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  text-decoration: none;
+  margin-bottom: 20px;
+}
+
+.footer-logo i {
+  margin-right: 10px;
+  font-size: 28px;
+  color: var(--primary-color);
+}
+
+.footer-links {
+  list-style: none;
+}
+
+.footer-links li {
+  margin-bottom: 15px;
+}
+
+.footer-links li a {
+  color: #b0b0b0;
+  text-decoration: none;
+  transition: color 0.3s ease, transform 0.3s ease;
+  display: inline-block;
+}
+
+.footer-links li a:hover {
+  color: white;
+  transform: translateX(5px);
+}
+
+.footer-contact-item {
+  display: flex;
+  margin-bottom: 15px;
+  color: #b0b0b0;
+}
+
+.footer-contact-item i {
+  margin-right: 15px;
+  color: var(--primary-color);
+}
+
+.footer-newsletter p {
+  margin-bottom: 20px;
+}
+
+.newsletter-form {
+  display: flex;
+}
+
+.newsletter-form input {
+  flex: 1;
+  padding: 12px 15px;
+  border: none;
+  border-radius: 5px 0 0 5px;
+  outline: none;
+  background-color: #333333;
+  color: white;
+}
+
+.newsletter-form button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 0 20px;
+  border-radius: 0 5px 5px 0;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.newsletter-form button:hover {
+  background-color: #005bbf;
+}
+
+.footer-bottom {
+  border-top: 1px solid #333333;
+  padding-top: 30px;
+  text-align: center;
+  color: #b0b0b0;
+}
+
+.footer-bottom p {
+  margin-bottom: 10px;
+}
+
+.footer-bottom a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .header-container {
+    padding: 15px;
+  }
+  
+  nav {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transform: translateY(-150%);
+    transition: transform 0.3s ease;
+    z-index: 999;
+  }
+  
+  nav.active {
+    transform: translateY(0);
+  }
+  
+  nav ul {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  nav ul li {
+    margin-left: 0;
+  }
+  
+  .mobile-menu-btn {
+    display: block;
+  }
+  
+  .hero h1 {
+    font-size: 36px;
+  }
+  
+  .hero-buttons {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .rental-steps {
+    flex-direction: column;
+    gap: 50px;
+  }
+  
+  .rental-steps::before {
+    width: 4px;
+    height: 70%;
+    left: 50%;
+    top: 15%;
+    transform: translateX(-50%);
+  }
+  
+  .step {
+    padding: 0 30px;
+  }
+  
+  .step:hover {
+    transform: translateX(10px);
+  }
+  
+  .rental-form {
+    padding: 30px 20px;
+  }
+  
+  .exchange-container,
+  .about-container,
+  .contact-container,
+  .footer-container {
+    flex-direction: column;
+  }
+  
+  .about-img-container {
+    min-height: 300px;
+  }
+  
+  .contact-form {
+    padding: 30px 20px;
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>
 </head>
 <body>
-  <!-- Header -->
   <header>
-    <div class="container header-container">
-      <a href="#" class="logo">
-        <div class="logo-icon">O</div>
-        OnlyGram
-      </a>
-      <nav>
-        <ul>
-          <li><a href="#">Features</a></li>
-          <li><a href="#">How it Works</a></li>
-          <li><a href="#">Ecosystem</a></li>
-          <li><a href="#">Docs</a></li>
-        </ul>
-      </nav>
-      <div class="header-buttons">
-        <a href="#" class="secondary-button">Learn More</a>
-        <a href="#" class="primary-button">Launch App</a>
+    <div class="container">
+      <div class="header-container">
+        <a href="#" class="logo">
+          <i class="fas fa-bolt"></i> MeFree
+        </a>
+        
+        <nav>
+          <ul>
+            <li><a href="#energy">Energy Rental</a></li>
+            <li><a href="#exchange">Exchange</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </nav>
+        
+        <div class="header-right">
+          <div class="language-selector">
+            <select id="language">
+              <option value="en">English</option>
+              <option value="zh">Chinese</option>
+              <option value="ko">Korean</option>
+              <option value="ru">Russian</option>
+            </select>
+          </div>
+          
+          <a href="#" class="cta-button">Get Started</a>
+          
+          <div class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+          </div>
+        </div>
       </div>
-      <button class="mobile-menu-button">☰</button>
     </div>
   </header>
   
-  <!-- Hero Section -->
   <section class="hero">
-    <div class="container hero-container">
-      <div class="hero-content fade-in">
-        <h1>The Next Generation <span>Telegram Client</span> with Web3 Integration</h1>
-        <p>OnlyGram seamlessly combines the power of Telegram messaging with Web3 wallet functionality and modular miniapps to create a unified communication and crypto experience.</p>
-        <div class="header-buttons">
-          <a href="#" class="primary-button">Get Started</a>
-          <a href="#" class="secondary-button">View Demo</a>
-        </div>
-        <div class="hero-stats">
-          <div class="stat-item">
-            <div class="stat-value">2.5M+</div>
-            <div class="stat-label">Active Users</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value">$120M+</div>
-            <div class="stat-label">Transaction Volume</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value">250+</div>
-            <div class="stat-label">MiniApps</div>
-          </div>
-        </div>
-      </div>
-      <div class="hero-image fade-in delay-2">
-        <div class="hero-image-inner"></div>
-      </div>
-    </div>
-  </section>
-  
-  <!-- Features Section -->
-  <section class="features">
     <div class="container">
-      <div class="section-header fade-in">
-        <h2>Key Features</h2>
-        <p>OnlyGram combines the best of messaging and Web3 technology to deliver a seamless experience</p>
-      </div>
-      <div class="features-grid">
-        <div class="feature-card fade-in">
-          <div class="feature-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
-            </svg>
-          </div>
-          <h3>Integrated Web3 Wallet</h3>
-          <p>Securely manage your crypto assets, NFTs, and tokens directly within your messaging app with our built-in wallet functionality.</p>
-          <a href="#" class="feature-link">
-            Learn more
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          </a>
-        </div>
-        <div class="feature-card fade-in delay-1">
-          <div class="feature-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/>
-            </svg>
-          </div>
-          <h3>Modular MiniApps</h3>
-          <p>Extend functionality with a growing ecosystem of decentralized applications that run directly in your chat interface.</p>
-          <a href="#" class="feature-link">
-            Learn more
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          </a>
-        </div>
-        <div class="feature-card fade-in delay-2">
-          <div class="feature-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
-            </svg>
-          </div>
-          <h3>Enhanced Privacy</h3>
-          <p>End-to-end encryption combined with blockchain technology ensures your communications and transactions remain secure.</p>
-          <a href="#" class="feature-link">
-            Learn more
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          </a>
-        </div>
-        <div class="feature-card fade-in">
-          <div class="feature-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
-            </svg>
-          </div>
-          <h3>DeFi Integration</h3>
-          <p>Access decentralized exchanges, lending platforms, and yield farming opportunities without leaving your messaging environment.</p>
-          <a href="#" class="feature-link">
-            Learn more
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          </a>
-        </div>
-        <div class="feature-card fade-in delay-1">
-          <div class="feature-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
-            </svg>
-          </div>
-          <h3>Cross-Chain Support</h3>
-          <p>Interact with multiple blockchains including Ethereum, Solana, Binance Smart Chain, and more from a single unified interface.</p>
-          <a href="#" class="feature-link">
-            Learn more
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          </a>
-        </div>
-        <div class="feature-card fade-in delay-2">
-          <div class="feature-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-            </svg>
-          </div>
-          <h3>Decentralized Identity</h3>
-          <p>Manage your digital identity across Web3 applications with integrated support for ENS domains and other decentralized identity solutions.</p>
-          <a href="#" class="feature-link">
-            Learn more
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          </a>
-        </div>
+      <h1>TRON Energy Rental Made Simple</h1>
+      <p>Save up to 90% on TRON transaction fees by renting energy instead of consuming TRX. Instant delivery, no registration required.</p>
+      
+      <div class="hero-buttons">
+        <a href="#energy" class="cta-button">Rent Energy Now</a>
+        <a href="#about" class="secondary-button">Learn More</a>
       </div>
     </div>
   </section>
   
-  <!-- How It Works -->
-  <section class="how-it-works">
-    <div class="container steps-container">
-      <div class="section-header fade-in">
-        <h2>How It Works</h2>
-        <p>Getting started with OnlyGram is simple and straightforward</p>
-      </div>
-      <div class="steps">
-        <div class="step fade-in">
-          <div class="step-number">1</div>
-          <h3>Download</h3>
-          <p>Get OnlyGram from our official website or app stores for your device</p>
-        </div>
-        <div class="step fade-in delay-1">
-          <div class="step-number">2</div>
-          <h3>Connect</h3>
-          <p>Link your Telegram account and set up your integrated Web3 wallet</p>
-        </div>
-        <div class="step fade-in delay-2">
-          <div class="step-number">3</div>
-          <h3>Explore</h3>
-          <p>Discover and install miniapps from our growing ecosystem</p>
-        </div>
-        <div class="step fade-in delay-3">
-          <div class="step-number">4</div>
-          <h3>Enjoy</h3>
-          <p>Experience the seamless blend of messaging and Web3 functionality</p>
-        </div>
-      </div>
-    </div>
-  </section>
-  
-  <!-- Ecosystem Section -->
-  <section class="ecosystem">
+  <section id="energy" class="energy-rental">
+    <div class="particles-container" id="particles"></div>
     <div class="container">
-      <div class="section-header fade-in">
-        <h2>Ecosystem Partners</h2>
-        <p>OnlyGram integrates with leading blockchain networks and Web3 platforms</p>
+      <h2 class="section-title">Energy Rental</h2>
+      
+      <div class="rental-steps">
+        <div class="step">
+          <div class="step-number">
+            <span class="step-number-text">1</span>
+            <div class="step-icon">
+              <i class="fas fa-edit"></i>
+            </div>
+          </div>
+          <h3>Enter Details</h3>
+          <p>Specify the number of transactions you need energy for.</p>
+        </div>
+        
+        <div class="step">
+          <div class="step-number">
+            <span class="step-number-text">2</span>
+            <div class="step-icon">
+              <i class="fas fa-wallet"></i>
+            </div>
+          </div>
+          <h3>Make Payment</h3>
+          <p>Send TRX or USDT to our platform address.</p>
+        </div>
+        
+        <div class="step">
+          <div class="step-number">
+            <span class="step-number-text">3</span>
+            <div class="step-icon">
+              <i class="fas fa-bolt"></i>
+            </div>
+          </div>
+          <h3>Receive Energy</h3>
+          <p>Energy is instantly sent to your wallet address.</p>
+        </div>
       </div>
-      <div class="ecosystem-grid">
-        <div class="ecosystem-card fade-in">
-          <div class="ecosystem-logo"></div>
-          <h3>Ethereum</h3>
-          <p>The world's programmable blockchain</p>
-          <a href="#" class="ecosystem-link">Learn more</a>
+      
+      <div class="rental-form">
+        <div class="form-group">
+          <label for="transactions">Number of Transactions</label>
+          <input type="number" id="transactions" min="1" value="1">
         </div>
-        <div class="ecosystem-card fade-in delay-1">
-          <div class="ecosystem-logo"></div>
-          <h3>Solana</h3>
-          <p>Fast, secure, and censorship-resistant blockchain</p>
-          <a href="#" class="ecosystem-link">Learn more</a>
+        
+        <div class="form-group select-container">
+          <label for="payment-method">Payment Method</label>
+          <select id="payment-method">
+            <option value="trx">TRX</option>
+            <option value="usdt">USDT</option>
+          </select>
         </div>
-        <div class="ecosystem-card fade-in delay-2">
-          <div class="ecosystem-logo"></div>
-          <h3>Polygon</h3>
-          <p>Ethereum's Internet of Blockchains</p>
-          <a href="#" class="ecosystem-link">Learn more</a>
+        
+        <div class="price-display">
+          <div>
+            <p class="price-label">Total Amount:</p>
+            <p class="price"><i class="fas fa-bolt"></i> <span id="price-value">5 TRX</span></p>
+          </div>
+          <div class="discount">
+            <i class="fas fa-tags"></i> Save 7 TRX
+          </div>
         </div>
-        <div class="ecosystem-card fade-in delay-3">
-          <div class="ecosystem-logo"></div>
-          <h3>Binance</h3>
-          <p>Fast and secure decentralized digital asset exchange</p>
-          <a href="#" class="ecosystem-link">Learn more</a>
-        </div>
-        <div class="ecosystem-card fade-in">
-          <div class="ecosystem-logo"></div>
-          <h3>Telegram</h3>
-          <p>Cloud-based mobile and desktop messaging app</p>
-          <a href="#" class="ecosystem-link">Learn more</a>
-        </div>
-        <div class="ecosystem-card fade-in delay-1">
-          <div class="ecosystem-logo"></div>
-          <h3>Uniswap</h3>
-          <p>Protocol for automated token exchange</p>
-          <a href="#" class="ecosystem-link">Learn more</a>
-        </div>
-        <div class="ecosystem-card fade-in delay-2">
-          <div class="ecosystem-logo"></div>
-          <h3>Aave</h3>
-          <p>Open source liquidity protocol</p>
-          <a href="#" class="ecosystem-link">Learn more</a>
-        </div>
-        <div class="ecosystem-card fade-in delay-3">
-          <div class="ecosystem-logo"></div>
-          <h3>Chainlink</h3>
-          <p>Decentralized oracle network</p>
-          <a href="#" class="ecosystem-link">Learn more</a>
+        
+        <button class="submit-btn">Rent Energy Now</button>
+        
+        <div class="wallet-address">
+          <h4>Platform Wallet Address</h4>
+          <div class="address-box">
+            <p>TUfAMQM81RLMdquBSaFytsXxEet7AKKKKK</p>
+            <button class="copy-btn">
+              <i class="far fa-copy"></i> Copy
+            </button>
+          </div>
+          <p>Send the exact amount to this address to receive energy</p>
         </div>
       </div>
     </div>
   </section>
   
-  <!-- Stats Section -->
-  <section class="stats">
+  <section id="exchange" class="exchange">
     <div class="container">
-      <div class="section-header fade-in">
-        <h2>OnlyGram by the Numbers</h2>
-        <p>Our growing ecosystem and community achievements</p>
-      </div>
-      <div class="stats-grid">
-        <div class="stat-card fade-in">
-          <h3>2.5M+</h3>
-          <p>Active Users</p>
+      <h2 class="section-title">Exchange</h2>
+      
+      <div class="exchange-container">
+        <div class="exchange-form">
+          <h3>Convert USDT to TRX</h3>
+          
+          <div class="currency-labels">
+            <span>USDT</span>
+            <span>TRX</span>
+          </div>
+          
+          <div class="currency-inputs">
+            <input type="number" id="usdt-amount" placeholder="0.00" min="1">
+            <input type="number" id="trx-amount" placeholder="0.00" readonly>
+          </div>
+          
+          <div class="exchange-rate">
+            <span class="exchange-rate-label">Exchange Rate</span>
+            <span class="exchange-rate-value">1 USDT = 12.45 TRX</span>
+          </div>
+          
+          <button class="exchange-btn">Exchange Now</button>
         </div>
-        <div class="stat-card fade-in delay-1">
-          <h3>$120M+</h3>
-          <p>Transaction Volume</p>
-        </div>
-        <div class="stat-card fade-in delay-2">
-          <h3>250+</h3>
-          <p>MiniApps</p>
-        </div>
-        <div class="stat-card fade-in delay-3">
-          <h3>15+</h3>
-          <p>Blockchain Networks</p>
+        
+        <div class="exchange-info">
+          <h3>Why Exchange with Us?</h3>
+          
+          <ul>
+            <li>Best rates in the market with no hidden fees</li>
+            <li>Instant exchange, no registration required</li>
+            <li>Secure transactions with blockchain verification</li>
+            <li>24/7 customer support for any issues</li>
+            <li>Seamless integration with our energy rental service</li>
+          </ul>
+          
+          <div class="recent-exchanges">
+            <h4>Recent Exchanges</h4>
+            
+            <table class="exchange-table">
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Amount</th>
+                  <th>Rate</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>2 mins ago</td>
+                  <td>50 USDT → 622.5 TRX</td>
+                  <td>12.45</td>
+                </tr>
+                <tr>
+                  <td>15 mins ago</td>
+                  <td>100 USDT → 1245 TRX</td>
+                  <td>12.45</td>
+                </tr>
+                <tr>
+                  <td>32 mins ago</td>
+                  <td>25 USDT → 311.25 TRX</td>
+                  <td>12.45</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
   </section>
   
-  <!-- CTA Section -->
-  <section class="cta">
-    <div class="container cta-container">
-      <div class="cta-content fade-in">
-        <h2>Ready to Transform Your Messaging Experience?</h2>
-        <p>Join thousands of users who are already enjoying the future of messaging with integrated Web3 capabilities.</p>
-        <div class="cta-buttons">
-          <a href="#" class="primary-button">Get Started</a>
-          <a href="#" class="secondary-button" style="border-color: var(--primary); color: var(--primary);">Learn More</a>
+  <section id="about" class="about">
+    <div class="container">
+      <h2 class="section-title">About MeFree</h2>
+      
+      <div class="about-container">
+        <div class="about-content">
+          <h3>The Simplest Way to Save on TRON Fees</h3>
+          
+          <p>MeFree was founded in 2023 with a simple mission: make TRON blockchain transactions more affordable for everyone. We recognized that many users were unnecessarily spending TRX on transaction fees when they could be renting energy instead.</p>
+          
+          <p>Our platform provides a seamless way to rent TRON energy and bandwidth, allowing you to execute smart contracts and transactions at a fraction of the cost. Whether you're a developer, trader, or casual user, our service helps you optimize your blockchain experience.</p>
+          
+          <p>We're committed to transparency, security, and exceptional customer service. All transactions are processed instantly on the TRON blockchain, ensuring you receive your energy without delays.</p>
+          
+          <div class="about-stats">
+            <div class="stat-item">
+              <div class="stat-value">50K+</div>
+              <div class="stat-label">Users Served</div>
+            </div>
+            
+            <div class="stat-item">
+              <div class="stat-value">1M+</div>
+              <div class="stat-label">Transactions</div>
+            </div>
+            
+            <div class="stat-item">
+              <div class="stat-value">90%</div>
+              <div class="stat-label">Average Savings</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="about-image">
+          <div class="about-img-container">
+            <img src="https://images.unsplash.com/photo-1639762681057-408e52192e55?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="TRON Energy Visualization">
+            <div class="about-img-overlay">
+              <div class="about-img-text">Powering the TRON Ecosystem</div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="cta-image fade-in delay-2"></div>
     </div>
   </section>
   
-  <!-- Footer -->
+  <section id="faq" class="faq">
+    <div class="container">
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      
+      <div class="faq-container">
+        <div class="faq-intro">
+          <p>Have questions about our energy rental service? Find answers to the most common questions below.</p>
+        </div>
+        
+        <div class="accordion">
+          <div class="accordion-item">
+            <div class="accordion-header">
+              <h3>What is TRON energy and why do I need it?</h3>
+              <div class="accordion-icon">+</div>
+            </div>
+            <div class="accordion-content">
+              <div class="accordion-content-inner">
+                <p>TRON energy is a resource used to pay for smart contract executions and transactions on the TRON blockchain. When you execute a smart contract or interact with a dApp, you need energy to cover the computational costs. Without energy, these operations would consume your TRX tokens directly, which is often more expensive.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="accordion-item">
+            <div class="accordion-header">
+              <h3>How much can I save by renting energy?</h3>
+              <div class="accordion-icon">+</div>
+            </div>
+            <div class="accordion-content">
+              <div class="accordion-content-inner">
+                <p>By renting energy instead of directly spending TRX on transaction fees, you can save up to 90% on your transaction costs. The exact savings depend on the current network conditions and transaction complexity, but most users see significant cost reductions.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="accordion-item">
+            <div class="accordion-header">
+              <h3>How long does the energy rental last?</h3>
+              <div class="accordion-icon">+</div>
+            </div>
+            <div class="accordion-content">
+                              <div class="accordion-content-inner">
+                <p>Our energy rental is transaction-based, not time-based. This means you're purchasing energy for a specific number of transactions, and it remains available until you use it up. There's no expiration date, so you can use the energy whenever you need it.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="accordion-item">
+            <div class="accordion-header">
+              <h3>How quickly will I receive the energy after payment?</h3>
+              <div class="accordion-icon">+</div>
+            </div>
+            <div class="accordion-content">
+              <div class="accordion-content-inner">
+                <p>Energy is delivered instantly to your wallet address as soon as your payment is confirmed on the blockchain. This typically takes less than a minute. Our automated system monitors incoming transactions and processes energy transfers immediately.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="accordion-item">
+            <div class="accordion-header">
+              <h3>Is there a minimum or maximum amount of energy I can rent?</h3>
+              <div class="accordion-icon">+</div>
+            </div>
+            <div class="accordion-content">
+              <div class="accordion-content-inner">
+                <p>You can rent energy for as little as 1 transaction or as many as 10,000 transactions in a single order. For larger requirements, please contact our support team, and we can arrange a custom solution for your needs.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="accordion-item">
+            <div class="accordion-header">
+              <h3>What payment methods do you accept?</h3>
+              <div class="accordion-icon">+</div>
+            </div>
+            <div class="accordion-content">
+              <div class="accordion-content-inner">
+                <p>We currently accept TRX and USDT-TRC20 as payment methods. When paying with USDT, our system automatically converts it to TRX at the current market rate before processing your energy rental.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section id="contact" class="contact">
+    <div class="container">
+      <h2 class="section-title">Contact Us</h2>
+      
+      <div class="contact-container">
+        <div class="contact-info">
+          <h3>Get In Touch</h3>
+          
+          <p>Have questions or need assistance with our services? Our team is here to help. Reach out to us through any of the following channels, and we'll get back to you as soon as possible.</p>
+          
+          <div class="contact-methods">
+            <div class="contact-method">
+              <div class="contact-icon">
+                <i class="fas fa-envelope"></i>
+              </div>
+              <div class="contact-text">
+                <h4>Email</h4>
+                <p>support@mefree.io</p>
+              </div>
+            </div>
+            
+            <div class="contact-method">
+              <div class="contact-icon">
+                <i class="fab fa-telegram"></i>
+              </div>
+              <div class="contact-text">
+                <h4>Telegram</h4>
+                <p>@MeFreeSupport</p>
+              </div>
+            </div>
+            
+            <div class="contact-method">
+              <div class="contact-icon">
+                <i class="fas fa-headset"></i>
+              </div>
+              <div class="contact-text">
+                <h4>Live Chat</h4>
+                <p>Available 24/7 on our website</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="social-links">
+            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-telegram"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-medium"></i></a>
+          </div>
+        </div>
+        
+        <div class="contact-form-container">
+          <div class="contact-form">
+            <h3>Send Us a Message</h3>
+            
+            <div class="form-group">
+              <input type="text" placeholder="Your Name">
+            </div>
+            
+            <div class="form-group">
+              <input type="email" placeholder="Your Email">
+            </div>
+            
+            <div class="form-group">
+              <input type="text" placeholder="Subject">
+            </div>
+            
+            <div class="form-group">
+              <textarea placeholder="Your Message"></textarea>
+            </div>
+            
+            <button class="submit-btn">Send Message</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
   <footer>
     <div class="container">
       <div class="footer-container">
-        <div class="footer-about">
+        <div class="footer-col">
           <a href="#" class="footer-logo">
-            <div class="logo-icon">O</div>
-            OnlyGram
+            <i class="fas fa-bolt"></i> MeFree
           </a>
-          <p>OnlyGram is revolutionizing the way we communicate by bringing Web3 functionality directly into your messaging experience.</p>
-          <div class="social-links">
-            <a href="#" class="social-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/>
-              </svg>
-            </a>
-            <a href="#" class="social-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M12 2.04c-5.5 0-10 4.49-10 10.02 0 5 3.66 9.15 8.44 9.9v-7H7.9v-2.9h2.54V9.85c0-2.51 1.49-3.89 3.78-3.89 1.09 0 2.23.19 2.23.19v2.47h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.45 2.9h-2.33v7a10 10 0 0 0 8.44-9.9c0-5.53-4.5-10.02-10-10.02z"/>
-              </svg>
-            </a>
-            <a href="#" class="social-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8 1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/>
-              </svg>
-            </a>
-            <a href="#" class="social-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M19.05 4.91A9.816 9.816 0 0 0 12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01zm-7.01 15.24c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.264 8.264 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24 2.2 0 4.27.86 5.82 2.42a8.183 8.183 0 0 1 2.41 5.83c.02 4.54-3.68 8.23-8.22 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.17.25-.64.81-.78.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43s.17-.25.25-.41c.08-.17.04-.31-.02-.43s-.56-1.34-.76-1.84c-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.14-1.18-.07-.11-.22-.16-.47-.28z"/>
-              </svg>
-            </a>
-            <a href="#" class="social-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.22-1.13 6.93-.14.7-.42 1.27-.7 1.27-.28 0-.5-.38-.82-.77-.46-.59-2.11-1.85-2.29-2.26-.16-.36-.03-.56.39-.94.11-.1.96-.88 1.96-1.78.15-.17.1-.38-.11-.38-.06 0-.22.07-.38.2l-2.38 1.6c-.31.2-.87.5-1.22.5s-.93-.22-1.58-.43c-.65-.21-1.26-.53-1.2-.85.03-.17.31-.39.6-.61 2.29-1.73 3.84-2.87 4.69-3.48.86-.61 1.95-1.11 2.35-1.11.1 0 .19.02.27.06.32.16.32.67.27 1.05z"/>
-              </svg>
-            </a>
+          <p>The simplest way to save on TRON transaction fees. Rent energy instead of consuming TRX and save up to 90% on your blockchain operations.</p>
+        </div>
+        
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="#energy">Energy Rental</a></li>
+            <li><a href="#exchange">Exchange</a></li>
+            <li><a href="#about">About Us</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-col">
+          <h4>Contact Info</h4>
+          <div class="footer-contact-item">
+            <i class="fas fa-envelope"></i>
+            <p>support@mefree.io</p>
+          </div>
+          <div class="footer-contact-item">
+            <i class="fab fa-telegram"></i>
+            <p>@MeFreeSupport</p>
+          </div>
+          <div class="footer-contact-item">
+            <i class="fas fa-globe"></i>
+            <p>www.mefree.io</p>
           </div>
         </div>
-        <div class="footer-links">
-          <h4>Product</h4>
-          <ul>
-            <li><a href="#">Features</a></li>
-            <li><a href="#">Security</a></li>
-            <li><a href="#">MiniApps</a></li>
-            <li><a href="#">Wallet</a></li>
-            <li><a href="#">Pricing</a></li>
-          </ul>
-        </div>
-        <div class="footer-links">
-          <h4>Resources</h4>
-          <ul>
-            <li><a href="#">Documentation</a></li>
-            <li><a href="#">API</a></li>
-            <li><a href="#">Developer Portal</a></li>
-            <li><a href="#">Community</a></li>
-            <li><a href="#">Blog</a></li>
-          </ul>
-        </div>
-        <div class="footer-links">
-          <h4>Company</h4>
-          <ul>
-            <li><a href="#">About Us</a></li>
-            <li><a href="#">Careers</a></li>
-            <li><a href="#">Contact</a></li>
-            <li><a href="#">Privacy Policy</a></li>
-            <li><a href="#">Terms of Service</a></li>
-          </ul>
+        
+        <div class="footer-col footer-newsletter">
+          <h4>Newsletter</h4>
+          <p>Subscribe to our newsletter to receive updates and special offers.</p>
+          <form class="newsletter-form">
+            <input type="email" placeholder="Your Email">
+            <button type="submit"><i class="fas fa-paper-plane"></i></button>
+          </form>
         </div>
       </div>
+      
       <div class="footer-bottom">
-        <div class="copyright">
-          &copy; 2025 OnlyGram. All rights reserved.
-        </div>
-        <div class="footer-nav">
-          <a href="#">Privacy Policy</a>
-          <a href="#">Terms of Service</a>
-          <a href="#">Cookies</a>
-        </div>
+        <p>&copy; 2025 MeFree. All rights reserved.</p>
+        <p>Designed with <i class="fas fa-heart"></i> for the TRON community</p>
       </div>
     </div>
   </footer>
-  
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.3/particles.min.js"></script>
   <script>
-    // Simple animation on scroll
-    document.addEventListener('DOMContentLoaded', function() {
-      const fadeElems = document.querySelectorAll('.fade-in');
+    // Mobile menu toggle
+    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+    const nav = document.querySelector('nav');
+    
+    mobileMenuBtn.addEventListener('click', () => {
+      nav.classList.toggle('active');
+      mobileMenuBtn.querySelector('i').classList.toggle('fa-bars');
+      mobileMenuBtn.querySelector('i').classList.toggle('fa-times');
+    });
+    
+    // Transaction calculator
+    const transactionsInput = document.getElementById('transactions');
+    const paymentMethodSelect = document.getElementById('payment-method');
+    const priceValue = document.getElementById('price-value');
+    
+    function updatePrice() {
+      const transactions = parseInt(transactionsInput.value) || 1;
+      const paymentMethod = paymentMethodSelect.value;
       
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.style.opacity = 1;
-            entry.target.style.transform = 'translateY(0)';
-            observer.unobserve(entry.target);
-          }
-        });
-      }, {
-        threshold: 0.1
-      });
-      
-      fadeElems.forEach(elem => {
-        elem.style.opacity = 0;
-        elem.style.transform = 'translateY(20px)';
-        elem.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
-        observer.observe(elem);
-      });
-      
-      // Mobile menu toggle
-      const mobileMenuBtn = document.querySelector('.mobile-menu-button');
-      const nav = document.querySelector('nav');
-      const headerButtons = document.querySelector('.header-buttons');
-      
-      if (mobileMenuBtn) {
-        mobileMenuBtn.addEventListener('click', function() {
-          if (nav.style.display === 'block') {
-            nav.style.display = 'none';
-            headerButtons.style.display = 'none';
-          } else {
-            nav.style.display = 'block';
-            headerButtons.style.display = 'flex';
-            nav.style.marginTop = '20px';
-            headerButtons.style.marginTop = '20px';
-          }
-        });
+      let price;
+      if (paymentMethod === 'trx') {
+        price = transactions * 5;
+        priceValue.textContent = `${price} TRX`;
+      } else {
+        price = (transactions * 5 / 12.45).toFixed(2);
+        priceValue.textContent = `${price} USDT`;
       }
+    }
+    
+    transactionsInput.addEventListener('input', updatePrice);
+    paymentMethodSelect.addEventListener('change', updatePrice);
+    
+    // USDT to TRX converter
+    const usdtInput = document.getElementById('usdt-amount');
+    const trxInput = document.getElementById('trx-amount');
+    
+    usdtInput.addEventListener('input', () => {
+      const usdtAmount = parseFloat(usdtInput.value) || 0;
+      const trxAmount = (usdtAmount * 12.45).toFixed(2);
+      trxInput.value = trxAmount;
+    });
+    
+    // FAQ accordion
+    const accordionItems = document.querySelectorAll('.accordion-item');
+    
+    accordionItems.forEach(item => {
+      const header = item.querySelector('.accordion-header');
+      
+      header.addEventListener('click', () => {
+        item.classList.toggle('active');
+      });
+    });
+    
+    // Particles background
+    window.onload = function() {
+      Particles.init({
+        selector: '#particles',
+        color: ['#0071e3', '#4286f5', '#5ca2ff'],
+        connectParticles: true,
+        responsive: [
+          {
+            breakpoint: 768,
+            options: {
+              maxParticles: 80
+            }
+          },
+          {
+            breakpoint: 425,
+            options: {
+              maxParticles: 50
+            }
+          }
+        ]
+      });
+    };
+    
+    // Copy wallet address
+    const copyBtn = document.querySelector('.copy-btn');
+    const addressBox = document.querySelector('.address-box p');
+    
+    copyBtn.addEventListener('click', () => {
+      const tempInput = document.createElement('input');
+      tempInput.value = addressBox.textContent;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+      
+      copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied';
+      
+      setTimeout(() => {
+        copyBtn.innerHTML = '<i class="far fa-copy"></i> Copy';
+      }, 2000);
     });
   </script>
 </body>
 </html>
+
