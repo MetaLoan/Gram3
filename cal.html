@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>合约收益率计算器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .calculator {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+      width: 100%;
+    }
+    
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+      font-size: 28px;
+    }
+    
+    .input-group {
+      margin-bottom: 25px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #555;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s;
+      outline: none;
+    }
+    
+    input:focus, select:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .direction-group {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+    
+    .direction-btn {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      background: white;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    
+    .direction-btn.long {
+      color: #10b981;
+    }
+    
+    .direction-btn.short {
+      color: #ef4444;
+    }
+    
+    .direction-btn.active.long {
+      background: #10b981;
+      color: white;
+      border-color: #10b981;
+    }
+    
+    .direction-btn.active.short {
+      background: #ef4444;
+      color: white;
+      border-color: #ef4444;
+    }
+    
+    .calculate-btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+      margin-top: 10px;
+    }
+    
+    .calculate-btn:hover {
+      transform: translateY(-2px);
+    }
+    
+    .calculate-btn:active {
+      transform: translateY(0);
+    }
+    
+    .result {
+      margin-top: 30px;
+      padding: 25px;
+      background: #f8f9fa;
+      border-radius: 15px;
+      display: none;
+    }
+    
+    .result.show {
+      display: block;
+      animation: slideIn 0.3s ease;
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .result-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+    
+    .result-item:last-child {
+      margin-bottom: 0;
+      padding-top: 15px;
+      border-top: 2px solid #e0e0e0;
+    }
+    
+    .result-label {
+      color: #666;
+      font-weight: 500;
+    }
+    
+    .result-value {
+      font-weight: 700;
+      font-size: 18px;
+    }
+    
+    .result-value.positive {
+      color: #10b981;
+    }
+    
+    .result-value.negative {
+      color: #ef4444;
+    }
+    
+    .result-value.neutral {
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <h1>📊 合约收益率计算器</h1>
+    
+    <div class="input-group">
+      <label>交易方向</label>
+      <div class="direction-group">
+        <button class="direction-btn long active" data-direction="long">做多 (Long)</button>
+        <button class="direction-btn short" data-direction="short">做空 (Short)</button>
+      </div>
+    </div>
+    
+    <div class="input-group">
+      <label>买入点位</label>
+      <input type="number" id="entryPrice" placeholder="请输入买入点位" step="0.01">
+    </div>
+    
+    <div class="input-group">
+      <label>平仓点位</label>
+      <input type="number" id="exitPrice" placeholder="请输入平仓点位" step="0.01">
+    </div>
+    
+    <div class="input-group">
+      <label>杠杆倍数</label>
+      <input type="number" id="leverage" placeholder="请输入杠杆倍数" value="10" min="1" max="125">
+    </div>
+    
+    <button class="calculate-btn" onclick="calculate()">计算收益率</button>
+    
+    <div class="result" id="result">
+      <div class="result-item">
+        <span class="result-label">价格变化:</span>
+        <span class="result-value neutral" id="priceChange"></span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">价格变化率:</span>
+        <span class="result-value neutral" id="priceChangePercent"></span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">收益率:</span>
+        <span class="result-value" id="profitPercent"></span>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    let direction = 'long';
+    
+    // 方向选择
+    document.querySelectorAll('.direction-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.direction-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        direction = this.dataset.direction;
+      });
+    });
+    
+    // 计算函数
+    function calculate() {
+      const entryPrice = parseFloat(document.getElementById('entryPrice').value);
+      const exitPrice = parseFloat(document.getElementById('exitPrice').value);
+      const leverage = parseFloat(document.getElementById('leverage').value);
+      
+      // 验证输入
+      if (!entryPrice || !exitPrice || !leverage) {
+        alert('请填写所有字段！');
+        return;
+      }
+      
+      if (entryPrice <= 0 || exitPrice <= 0 || leverage <= 0) {
+        alert('请输入有效的正数！');
+        return;
+      }
+      
+      // 计算价格变化
+      const priceChange = exitPrice - entryPrice;
+      const priceChangePercent = (priceChange / entryPrice) * 100;
+      
+      // 计算收益率
+      let profitPercent;
+      if (direction === 'long') {
+        profitPercent = priceChangePercent * leverage;
+      } else {
+        profitPercent = -priceChangePercent * leverage;
+      }
+      
+      // 显示结果
+      document.getElementById('priceChange').textContent = priceChange.toFixed(2);
+      document.getElementById('priceChangePercent').textContent = priceChangePercent.toFixed(2) + '%';
+      
+      const profitElement = document.getElementById('profitPercent');
+      profitElement.textContent = (profitPercent > 0 ? '+' : '') + profitPercent.toFixed(2) + '%';
+      
+      // 设置颜色
+      if (profitPercent > 0) {
+        profitElement.className = 'result-value positive';
+      } else if (profitPercent < 0) {
+        profitElement.className = 'result-value negative';
+      } else {
+        profitElement.className = 'result-value neutral';
+      }
+      
+      // 显示结果区域
+      document.getElementById('result').classList.add('show');
+    }
+    
+    // 回车键触发计算
+    document.querySelectorAll('input').forEach(input => {
+      input.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          calculate();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
