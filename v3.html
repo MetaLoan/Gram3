@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Crypto Signal 回测一键GUI（离线版 · 多交易所 v2.0）</title>
+<style>
+  :root { --bg:#f8fafc; --card:#ffffff; --text:#0f172a; --muted:#64748b; --accent:#10b981; --border:#e2e8f0; --danger:#ef4444; --warn:#f59e0b;}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,"Noto Sans","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+  .container{max-width:1250px;margin:0 auto;padding:24px} h1{font-size:22px;margin:0} h2{font-size:16px;margin:0 0 8px 0}
+  .row{display:grid;gap:16px} @media(min-width:1100px){.row{grid-template-columns:1fr 1fr}}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+  label{font-size:13px;color:var(--muted);display:block} input,select,textarea{width:100%;margin-top:6px;padding:10px 12px;border-radius:10px;border:1px solid var(--border);outline:none;font-size:14px}
+  textarea{font-family:ui-monospace,Menlo,Monaco,"Courier New",monospace;height:180px;resize:vertical}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;border:1px solid var(--border);background:#fff;cursor:pointer;font-size:14px}
+  .btn.primary{background:#0f172a;color:#fff;border-color:#000} .btn.success{background:var(--accent);color:#fff;border-color:var(--accent)} .btn:disabled{opacity:.6;pointer-events:none}
+  .muted{color:var(--muted);font-size:12px} .stack{display:flex;flex-wrap:wrap;gap:8px;align-items:center;flex-wrap:wrap}
+  table{width:100%;border-collapse:collapse;font-size:12px} th,td{padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;vertical-align:middle}
+  .stat{border:1px solid var(--border);border-radius:12px;padding:10px}.stat .label{color:var(--muted);font-size:12px}.stat .value{font-size:18px;font-weight:600;margin-top:6px}
+  .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}.pill{font-size:12px;color:var(--muted)}.grid4{display:grid;grid-template-columns:repeat(1,1fr);gap:12px}
+  @media(min-width:1100px){.grid4{grid-template-columns:repeat(4,1fr)}}
+  .footer{color:var(--muted);font-size:12px;margin-top:16px}.hr{height:1px;background:var(--border);margin:12px 0}
+  .hint{font-size:12px;color:var(--muted)} .hidden{opacity:.5;pointer-events:none}
+  .badge{display:inline-block;padding:2px 6px;border-radius:999px;font-size:11px;border:1px solid var(--border);color:#334155;background:#f1f5f9}
+  .badge.warn{color:#7c2d12;background:#fffbeb;border-color:#fde68a}
+  .badge.err{color:#7f1d1d;background:#fef2f2;border-color:#fecaca}
+  .kv{display:flex;gap:8px;flex-wrap:wrap}
+  .kv > div{display:flex;align-items:center;gap:6px;background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:6px 8px;font-size:12px}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>Crypto Signal 回测一键GUI（离线版 · 多交易所 v2.0）</h1>
+    <div class="pill">本地执行；直连 Binance / OKX / Bybit / LBank（若跨域受限请改用 CSV 上传）</div>
+  </div>
+
+  <div class="row">
+    <div class="card">
+      <h2>数据设置</h2>
+      <div class="hr"></div>
+      <div class="kv">
+        <div><span>数据源</span>
+          <select id="provider">
+            <option value="binance" selected>Binance</option>
+            <option value="okx">OKX</option>
+            <option value="bybit">Bybit</option>
+            <option value="lbank">LBank</option>
+            <option value="csv">CSV（只用上传数据，不拉接口）</option>
+          </select>
+        </div>
+        <div><span>市场</span>
+          <select id="market">
+            <option value="spot" selected>现货</option>
+            <option value="um">USDT合约/永续</option>
+          </select>
+        </div>
+        <div><span>周期</span>
+          <input id="intervalInput" value="15m" />
+        </div>
+        <div><span>自动推断</span>
+          <label style="display:flex;align-items:center;gap:6px;"><input id="autoInfer" type="checkbox" checked />来自信号的 symbol/since</label>
+        </div>
+      </div>
+      <div class="hint" style="margin-top:6px;">周期可输入：1m/3m/5m/15m/30m/1h/2h/4h/6h/8h/12h/1d/3d/1w/1M；也兼容「1H」「15 min」「1 小时」等写法</div>
+      <div class="hr"></div>
+      <div id="manualBox" class="row" style="grid-template-columns: 1fr 1fr; gap: 12px; opacity:.6">
+        <div><label>交易对（手动模式时生效；不同交易所格式不同，见下）
+          <input id="symbol" placeholder="SOL/USDT 或 SOLUSDT 或 sol_usdt" value="SOL/USDT" />
+        </label></div>
+        <div><label>Since (UTC，手动模式时生效)
+          <input id="since" value="2025-01-01T00:00:00Z" />
+        </label></div>
+        <div style="grid-column: 1 / -1;"><label>Until (UTC，可留空)
+          <input id="until" placeholder="" />
+        </label></div>
+      </div>
+
+      <div class="stack" style="margin-top: 12px;">
+        <button id="btnFetch" class="btn primary">仅拉取K线</button>
+        <button id="btnOneClick" class="btn success">一键回测（拉取→计算）</button>
+        <span class="badge" id="symBadge" title="已识别的交易对">—</span>
+        <span class="badge warn" id="warnBadge" style="display:none;">周期已标准化为兼容格式</span>
+        <span class="badge err" id="corsBadge" style="display:none;">该交易所跨域受限，请改用 CSV 上传</span>
+        <span class="muted" id="fetchedCount">已获取：0 根</span>
+      </div>
+      <div class="hint" style="margin-top:8px;">
+        不同交易所 symbol 样式：Binance=SOLUSDT；OKX=SOL-USDT；Bybit=SOLUSDT；LBank=sol_usdt（小写+下划线）。自动推断下可统一用“SOL/USDT”。
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>信号输入</h2>
+      <div class="hr"></div>
+      <div class="muted">列：signal_id,symbol,direction,leverage,entry_low,entry_high,tp1..tp5,sl,signal_time（UTC ISO）</div>
+      <textarea id="signalsCSV">signal_id,symbol,direction,leverage,entry_low,entry_high,tp1,tp2,tp3,tp4,tp5,sl,signal_time
+ex1,SOLUSDT,LONG,25,200.3,202.5,204.1,204.9,206.7,208.7,211.8,193.6,2025-01-15T08:00:00Z</textarea>
+      <div class="stack">
+        <input type="file" id="fileSignals" accept=".csv" />
+        <label>同K线冲突
+          <select id="conflict">
+            <option value="conservative">保守（先SL）</option>
+            <option value="optimistic">乐观（先TP）</option>
+            <option value="hl_order" selected>路径假设（O→H→L→C / O→L→H→C）</option>
+          </select>
+        </label>
+        <label>触碰即命中
+          <select id="touch">
+            <option value="true" selected>是</option>
+            <option value="false">否</option>
+          </select>
+        </label>
+        <button id="btnRun" class="btn">仅回测（使用已拉取K线）</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top: 16px;">
+    <h2>总览</h2>
+    <div class="hr"></div>
+    <div class="grid4">
+      <div class="stat"><div class="label">信号总数</div><div class="value" id="statTotal">0</div></div>
+      <div class="stat"><div class="label">已成交数</div><div class="value" id="statFilled">0</div></div>
+      <div class="stat"><div class="label">命中率 (TP_HIT/已成交)</div><div class="value" id="statHitRate">-</div></div>
+      <div class="stat"><div class="label">最高浮盈（杠杆后，已成交）</div><div class="value" id="statMaxLev">-</div></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top: 16px; overflow: auto;">
+    <h2>明细</h2>
+    <div class="hr"></div>
+    <table id="table">
+      <thead>
+        <tr>
+          <th>signal_id</th><th>symbol</th><th>direction</th><th>status</th><th>fill_price</th>
+          <th>tp_hit</th><th>sl_hit</th><th>best_tp_reached</th>
+          <th>max_floating_raw_pct</th><th>max_floating_pnl_pct</th>
+          <th>max_drawdown_raw_pct</th><th>max_drawdown_pct</th>
+          <th>best_tp_yield_raw_pct</th><th>best_tp_yield_pct</th>
+          <th>realized_raw_pct</th><th>realized_pct</th>
+          <th>fill_time</th><th>exit_time</th><th>last_timestamp</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="stack" style="margin-top: 8px;">
+      <button id="btnExport" class="btn">导出结果CSV（可选）</button>
+    </div>
+  </div>
+
+  <div class="footer">
+    跨域（CORS）提示：若某交易所接口在你的浏览器环境被跨域拦截，本工具会显示红色徽标并建议用“CSV 数据源”上传历史K线继续回测。
+  </div>
+</div>
+
+<script>
+  // ---------- Utils ----------
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+  const toMs = (d) => (d instanceof Date ? d.getTime() : new Date(d).getTime());
+  const fmtPct = (x) => (x == null || Number.isNaN(x) ? "-" : (x * 100).toFixed(2) + "%");
+  const fmtNum = (x, n = 4) => (x == null || Number.isNaN(x) ? "-" : Number(x).toFixed(n));
+  const dl = (name, text) => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type: "text/csv;charset=utf-8;" })); a.download = name; a.click(); };
+  const uniq = (arr) => Array.from(new Set(arr));
+
+  function parseCSV(text) {
+    const rows = String(text||"").trim().split(/\\r?\\n/);
+    if (!rows[0]) return [];
+    const header = splitCSVLine(rows[0]);
+    return rows.slice(1).filter(Boolean).map((line) => {
+      const cols = splitCSVLine(line);
+      return Object.fromEntries(header.map((h, i) => [h, cols[i] ?? ""]));
+    });
+  }
+  function splitCSVLine(line) {
+    const out = []; let cur = "", inQ = false;
+    for (let i=0;i<line.length;i++){ const ch=line[i];
+      if (ch === '"'){ inQ = !inQ; continue; }
+      if (ch === "," && !inQ){ out.push(cur); cur=""; continue; }
+      cur += ch;
+    }
+    out.push(cur);
+    return out.map(s => s.trim());
+  }
+  function toCSV(rows) {
+    if (!rows?.length) return "";
+    const header = Object.keys(rows[0]);
+    const esc = (v) => (v == null ? "" : String(v).includes(",") ? '"' + String(v).replaceAll('"','\\"') + '"' : String(v));
+    const body = rows.map((r) => header.map((h) => esc(r[h])).join(","));
+    return [header.join(","), ...body].join("\\n");
+  }
+
+  // Interval standardization
+  const BINANCE_INTERVALS = new Set(["1m","3m","5m","15m","30m","1h","2h","4h","6h","8h","12h","1d","3d","1w","1M"]);
+  function standardizeInterval(input) {
+    let s = String(input || "").trim();
+    if (!s) return { val: "15m", fixed: true };
+    if (BINANCE_INTERVALS.has(s)) return { val: s, fixed: false };
+    let t = s.toLowerCase()
+      .replace(/分钟|分|min|mins|minute|minutes/g, "m")
+      .replace(/小时|时|hour|hours|hr|hrs/g, "h")
+      .replace(/天|日|day|days/g, "d")
+      .replace(/周|星期|week|weeks/g, "w")
+      .replace(/月|month|months/g, "M")
+      .replace(/\\s+/g, "");
+    const m = t.match(/^(\\d+)([mhdwM])$/i);
+    if (!m) return { val: "15m", fixed: true };
+    const n = m[1], u = m[2];
+    const std = (u==="M") ? (n+"M") : (n+u.toLowerCase());
+    if (BINANCE_INTERVALS.has(std)) return { val: std, fixed: true };
+    if (u.toLowerCase()==="m") {
+      const num = parseInt(n,10), choices=[1,3,5,15,30];
+      let best=1, diff=1e9; for (const c of choices){ const d=Math.abs(c-num); if(d<diff){diff=d; best=c;} }
+      return { val: best+"m", fixed: true };
+    }
+    return { val:"15m", fixed:true };
+  }
+  function intervalToMs(interval) {
+    const { val } = standardizeInterval(interval);
+    const n = parseInt(val,10); const u = val.replace(String(n),"");
+    const map = { m:60000, h:3600000, d:86400000, w:604800000, M:30*86400000 };
+    return n * map[u];
+  }
+
+  // ---------- Providers ----------
+  function normCommonSymbol(s){ if(!s) return ""; s=String(s).trim(); return s.includes("/")? s.replace("/","").toUpperCase() : s.toUpperCase(); }
+
+  async function fetchBinance({symbol, interval, market, startTime, endTime}) {
+    const base = (market==="um") ? "https://fapi.binance.com/fapi/v1/klines" : "https://api.binance.com/api/v3/klines";
+    const sym = normCommonSymbol(symbol);
+    const { val: iv } = standardizeInterval(interval);
+    const tfMs = intervalToMs(iv);
+    const params = (st,cursor)=> {
+      const p = new URLSearchParams({ symbol: sym, interval: iv, limit: "1000" });
+      if (st) p.set("startTime", String(st));
+      if (endTime) p.set("endTime", String(endTime));
+      return p.toString();
+    };
+    const out = []; let cursor = startTime || undefined;
+    while (true) {
+      const res = await fetch(base + "?" + params(cursor));
+      if (!res.ok) throw new Error("CORS或HTTP错误：" + res.status);
+      const batch = await res.json();
+      if (!Array.isArray(batch) || batch.length===0) break;
+      for (const k of batch) out.push({ timestamp:new Date(k[0]).toISOString(), open:+k[1], high:+k[2], low:+k[3], close:+k[4], volume:+k[5], symbol: sym });
+      const lastOpen = batch[batch.length-1][0];
+      if (lastOpen + tfMs > (endTime || Date.now())) break;
+      cursor = lastOpen + tfMs;
+      await sleep(120);
+    }
+    return out;
+  }
+
+  function toOkxId(s){
+    s = String(s).trim();
+    if (s.includes("-")) return s.toUpperCase();
+    if (s.includes("/")) return s.replace("/", "-").toUpperCase();
+    const m = s.match(/^([A-Za-z0-9]+)(USDT|USD|USDC|BTC|ETH)$/i);
+    if (m) return (m[1]+"-"+m[2]).toUpperCase();
+    return s.toUpperCase();
+  }
+  function okxBar(interval){
+    const { val } = standardizeInterval(interval);
+    const map = { "1m":"1m", "3m":"3m", "5m":"5m", "15m":"15m", "30m":"30m",
+      "1h":"1H", "2h":"2H", "4h":"4H", "6h":"6H", "8h":"8H", "12h":"12H",
+      "1d":"1D", "3d":"3D", "1w":"1W", "1M":"1M" };
+    return map[val] || "15m";
+  }
+  async function fetchOKX({symbol, interval, startTime, endTime}){
+    const instId = toOkxId(symbol);
+    const bar = okxBar(interval);
+    const limit = 300;
+    let after = undefined;
+    let urlBase = "https://www.okx.com/api/v5/market/history-candles";
+    const out = []; let safety = 0;
+    while (true) {
+      const usp = new URLSearchParams({ instId, bar, limit: String(limit) });
+      if (after) usp.set("before", String(after));
+      const res = await fetch(urlBase + "?" + usp.toString());
+      if (!res.ok) throw new Error("CORS或HTTP错误：" + res.status);
+      const js = await res.json();
+      if (!js?.data?.length) break;
+      const batch = js.data;
+      for (const k of batch) {
+        const ts = +k[0];
+        if (endTime && ts > endTime) continue;
+        if (startTime && ts < startTime) continue;
+        out.push({ timestamp:new Date(ts).toISOString(), open:+k[1], high:+k[2], low:+k[3], close:+k[4], volume:+k[5], symbol: instId });
+      }
+      const oldestTs = +batch[batch.length-1][0];
+      if (startTime && oldestTs <= startTime) break;
+      after = oldestTs;
+      if (++safety>40) break;
+      await sleep(120);
+    }
+    out.sort((a,b)=> new Date(a.timestamp)-new Date(b.timestamp));
+    const common = instId.replace("-", "");
+    return out.map(r => ({...r, symbol: common }));
+  }
+
+  function bybitInterval(interval){
+    const { val } = standardizeInterval(interval);
+    const map = { "1m":"1", "3m":"3", "5m":"5", "15m":"15", "30m":"30",
+      "1h":"60", "2h":"120", "4h":"240", "6h":"360", "8h":"480", "12h":"720",
+      "1d":"D", "3d":"3D", "1w":"W", "1M":"M" };
+    return map[val] || "15";
+  }
+  async function fetchBybit({symbol, interval, market, startTime, endTime}){
+    const sym = normCommonSymbol(symbol);
+    const category = (market==="um") ? "linear" : "spot";
+    const iv = bybitInterval(interval);
+    const limit = 1000;
+    const out = [];
+    let cursorStart = startTime || undefined;
+    while (true) {
+      const usp = new URLSearchParams({ category, symbol: sym, interval: iv, limit: String(limit) });
+      if (cursorStart) usp.set("start", String(cursorStart));
+      if (endTime) usp.set("end", String(endTime));
+      const url = "https://api.bybit.com/v5/market/kline?" + usp.toString();
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("CORS或HTTP错误：" + res.status);
+      const js = await res.json();
+      const list = js?.result?.list;
+      if (!Array.isArray(list) || list.length===0) break;
+      for (const k of list) {
+        const ts = +k[0];
+        out.push({ timestamp:new Date(ts).toISOString(), open:+k[1], high:+k[2], low:+k[3], close:+k[4], volume:+k[5], symbol: sym });
+      }
+      const lastTs = +list[list.length-1][0];
+      if (!cursorStart || lastTs <= cursorStart) break;
+      cursorStart = lastTs + 1;
+      await sleep(120);
+    }
+    out.sort((a,b)=> new Date(a.timestamp)-new Date(b.timestamp));
+    return out;
+  }
+
+  function toLbankSymbol(s){
+    s = String(s).trim();
+    if (s.includes("_")) return s.toLowerCase();
+    if (s.includes("/")) return s.replace("/", "_").toLowerCase();
+    const m = s.match(/^([A-Za-z0-9]+)(USDT|USD|USDC)$/i);
+    if (m) return (m[1]+"_"+m[2]).toLowerCase();
+    return s.toLowerCase();
+  }
+  function lbankType(interval){
+    const { val } = standardizeInterval(interval);
+    const map = { "1m":"1min","3m":"3min","5m":"5min","15m":"15min","30m":"30min",
+      "1h":"1hour","2h":"2hour","4h":"4hour","6h":"6hour","8h":"8hour","12h":"12hour",
+      "1d":"1day","3d":"3day","1w":"1week","1M":"1mon" };
+    return map[val] || "15min";
+  }
+  async function fetchLbank({symbol, interval, startTime, endTime}){
+    const sym = toLbankSymbol(symbol);
+    const type = lbankType(interval);
+    const size = 600;
+    const url = `https://api.lbkex.com/v2/kline.do?symbol=${encodeURIComponent(sym)}&type=${encodeURIComponent(type)}&size=${size}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("CORS或HTTP错误：" + res.status);
+    const js = await res.json();
+    if (!js || !Array.isArray(js?.data)) return [];
+    const rows = js.data.map(k => ({
+      timestamp: new Date(k.time * 1000).toISOString(),
+      open: +k.open, high: +k.high, low: +k.low, close: +k.close, volume: +k.vol, symbol: sym.replace("_","").toUpperCase()
+    }));
+    return rows.filter(r => (!startTime || +new Date(r.timestamp) >= startTime) && (!endTime || +new Date(r.timestamp) <= endTime))
+               .sort((a,b)=> new Date(a.timestamp)-new Date(b.timestamp));
+  }
+
+  const Providers = {
+    binance: { id:"binance", normalizeSymbol:(s)=> normCommonSymbol(s), fetchKlines: fetchBinance },
+    okx:     { id:"okx",     normalizeSymbol:(s)=> toOkxId(s),          fetchKlines: ({symbol, interval, market, startTime, endTime})=>fetchOKX({symbol, interval, startTime, endTime}) },
+    bybit:   { id:"bybit",   normalizeSymbol:(s)=> normCommonSymbol(s), fetchKlines: fetchBybit },
+    lbank:   { id:"lbank",   normalizeSymbol:(s)=> toLbankSymbol(s),    fetchKlines: fetchLbank },
+    csv:     { id:"csv",     normalizeSymbol:(s)=> s,                   fetchKlines: async()=>[] }
+  };
+
+  // ---------- Backtest core ----------
+  function normalizeTPs(direction, tps) {
+    const clean = (tps || []).map(Number).filter((x) => !Number.isNaN(x));
+    return (direction || "").toUpperCase() === "LONG" ? clean.sort((a,b)=>a-b) : clean.sort((a,b)=>b-a);
+  }
+  function entryFilled(bar, direction, low, high, touch) {
+    const lo = bar.low, hi = bar.high;
+    return touch ? (hi >= low && lo <= high) : (hi > low && lo < high);
+  }
+  function firstFillPrice(bar, direction, low, high, method) {
+    const o=bar.open,h=bar.high,l=bar.low,c=bar.close;
+    if (o>=low && o<=high) return o;
+    if (method==="hl_order") {
+      const green=c>=o; const seq = green ? [h,l] : [l,h];
+      for (const v of seq){ if (v>=low && v<=high) return Math.min(Math.max(v,low),high); }
+    }
+    if ((direction||"").toUpperCase()==="LONG"){
+      const t=(l>=low&&l<=high)?l:((h>=low&&h<=high)?h:NaN); if(!Number.isNaN(t)) return t;
+    } else {
+      const t=(h>=low&&h<=high)?h:((l>=low&&l<=high)?l:NaN); if(!Number.isNaN(t)) return t;
+    }
+    if (h>=low && l<=high) return Math.min(Math.max(o,low),high);
+    throw new Error("Cannot infer fill price; no overlap");
+  }
+  function hitLevel(bar, direction, level, touch) {
+    const lo=bar.low, hi=bar.high;
+    return (direction||"").toUpperCase()==="LONG" ? (touch? hi>=level:hi>level) : (touch? lo<=level:lo<level);
+  }
+  function sequenceHitsInBar(bar, direction, levelsUp, levelsDown, touch, method) {
+    const o=bar.open,h=bar.high,l=bar.low,c=bar.close;
+    if (method==="hl_order") {
+      const green=c>=o; const path = green ? [o,h,l,c] : [o,l,h,c];
+      const hits=[]; let last=path[0];
+      for (let i=1;i<path.length;i++) {
+        const nxt=path[i]; const lo=Math.min(last,nxt), hi=Math.max(last,nxt);
+        for (const L of levelsUp){ if((touch? hi>=L:hi>L) && lo<=L) hits.push({dir:"UP",level:L}); }
+        for (const L of levelsDown){ if((touch? lo<=L:lo<L) && hi>=L) hits.push({dir:"DOWN",level:L}); }
+        last=nxt;
+      }
+      return hits;
+    }
+    const upHit = levelsUp.some((L)=> hitLevel(bar,direction,L,touch));
+    const downHit = levelsDown.some((L)=> hitLevel(bar,direction,L,touch));
+    if (upHit && downHit) return [{dir: (method==="conservative" ? "DOWN":"UP"), level: (method==="conservative" ? levelsDown[0] : levelsUp[0])}];
+    if (upHit) return [{dir:"UP", level: levelsUp[0]}];
+    if (downHit) return [{dir:"DOWN", level: levelsDown[0]}];
+    return [];
+  }
+  function evaluateSignal(sig, kdf, cfg){
+    const rows = kdf.filter((r)=> r.symbol===sig.symbol && new Date(r.timestamp) >= new Date(sig.signal_time));
+    if (!rows.length) return { signal_id: sig.signal_id, status: "NO_DATA_AFTER_SIGNAL" };
+    let fillIdx=null, fillPrice=null;
+    for (let i=0;i<rows.length;i++){
+      const bar=rows[i];
+      if (entryFilled(bar, sig.direction, sig.entry_low, sig.entry_high, cfg.touch_is_fill)) {
+        fillIdx=i; try { fillPrice = firstFillPrice(bar, sig.direction, sig.entry_low, sig.entry_high, cfg.conflict_resolution); } catch { fillPrice = (sig.entry_low + sig.entry_high)/2; }
+        break;
+      }
+    }
+    if (fillIdx===null) return { signal_id: sig.signal_id, status: "NOT_FILLED", entry_range: [sig.entry_low,sig.entry_high] };
+
+    const post = rows.slice(fillIdx);
+    const dir = (sig.direction || "").toUpperCase();
+    const tps = normalizeTPs(dir, sig.tps);
+
+    let exitIdx=null, tpHit=null, slHit=null;
+    const tpTouchedBeforeExit = [];
+    for (let i=0;i<post.length;i++){
+      const bar=post[i];
+      const ups = dir==="LONG" ? tps.filter((L)=> L>=fillPrice) : tps.filter((L)=> L<=fillPrice);
+      const downs = dir==="LONG" ? (sig.sl<fillPrice ? [sig.sl] : []) : (sig.sl>fillPrice ? [sig.sl] : []);
+      const hits = sequenceHitsInBar(bar, dir, ups, downs, cfg.touch_is_fill, cfg.conflict_resolution);
+      if (hits.length) {
+        for (const h of hits) {
+          if (h.dir === "UP") tpTouchedBeforeExit.push(h.level);
+          if (h.dir === "DOWN") { slHit = h.level; exitIdx = i; break; }
+        }
+        if (exitIdx !== null) break;
+        tpHit = hits.find(h=>h.dir==="UP")?.level ?? tpHit;
+        if (tpHit != null) { exitIdx = i; break; }
+      }
+    }
+
+    const endSlice = exitIdx!==null ? post.slice(0, exitIdx+1) : post;
+    const highs = endSlice.map((b)=> b.high), lows = endSlice.map((b)=> b.low);
+    const bestPrice = dir==="LONG" ? Math.max(...highs) : Math.min(...lows);
+    const worstPrice = dir==="LONG" ? Math.min(...lows) : Math.max(...highs);
+    const rawMFE = dir==="LONG" ? (bestPrice - fillPrice)/fillPrice : (fillPrice - bestPrice)/fillPrice;
+    const rawMAE = dir==="LONG" ? (worstPrice - fillPrice)/fillPrice : (fillPrice - worstPrice)/fillPrice;
+    const leveragedMFE = rawMFE * sig.leverage;
+    const leveragedMAE = rawMAE * sig.leverage;
+
+    let bestTP = null, bestTPYieldRaw = null, bestTPYieldLev = null;
+    if (tps.length) {
+      if (slHit != null) {
+        if (tpTouchedBeforeExit.length) bestTP = dir==="LONG" ? Math.max(...tpTouchedBeforeExit) : Math.min(...tpTouchedBeforeExit);
+      } else {
+        if (tpHit != null) bestTP = tpHit;
+        else bestTP = dir==="LONG" ? (tps.filter(tp=> bestPrice>=tp).pop() ?? null) : (tps.filter(tp=> bestPrice<=tp).pop() ?? null);
+      }
+      if (bestTP != null) {
+        bestTPYieldRaw = dir==="LONG" ? (bestTP - fillPrice)/fillPrice : (fillPrice - bestTP)/fillPrice;
+        bestTPYieldLev = bestTPYieldRaw * sig.leverage;
+      }
+    }
+
+    let realizedRaw = null, realizedLev = null;
+    let status;
+    if (slHit != null) {
+      status = "SL_HIT";
+      realizedRaw = dir==="LONG" ? (slHit - fillPrice)/fillPrice : (fillPrice - slHit)/fillPrice;
+      realizedLev = realizedRaw * sig.leverage;
+    } else if (tpHit != null) {
+      status = "TP_HIT";
+      realizedRaw = dir==="LONG" ? (tpHit - fillPrice)/fillPrice : (fillPrice - tpHit)/fillPrice;
+      realizedLev = realizedRaw * sig.leverage;
+    } else {
+      status = "OPEN_FILLED";
+    }
+
+    return {
+      signal_id: sig.signal_id, symbol: sig.symbol, direction: dir, status,
+      signal_time: new Date(sig.signal_time).toISOString(),
+      fill_time: new Date(post[0].timestamp).toISOString(),
+      fill_price: Number(fillPrice),
+      entry_range: [sig.entry_low, sig.entry_high].join("-"),
+      leverage: Number(sig.leverage),
+      tp_hit: tpHit, sl_hit: slHit,
+      best_tp_reached: bestTP,
+      max_floating_raw_pct: rawMFE, max_floating_pnl_pct: leveragedMFE,
+      max_drawdown_raw_pct: rawMAE, max_drawdown_pct: leveragedMAE,
+      best_tp_yield_raw_pct: bestTPYieldRaw,
+      best_tp_yield_pct: bestTPYieldLev,
+      realized_raw_pct: realizedRaw,
+      realized_pct: realizedLev,
+      exit_time: (exitIdx!==null ? new Date(post[exitIdx].timestamp).toISOString() : ""),
+      last_timestamp: new Date(endSlice[endSlice.length - 1].timestamp).toISOString(),
+    };
+  }
+
+  // ---------- Orchestration ----------
+  const $ = id => document.getElementById(id);
+  const el = {
+    provider:$("provider"), market:$("market"), intervalInput:$("intervalInput"),
+    autoInfer:$("autoInfer"), symbol:$("symbol"), since:$("since"), until:$("until"),
+    btnFetch:$("btnFetch"), btnOneClick:$("btnOneClick"), btnRun:$("btnRun"),
+    fetchedCount:$("fetchedCount"), symBadge:$("symBadge"), warnBadge:$("warnBadge"), corsBadge:$("corsBadge"),
+    signalsCSV:$("signalsCSV"), fileSignals:$("fileSignals"),
+    conflict:$("conflict"), touch:$("touch"),
+    statTotal:$("statTotal"), statFilled:$("statFilled"), statHitRate:$("statHitRate"), statMaxLev:$("statMaxLev"),
+    tbody:$("tbody"), btnExport:$("btnExport"), manualBox:$("manualBox")
+  };
+  let KLINES = []; let RESULTS = [];
+
+  function setBusy(b){ el.btnFetch.disabled=b; el.btnOneClick.disabled=b; el.btnRun.disabled=b; }
+
+  function parseSignalsCSV(){
+    const rows = parseCSV(el.signalsCSV.value);
+    return rows.map((r,i)=> ({
+      signal_id: r.signal_id || ("sig_"+i),
+      symbol: (r.symbol || el.symbol.value || "").trim(),
+      direction: (r.direction || "LONG").toUpperCase(),
+      leverage: Number(r.leverage || 1),
+      entry_low: Number(r.entry_low),
+      entry_high: Number(r.entry_high),
+      sl: Number(r.sl),
+      tps: [r.tp1,r.tp2,r.tp3,r.tp4,r.tp5].filter((x)=> x !== undefined),
+      signal_time: r.signal_time,
+    }));
+  }
+
+  function inferSymbolsAndSince(sigs, provider){
+    const norm = Providers[provider].normalizeSymbol;
+    const symbols = uniq(sigs.map(s=> norm(s.symbol || el.symbol.value)).filter(Boolean));
+    const times = sigs.map(s=> +new Date(s.signal_time)).filter(t=> !Number.isNaN(t));
+    const earliest = times.length ? Math.min(...times) : null;
+    return { symbols, sinceMs: earliest };
+  }
+
+  async function fetchAllKlines({ provider, market, interval, auto, sigs, since, until }){
+    const P = Providers[provider];
+    const { val: stdInterval, fixed } = standardizeInterval(interval);
+    el.warnBadge.style.display = fixed ? "inline-block" : "none";
+    el.corsBadge.style.display = "none";
+
+    let list = [];
+    try {
+      if (provider === "csv") {
+        el.symBadge.textContent = "CSV";
+        return [];
+      }
+      if (auto) {
+        const inf = inferSymbolsAndSince(sigs, provider);
+        const syms = inf.symbols.length ? inf.symbols : [P.normalizeSymbol(el.symbol.value)];
+        const tfMs = intervalToMs(stdInterval);
+        const sinceMs = (inf.sinceMs != null) ? (inf.sinceMs - 2*tfMs) : (el.since.value ? toMs(el.since.value) : undefined);
+        el.symBadge.textContent = syms.join(", ");
+        for (const sym of syms) {
+          const rows = await P.fetchKlines({ symbol:sym, interval: stdInterval, market, startTime: sinceMs, endTime: (el.until.value? toMs(el.until.value): undefined) });
+          const common = normCommonSymbol(sym.includes("-")? sym.replace("-","") : (sym.includes("_")? sym.replace("_","").toUpperCase() : sym));
+          list = list.concat(rows.map(r => ({...r, symbol: common })));
+          await sleep(120);
+        }
+      } else {
+        const sym = P.normalizeSymbol(el.symbol.value);
+        el.symBadge.textContent = sym;
+        const rows = await P.fetchKlines({ symbol:sym, interval: stdInterval, market, startTime: (since? toMs(since): undefined), endTime: (until? toMs(until): undefined) });
+        const common = normCommonSymbol(sym.includes("-")? sym.replace("-","") : (sym.includes("_")? sym.replace("_","").toUpperCase() : sym));
+        list = rows.map(r=> ({...r, symbol: common }));
+      }
+    } catch (e) {
+      console.warn(e);
+      el.corsBadge.style.display = "inline-block";
+      throw e;
+    }
+    list.sort((a,b)=> (a.symbol===b.symbol) ? (new Date(a.timestamp)-new Date(b.timestamp)) : a.symbol.localeCompare(b.symbol));
+    return list;
+  }
+
+  function runBacktest(usingKlines){
+    const cfg = { conflict_resolution: el.conflict.value, touch_is_fill: el.touch.value === "true" };
+    const sigsRaw = parseSignalsCSV();
+    const provider = el.provider.value;
+    const P = Providers[provider];
+    const sigs = sigsRaw.map(s => {
+      let normSym = s.symbol && s.symbol.trim() ? s.symbol.trim() : el.symbol.value;
+      normSym = P.normalizeSymbol(normSym);
+      const common = normCommonSymbol(normSym.includes("-")? normSym.replace("-","") : (normSym.includes("_")? normSym.replace("_","").toUpperCase() : normSym));
+      return { ...s, symbol: common };
+    });
+    RESULTS = sigs.map(sig => evaluateSignal(sig, usingKlines, cfg));
+    renderResults();
+  }
+
+  const $id = id => document.getElementById(id);
+  function renderResults(){
+    el.manualBox.style.opacity = el.autoInfer.checked ? ".5" : "1";
+    el.manualBox.classList.toggle("hidden", el.autoInfer.checked);
+
+    el.statTotal.textContent = String(RESULTS.length);
+    const filled = RESULTS.filter((r)=> r.status !== "NOT_FILLED" && r.status !== "NO_DATA_AFTER_SIGNAL");
+    el.statFilled.textContent = String(filled.length);
+    const hitRate = filled.length ? (filled.filter((r)=> r.status === "TP_HIT").length / filled.length) : null;
+    el.statHitRate.textContent = hitRate == null ? "-" : (hitRate * 100).toFixed(2) + "%";
+    const maxLev = filled.length ? Math.max.apply(null, filled.map((r)=> Number(r.max_floating_pnl_pct ?? -Infinity))) : -Infinity;
+    el.statMaxLev.textContent = maxLev === -Infinity ? "-" : (maxLev * 100).toFixed(2) + "%";
+
+    const cols = ["signal_id","symbol","direction","status","fill_price","tp_hit","sl_hit","best_tp_reached","max_floating_raw_pct","max_floating_pnl_pct","max_drawdown_raw_pct","max_drawdown_pct","best_tp_yield_raw_pct","best_tp_yield_pct","realized_raw_pct","realized_pct","fill_time","exit_time","last_timestamp"];
+    el.tbody.innerHTML = "";
+    for (const r of RESULTS) {
+      const tr = document.createElement("tr");
+      for (const c of cols) {
+        const td = document.createElement("td");
+        let v = r[c];
+        if (c==="fill_price") v = fmtNum(v);
+        if (c.includes("_pct")) v = fmtPct(v);
+        if (v == null || v === "") v = "-";
+        if (typeof v === "string" && (c.endsWith("_time") || c === "last_timestamp")) v = v.replace("T"," ").replace("Z","");
+        td.textContent = v; tr.appendChild(td);
+      }
+      el.tbody.appendChild(tr);
+    }
+  }
+
+  async function handleFetch(){
+    try {
+      setBusy(true); RESULTS = []; renderResults();
+      const sigs = parseSignalsCSV();
+      KLINES = await fetchAllKlines({ provider: el.provider.value, market: el.market.value, interval: el.intervalInput.value, auto: el.autoInfer.checked, sigs, since: el.since.value, until: el.until.value });
+      el.fetchedCount.textContent = "已获取：" + KLINES.length + " 根";
+    } catch (e) {
+      alert("拉取出错：" + e.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function handleOneClick(){
+    try {
+      setBusy(true); RESULTS = []; renderResults();
+      const sigs = parseSignalsCSV();
+      KLINES = await fetchAllKlines({ provider: el.provider.value, market: el.market.value, interval: el.intervalInput.value, auto: el.autoInfer.checked, sigs, since: el.since.value, until: el.until.value });
+      el.fetchedCount.textContent = "已获取：" + KLINES.length + " 根";
+      runBacktest(KLINES);
+    } catch (e) {
+      alert("一键回测出错：" + e.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  el.btnFetch.addEventListener("click", handleFetch);
+  el.btnOneClick.addEventListener("click", handleOneClick);
+  el.btnRun.addEventListener("click", ()=> runBacktest(KLINES));
+  el.fileSignals.addEventListener("change", (e)=>{ const f=e.target.files?.[0]; if(!f) return; const rdr=new FileReader(); rdr.onload=()=>{ el.signalsCSV.value=String(rdr.result||""); renderResults(); }; rdr.readAsText(f); });
+  el.autoInfer.addEventListener("change", renderResults);
+  el.provider.addEventListener("change", ()=>{ el.corsBadge.style.display="none"; });
+  renderResults();
+</script>
+</body>
+</html>
