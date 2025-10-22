@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加密货币交易计算器 - USDT本位</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+    
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+    
+    .header p {
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    
+    .content {
+      padding: 30px;
+    }
+    
+    .input-section {
+      background: #f8f9fa;
+      padding: 25px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+    }
+    
+    .input-section h2 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 20px;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px;
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .form-group label {
+      color: #555;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    
+    .form-group input,
+    .form-group select {
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: all 0.3s;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .mode-selector {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 8px;
+      align-items: center;
+    }
+    
+    .mode-selector label {
+      font-weight: 600;
+      color: #555;
+      margin-right: 10px;
+    }
+    
+    .mode-btn {
+      padding: 10px 20px;
+      border: 2px solid #667eea;
+      background: white;
+      color: #667eea;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 600;
+    }
+    
+    .mode-btn:hover {
+      background: #f0f3ff;
+    }
+    
+    .mode-btn.active {
+      background: #667eea;
+      color: white;
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 25px;
+    }
+    
+    button {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-calculate {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .btn-calculate:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-reset {
+      background: #6c757d;
+      color: white;
+    }
+    
+    .btn-reset:hover {
+      background: #5a6268;
+    }
+    
+    .results-section {
+      display: none;
+    }
+    
+    .results-section.active {
+      display: block;
+    }
+    
+    .results-section h2 {
+      color: #333;
+      margin-bottom: 25px;
+      font-size: 20px;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px;
+    }
+    
+    .mode-badge {
+      display: inline-block;
+      padding: 5px 15px;
+      background: #667eea;
+      color: white;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: 10px;
+    }
+    
+    .results-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .result-card {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      padding: 25px;
+      border-radius: 12px;
+      border-left: 4px solid #667eea;
+      transition: all 0.3s;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    .result-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .result-card h3 {
+      color: #555;
+      font-size: 13px;
+      margin-bottom: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .result-card .value {
+      color: #333;
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    
+    .result-card .unit {
+      color: #888;
+      font-size: 14px;
+      margin-left: 5px;
+      font-weight: 400;
+    }
+    
+    .result-card.positive {
+      border-left-color: #28a745;
+    }
+    
+    .result-card.positive .value {
+      color: #28a745;
+    }
+    
+    .result-card.negative {
+      border-left-color: #dc3545;
+    }
+    
+    .result-card.negative .value {
+      color: #dc3545;
+    }
+    
+    .result-card.warning {
+      border-left-color: #ffc107;
+    }
+    
+    .result-card.warning .value {
+      color: #ffc107;
+    }
+    
+    .result-card.info {
+      border-left-color: #17a2b8;
+    }
+    
+    .result-card.info .value {
+      color: #17a2b8;
+    }
+    
+    .info-box {
+      background: #e7f3ff;
+      border-left: 4px solid #2196F3;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+      font-size: 13px;
+      color: #555;
+      line-height: 1.6;
+    }
+    
+    @media (max-width: 968px) {
+      .results-row {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .button-group {
+        flex-direction: column;
+      }
+      
+      .result-card .value {
+        font-size: 24px;
+      }
+      
+      .mode-selector {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🚀 加密货币交易计算器</h1>
+      <p>USDT本位永续合约 - 实时计算盈亏与风险指标</p>
+    </div>
+    
+    <div class="content">
+      <div class="input-section">
+        <h2>📊 交易参数输入</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="crypto">货币类型</label>
+            <input type="text" id="crypto" placeholder="例如: BTC, ETH" value="BTC">
+          </div>
+          
+          <div class="form-group">
+            <label for="direction">方向</label>
+            <select id="direction">
+              <option value="long">做多 (Long)</option>
+              <option value="short">做空 (Short)</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="entryPrice">开仓价格 (USDT)</label>
+            <input type="number" id="entryPrice" placeholder="例如: 50000" step="0.01">
+          </div>
+          
+          <div class="form-group">
+            <label for="markPrice">标记价格 (USDT)</label>
+            <input type="number" id="markPrice" placeholder="当前市场价格" step="0.01">
+          </div>
+          
+          <div class="form-group">
+            <label for="quantity">买入数量</label>
+            <input type="number" id="quantity" placeholder="例如: 0.5" step="0.0001">
+          </div>
+          
+          <div class="form-group">
+            <label for="leverage">杠杆倍数</label>
+            <input type="number" id="leverage" placeholder="例如: 10" min="1" max="125" value="10">
+          </div>
+        </div>
+        
+        <div class="mode-selector">
+          <label>显示模式：</label>
+          <button class="mode-btn active" onclick="setMode('lbank')">LBANK 模式</button>
+          <button class="mode-btn" onclick="setMode('weex')">WEEX 模式</button>
+        </div>
+        
+        <div class="button-group">
+          <button class="btn-calculate" onclick="calculate()">计算</button>
+          <button class="btn-reset" onclick="resetForm()">重置</button>
+        </div>
+      </div>
+      
+      <div class="results-section" id="results">
+        <h2>📈 计算结果<span class="mode-badge" id="modeBadge">LBANK 模式</span></h2>
+        
+        <div id="lbankMode">
+          <!-- LBANK模式：第一行：杠杆倍数、回报率、盈亏 -->
+          <div class="results-row">
+            <div class="result-card info">
+              <h3>杠杆倍数 (Leverage)</h3>
+              <div class="value" id="leverageDisplay1">0</div>
+              <span class="unit">x</span>
+            </div>
+            
+            <div class="result-card" id="roiCard1">
+              <h3>回报率 (ROI)</h3>
+              <div class="value" id="roi1">0</div>
+              <span class="unit">%</span>
+            </div>
+            
+            <div class="result-card" id="pnlCard1">
+              <h3>未实现盈亏 (Unrealized PnL)</h3>
+              <div class="value" id="unrealizedPnl1">0</div>
+              <span class="unit">USDT</span>
+            </div>
+          </div>
+          
+          <!-- LBANK模式：第二行：维持保证金比率、保证金、持仓量 -->
+          <div class="results-row">
+            <div class="result-card">
+              <h3>维持保证金比率 (MMR)</h3>
+              <div class="value" id="maintenanceMarginRate1">0</div>
+              <span class="unit">%</span>
+            </div>
+            
+            <div class="result-card">
+              <h3>保证金 (Margin)</h3>
+              <div class="value" id="margin1">0</div>
+              <span class="unit">USDT</span>
+            </div>
+            
+            <div class="result-card">
+              <h3>持仓量 (Position Size)</h3>
+              <div class="value" id="positionSize1">0</div>
+              <span class="unit" id="positionUnit1">BTC</span>
+            </div>
+          </div>
+          
+          <!-- LBANK模式：第三行：预估强平价格、标记价格、开仓价格 -->
+          <div class="results-row">
+            <div class="result-card warning">
+              <h3>预估强平价格 (Liquidation)</h3>
+              <div class="value" id="liquidationPrice1">0</div>
+              <span class="unit">USDT</span>
+            </div>
+            
+            <div class="result-card">
+              <h3>标记价格 (Mark Price)</h3>
+              <div class="value" id="markPriceDisplay1">0</div>
+              <span class="unit">USDT</span>
+            </div>
+            
+            <div class="result-card">
+              <h3>开仓价格 (Entry Price)</h3>
+              <div class="value" id="entryPriceDisplay1">0</div>
+              <span class="unit">USDT</span>
+            </div>
+          </div>
+        </div>
+        
+        <div id="weexMode" style="display: none;">
+          <!-- WEEX模式：第一行：杠杆倍率、未实现盈亏、回报率 -->
+          <div class="results-row">
+            <div class="result-card info">
+              <h3>杠杆倍率 (Leverage)</h3>
+              <div class="value" id="leverageDisplay2">0</div>
+              <span class="unit">x</span>
+            </div>
+            
+            <div class="result-card" id="pnlCard2">
+              <h3>未实现盈亏 (Unrealized PnL)</h3>
+              <div class="value" id="unrealizedPnl2">0</div>
+              <span class="unit">USDT</span>
+            </div>
+            
+            <div class="result-card" id="roiCard2">
+              <h3>回报率 (ROI)</h3>
+              <div class="value" id="roi2">0</div>
+              <span class="unit">%</span>
+            </div>
+          </div>
+          
+          <!-- WEEX模式：第二行：持仓数量、保证金、维持保证金率MMR -->
+          <div class="results-row">
+            <div class="result-card">
+              <h3>持仓数量 (Position Size)</h3>
+              <div class="value" id="positionSize2">0</div>
+              <span class="unit" id="positionUnit2">BTC</span>
+            </div>
+            
+            <div class="result-card">
+              <h3>保证金 (Margin)</h3>
+              <div class="value" id="margin2">0</div>
+              <span class="unit">USDT</span>
+            </div>
+            
+            <div class="result-card">
+              <h3>维持保证金率 (MMR)</h3>
+              <div class="value" id="maintenanceMarginRate2">0</div>
+              <span class="unit">%</span>
+            </div>
+          </div>
+          
+          <!-- WEEX模式：第三行：开仓价格、标记价格、预估强平价 -->
+          <div class="results-row">
+            <div class="result-card">
+              <h3>开仓价格 (Entry Price)</h3>
+              <div class="value" id="entryPriceDisplay2">0</div>
+              <span class="unit">USDT</span>
+            </div>
+            
+            <div class="result-card">
+              <h3>标记价格 (Mark Price)</h3>
+              <div class="value" id="markPriceDisplay2">0</div>
+              <span class="unit">USDT</span>
+            </div>
+            
+            <div class="result-card warning">
+              <h3>预估强平价 (Liquidation)</h3>
+              <div class="value" id="liquidationPrice2">0</div>
+              <span class="unit">USDT</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="info-box">
+          <strong>📌 计算说明：</strong><br>
+          • <strong>持仓量</strong> = 买入数量（币种数量）<br>
+          • <strong>持仓价值</strong> = 开仓价格 × 买入数量<br>
+          • <strong>保证金</strong> = 持仓价值 / 杠杆倍数<br>
+          • <strong>维持保证金比率</strong> = 根据持仓价值动态计算（0.4% - 10%）<br>
+          • <strong>未实现盈亏</strong> = (标记价格 - 开仓价格) × 数量 (做多) 或 (开仓价格 - 标记价格) × 数量 (做空)<br>
+          • <strong>回报率</strong> = (未实现盈亏 / 保证金) × 100%<br>
+          • <strong>强平价格</strong> = 开仓价格 × (1 ± (1/杠杆 - 维持保证金率/100)) (做多用减，做空用加)
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    let currentMode = 'lbank';
+    
+    // 根据持仓价值动态计算维持保证金比率（模拟币安标准）
+    function getMaintenanceMarginRate(positionValue) {
+      if (positionValue <= 50000) return 0.4;
+      if (positionValue <= 250000) return 0.5;
+      if (positionValue <= 1000000) return 1.0;
+      if (positionValue <= 7500000) return 2.5;
+      if (positionValue <= 40000000) return 5.0;
+      return 10.0;
+    }
+    
+    function setMode(mode) {
+      currentMode = mode;
+      
+      // 更新按钮状态
+      const buttons = document.querySelectorAll('.mode-btn');
+      buttons.forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      // 更新显示模式
+      if (mode === 'lbank') {
+        document.getElementById('lbankMode').style.display = 'block';
+        document.getElementById('weexMode').style.display = 'none';
+        document.getElementById('modeBadge').textContent = 'LBANK 模式';
+      } else {
+        document.getElementById('lbankMode').style.display = 'none';
+        document.getElementById('weexMode').style.display = 'block';
+        document.getElementById('modeBadge').textContent = 'WEEX 模式';
+      }
+    }
+    
+    function calculate() {
+      // 获取输入值
+      const crypto = document.getElementById('crypto').value.trim().toUpperCase();
+      const direction = document.getElementById('direction').value;
+      const entryPrice = parseFloat(document.getElementById('entryPrice').value);
+      const markPrice = parseFloat(document.getElementById('markPrice').value);
+      const quantity = parseFloat(document.getElementById('quantity').value);
+      const leverage = parseFloat(document.getElementById('leverage').value);
+      
+      // 验证输入
+      if (!crypto || !entryPrice || !markPrice || !quantity || !leverage) {
+        alert('请填写所有必填字段！');
+        return;
+      }
+      
+      if (entryPrice <= 0 || markPrice <= 0 || quantity <= 0 || leverage <= 0) {
+        alert('请输入有效的正数！');
+        return;
+      }
+      
+      // 持仓量 = 买入数量（币种数量）
+      const positionSize = quantity;
+      
+      // 持仓价值 = 开仓价格 × 买入数量
+      const positionValue = entryPrice * quantity;
+      
+      // 计算保证金
+      const margin = positionValue / leverage;
+      
+      // 根据持仓价值动态计算维持保证金率
+      const maintenanceMarginRate = getMaintenanceMarginRate(positionValue);
+      
+      // 计算未实现盈亏
+      let unrealizedPnl;
+      if (direction === 'long') {
+        unrealizedPnl = (markPrice - entryPrice) * quantity;
+      } else {
+        unrealizedPnl = (entryPrice - markPrice) * quantity;
+      }
+      
+      // 计算回报率 (ROI)
+      const roi = (unrealizedPnl / margin) * 100;
+      
+      // 计算预估强平价格
+      let liquidationPrice;
+      if (direction === 'long') {
+        liquidationPrice = entryPrice * (1 - (1 / leverage - maintenanceMarginRate / 100));
+      } else {
+        liquidationPrice = entryPrice * (1 + (1 / leverage - maintenanceMarginRate / 100));
+      }
+      
+      // 持仓量显示格式
+      const decimals = quantity < 1 ? 8 : 4;
+      const positionSizeStr = positionSize.toFixed(decimals);
+      
+      // 更新LBANK模式显示
+      document.getElementById('leverageDisplay1').textContent = leverage.toFixed(0);
+      document.getElementById('roi1').textContent = roi.toFixed(2);
+      document.getElementById('unrealizedPnl1').textContent = unrealizedPnl.toFixed(2);
+      document.getElementById('maintenanceMarginRate1').textContent = maintenanceMarginRate.toFixed(2);
+      document.getElementById('margin1').textContent = margin.toFixed(2);
+      document.getElementById('positionSize1').textContent = positionSizeStr;
+      document.getElementById('positionUnit1').textContent = crypto;
+      document.getElementById('liquidationPrice1').textContent = liquidationPrice.toFixed(2);
+      document.getElementById('markPriceDisplay1').textContent = markPrice.toFixed(2);
+      document.getElementById('entryPriceDisplay1').textContent = entryPrice.toFixed(2);
+      
+      // 更新WEEX模式显示
+      document.getElementById('leverageDisplay2').textContent = leverage.toFixed(0);
+      document.getElementById('unrealizedPnl2').textContent = unrealizedPnl.toFixed(2);
+      document.getElementById('roi2').textContent = roi.toFixed(2);
+      document.getElementById('positionSize2').textContent = positionSizeStr;
+      document.getElementById('positionUnit2').textContent = crypto;
+      document.getElementById('margin2').textContent = margin.toFixed(2);
+      document.getElementById('maintenanceMarginRate2').textContent = maintenanceMarginRate.toFixed(2);
+      document.getElementById('entryPriceDisplay2').textContent = entryPrice.toFixed(2);
+      document.getElementById('markPriceDisplay2').textContent = markPrice.toFixed(2);
+      document.getElementById('liquidationPrice2').textContent = liquidationPrice.toFixed(2);
+      
+      // 设置盈亏颜色 - LBANK模式
+      const pnlCard1 = document.getElementById('pnlCard1');
+      const roiCard1 = document.getElementById('roiCard1');
+      pnlCard1.classList.remove('positive', 'negative');
+      roiCard1.classList.remove('positive', 'negative');
+      
+      if (unrealizedPnl > 0) {
+        pnlCard1.classList.add('positive');
+        roiCard1.classList.add('positive');
+      } else if (unrealizedPnl < 0) {
+        pnlCard1.classList.add('negative');
+        roiCard1.classList.add('negative');
+      }
+      
+      // 设置盈亏颜色 - WEEX模式
+      const pnlCard2 = document.getElementById('pnlCard2');
+      const roiCard2 = document.getElementById('roiCard2');
+      pnlCard2.classList.remove('positive', 'negative');
+      roiCard2.classList.remove('positive', 'negative');
+      
+      if (unrealizedPnl > 0) {
+        pnlCard2.classList.add('positive');
+        roiCard2.classList.add('positive');
+      } else if (unrealizedPnl < 0) {
+        pnlCard2.classList.add('negative');
+        roiCard2.classList.add('negative');
+      }
+      
+      // 显示结果区域
+      document.getElementById('results').classList.add('active');
+      
+      // 平滑滚动到结果
+      document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    
+    function resetForm() {
+      document.getElementById('crypto').value = 'BTC';
+      document.getElementById('direction').value = 'long';
+      document.getElementById('entryPrice').value = '';
+      document.getElementById('markPrice').value = '';
+      document.getElementById('quantity').value = '';
+      document.getElementById('leverage').value = '10';
+      document.getElementById('results').classList.remove('active');
+    }
+    
+    // 回车键触发计算
+    document.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        calculate();
+      }
+    });
+  </script>
+</body>
+</html>
