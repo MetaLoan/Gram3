@@ -191,9 +191,11 @@
       border-radius: 8px;
       overflow: auto;
       min-height: 400px;
+      max-height: 80vh;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
+      padding: 20px;
     }
     
     .preview-canvas {
@@ -531,26 +533,26 @@
           return;
         }
         
-        // 对于较长的行进行分词处理
-        const words = line.split(' ');
-        let currentLine = '';
+        let currentStr = '';
+        let start = 0;
+        let currentWidth = 0;
         
-        for (let i = 0; i < words.length; i++) {
-          const testLine = currentLine + words[i] + ' ';
-          const metrics = ctx.measureText(testLine);
-          const testWidth = metrics.width;
+        for (let i = 0; i < line.length; i++) {
+          const char = line[i];
+          const charWidth = ctx.measureText(char).width;
+          currentWidth += charWidth;
           
-          if (testWidth > maxWidth && i > 0) {
-            ctx.fillText(currentLine.trim(), x, currentY);
-            currentLine = words[i] + ' ';
+          if (currentWidth > maxWidth) {
+            ctx.fillText(line.substring(start, i), x, currentY);
             currentY += lineHeight;
-          } else {
-            currentLine = testLine;
+            start = i;
+            currentWidth = charWidth;
           }
         }
         
-        if (currentLine.trim()) {
-          ctx.fillText(currentLine.trim(), x, currentY);
+        // 绘制最后一行
+        if (start < line.length) {
+          ctx.fillText(line.substring(start), x, currentY);
           currentY += lineHeight;
         }
       });
@@ -603,22 +605,59 @@
         totalHeight += chartHeight + 30;
       }
       
+      // 预计算文本换行后的实际行数
+      function calculateWrappedLines(text, fontSize, maxTextWidth) {
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCtx.font = `${fontSize}px Arial, sans-serif`;
+        
+        let totalLines = 0;
+        const lines = text.split('\n');
+        
+        lines.forEach(line => {
+          if (!line.trim()) {
+            totalLines += 1;
+            return;
+          }
+          
+          let currentWidth = 0;
+          let lineCount = 1;
+          
+          for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            const charWidth = tempCtx.measureText(char).width;
+            currentWidth += charWidth;
+            
+            if (currentWidth > maxTextWidth) {
+              lineCount++;
+              currentWidth = charWidth;
+            }
+          }
+          
+          totalLines += lineCount;
+        });
+        
+        return totalLines;
+      }
+      
       // 文本高度估算（更准确的计算）
+      const maxTextWidth = canvasWidth - padding * 2;
+      
       if (parsedData.title) {
-        const titleLines = Math.ceil(parsedData.title.length / 20);
-        totalHeight += titleFontSize * 1.5 * Math.max(titleLines, 1) + 30;
+        const titleLines = calculateWrappedLines(parsedData.title, titleFontSize, maxTextWidth);
+        totalHeight += titleFontSize * 1.8 * titleLines + 40;
       }
       if (parsedData.description) {
-        const descLines = parsedData.description.split('\n').length;
-        totalHeight += descriptionFontSize * 1.5 * (descLines + 1) + 30;
+        const descLines = calculateWrappedLines(parsedData.description, descriptionFontSize, maxTextWidth);
+        totalHeight += descriptionFontSize * 1.8 * descLines + 40;
       }
       if (parsedData.analysis) {
-        const analysisLines = parsedData.analysis.split('\n').length;
-        totalHeight += analysisFontSize * 1.5 * (analysisLines + 1) + 30;
+        const analysisLines = calculateWrappedLines(parsedData.analysis, analysisFontSize, maxTextWidth);
+        totalHeight += analysisFontSize * 1.8 * analysisLines + 40;
       }
       if (parsedData.note) {
-        const noteLines = parsedData.note.split('\n').length;
-        totalHeight += noteFontSize * 1.5 * (noteLines + 1) + padding;
+        const noteLines = calculateWrappedLines(parsedData.note, noteFontSize, maxTextWidth);
+        totalHeight += noteFontSize * 1.8 * noteLines + 40;
       }
       
       // 设置画布尺寸
