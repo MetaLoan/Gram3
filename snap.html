@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>每日资讯</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+      }
+      
+      body {
+          background: #1a1a1a;
+          color: #fff;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+          padding: 40px 20px;
+      }
+      
+      body.rtl {
+          direction: rtl;
+      }
+      
+      .container {
+          max-width: 1000px;
+          margin: 0 auto;
+      }
+      
+      .input-section {
+          background: rgba(255, 255, 255, 0.05);
+          padding: 20px;
+          border-radius: 12px;
+          margin-bottom: 40px;
+      }
+      
+      .input-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 15px;
+          flex-wrap: wrap;
+          gap: 10px;
+      }
+      
+      .input-title {
+          font-size: 20px;
+          font-weight: bold;
+          color: #f5a623;
+      }
+      
+      .controls {
+          display: flex;
+          gap: 10px;
+          flex-wrap: wrap;
+      }
+      
+      .lang-selector {
+          background: #2a2a2a;
+          color: #fff;
+          border: 2px solid #444;
+          border-radius: 8px;
+          padding: 8px 15px;
+          font-size: 14px;
+          cursor: pointer;
+          transition: all 0.3s;
+      }
+      
+      .lang-selector:hover {
+          border-color: #f5a623;
+      }
+      
+      #dataInput {
+          width: 100%;
+          min-height: 300px;
+          background: #2a2a2a;
+          color: #fff;
+          border: 2px solid #444;
+          border-radius: 8px;
+          padding: 15px;
+          font-family: 'Courier New', monospace;
+          font-size: 14px;
+          resize: vertical;
+      }
+      
+      #dataInput:focus {
+          outline: none;
+          border-color: #f5a623;
+      }
+      
+      .button-group {
+          margin-top: 15px;
+          display: flex;
+          gap: 10px;
+          flex-wrap: wrap;
+      }
+      
+      .btn {
+          background: linear-gradient(90deg, #f5a623 0%, #ff6b00 100%);
+          color: #fff;
+          border: none;
+          padding: 12px 30px;
+          border-radius: 8px;
+          font-size: 16px;
+          font-weight: bold;
+          cursor: pointer;
+          transition: all 0.3s;
+      }
+      
+      .btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(245, 166, 35, 0.4);
+      }
+      
+      .btn-secondary {
+          background: linear-gradient(90deg, #4a90e2 0%, #357abd 100%);
+      }
+      
+      .btn-secondary:hover {
+          box-shadow: 0 5px 15px rgba(74, 144, 226, 0.4);
+      }
+      
+      #contentArea {
+          background: #1a1a1a;
+          padding: 40px;
+          border-radius: 12px;
+      }
+      
+      .header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 40px;
+      }
+      
+      .logo {
+          font-size: 32px;
+          font-weight: bold;
+          color: #f5a623;
+      }
+      
+      .title-section {
+          text-align: right;
+      }
+      
+      body.rtl .title-section {
+          text-align: left;
+      }
+      
+      .main-title {
+          font-size: 36px;
+          font-weight: bold;
+          margin-bottom: 5px;
+      }
+      
+      .date {
+          font-size: 18px;
+          color: #999;
+      }
+      
+      .stats-section {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin-bottom: 40px;
+      }
+      
+      .gauge-section {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+      }
+      
+      .gauge-container {
+          position: relative;
+          width: 240px;
+          height: 140px;
+          margin-bottom: 15px;
+      }
+      
+      .gauge {
+          width: 100%;
+          height: 100%;
+      }
+      
+      .gauge-needle {
+          position: absolute;
+          bottom: 20px;
+          left: 50%;
+          width: 4px;
+          height: 80px;
+          background: #fff;
+          transform-origin: bottom center;
+          transform: translateX(-50%) rotate(0deg);
+          border-radius: 2px;
+          transition: transform 0.5s ease-out;
+          box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      }
+      
+      .gauge-center {
+          position: absolute;
+          bottom: 15px;
+          left: 50%;
+          width: 12px;
+          height: 12px;
+          background: #fff;
+          border-radius: 50%;
+          transform: translateX(-50%);
+          box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+      }
+      
+      .gauge-label {
+          font-size: 18px;
+          font-weight: bold;
+          text-align: center;
+      }
+      
+      .gauge-value {
+          color: #f5a623;
+          font-size: 24px;
+      }
+      
+      .coins-section {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 40px;
+          margin-bottom: 40px;
+      }
+      
+      .coin-category {
+          background: rgba(255, 255, 255, 0.05);
+          padding: 20px;
+          border-radius: 12px;
+      }
+      
+      .category-title {
+          font-size: 22px;
+          font-weight: bold;
+          margin-bottom: 20px;
+          display: flex;
+          align-items: center;
+      }
+      
+      .category-title::before {
+          content: '';
+          width: 12px;
+          height: 12px;
+          background: #f5a623;
+          border-radius: 50%;
+          margin-right: 10px;
+      }
+      
+      body.rtl .category-title::before {
+          margin-right: 0;
+          margin-left: 10px;
+      }
+      
+      .coin-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 15px 0;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      
+      .coin-item:last-child {
+          border-bottom: none;
+      }
+      
+      .coin-info {
+          display: flex;
+          align-items: center;
+      }
+      
+      .coin-icon {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          margin-right: 15px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: bold;
+          font-size: 18px;
+          overflow: hidden;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          position: relative;
+      }
+      
+      body.rtl .coin-icon {
+          margin-right: 0;
+          margin-left: 15px;
+      }
+      
+      .coin-icon img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+      }
+      
+      .coin-icon-text {
+          color: #fff;
+          font-size: 16px;
+          font-weight: bold;
+      }
+      
+      .coin-name {
+          font-size: 20px;
+          font-weight: bold;
+          color: #f5a623;
+      }
+      
+      .coin-full-name {
+          font-size: 14px;
+          color: #999;
+          margin-left: 8px;
+      }
+      
+      body.rtl .coin-full-name {
+          margin-left: 0;
+          margin-right: 8px;
+      }
+      
+      .coin-price {
+          font-size: 24px;
+          font-weight: bold;
+      }
+      
+      .coin-change {
+          font-size: 24px;
+          font-weight: bold;
+      }
+      
+      .positive {
+          color: #4cd964;
+      }
+      
+      .news-section {
+          background: linear-gradient(135deg, #f5a623 0%, #ff8c00 100%);
+          padding: 30px;
+          border-radius: 20px;
+          position: relative;
+      }
+      
+      .news-title {
+          display: inline-flex;
+          align-items: center;
+          background: #000;
+          padding: 10px 20px;
+          border-radius: 25px;
+          font-size: 20px;
+          font-weight: bold;
+          margin-bottom: 20px;
+      }
+      
+      .news-title::before {
+          content: '';
+          width: 12px;
+          height: 12px;
+          background: #f5a623;
+          border-radius: 50%;
+          margin-right: 10px;
+      }
+      
+      body.rtl .news-title::before {
+          margin-right: 0;
+          margin-left: 10px;
+      }
+      
+      .news-item {
+          color: #000;
+          font-size: 16px;
+          line-height: 1.8;
+          margin-bottom: 12px;
+          font-weight: 500;
+      }
+      
+      .news-item:last-child {
+          margin-bottom: 0;
+      }
+      
+      @media (max-width: 768px) {
+          .coins-section {
+              grid-template-columns: 1fr;
+          }
+          
+          .input-header {
+              flex-direction: column;
+              align-items: flex-start;
+          }
+      }
+  </style>
+</head>
+<body>
+  <div class="container">
+      <div class="input-section">
+          <div class="input-header">
+              <div class="input-title">📝 <span data-lang="input_title">数据输入区</span></div>
+              <div class="controls">
+                  <select class="lang-selector" id="langSelector" onchange="switchLanguage()">
+                      <option value="zh-CN">中文简体</option>
+                      <option value="zh-TW">中文繁體</option>
+                      <option value="en">English</option>
+                      <option value="ja">日本語</option>
+                      <option value="ko">한국어</option>
+                      <option value="vi">Tiếng Việt</option>
+                      <option value="ru">Русский</option>
+                      <option value="ar">العربية</option>
+                  </select>
+              </div>
+          </div>
+          <textarea id="dataInput" data-lang-placeholder="input_placeholder"></textarea>
+          <div class="button-group">
+              <button class="btn" onclick="updateContent()">🔄 <span data-lang="btn_update">更新内容</span></button>
+              <button class="btn btn-secondary" onclick="exportImage()">📸 <span data-lang="btn_export">导出图片</span></button>
+          </div>
+      </div>
+
+      <div id="contentArea">
+          <div class="header">
+              <div class="logo" id="platform">WEEX</div>
+              <div class="title-section">
+                  <div class="main-title" data-lang="daily_news">每日资讯</div>
+                  <div class="date" id="date">周二 10/28 2025年</div>
+              </div>
+          </div>
+          
+          <div class="stats-section">
+              <div class="gauge-section">
+                  <div class="gauge-container">
+                      <svg class="gauge" viewBox="0 0 200 120">
+                          <defs>
+                              <linearGradient id="redGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                  <stop offset="0%" style="stop-color:#ff4444;stop-opacity:1" />
+                                  <stop offset="100%" style="stop-color:#ff6b6b;stop-opacity:1" />
+                              </linearGradient>
+                              <linearGradient id="yellowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                  <stop offset="0%" style="stop-color:#ffaa00;stop-opacity:1" />
+                                  <stop offset="100%" style="stop-color:#ffd93d;stop-opacity:1" />
+                              </linearGradient>
+                              <linearGradient id="greenGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                  <stop offset="0%" style="stop-color:#6bcf7f;stop-opacity:1" />
+                                  <stop offset="100%" style="stop-color:#4cd964;stop-opacity:1" />
+                              </linearGradient>
+                          </defs>
+                          <path d="M 30 100 A 70 70 0 0 1 85 35" 
+                                fill="none" 
+                                stroke="url(#redGradient)" 
+                                stroke-width="18" 
+                                stroke-linecap="round"/>
+                          <path d="M 85 35 A 70 70 0 0 1 115 35" 
+                                fill="none" 
+                                stroke="url(#yellowGradient)" 
+                                stroke-width="18" 
+                                stroke-linecap="round"/>
+                          <path d="M 115 35 A 70 70 0 0 1 170 100" 
+                                fill="none" 
+                                stroke="url(#greenGradient)" 
+                                stroke-width="18" 
+                                stroke-linecap="round"/>
+                      </svg>
+                      <div class="gauge-needle" id="gaugeNeedle"></div>
+                      <div class="gauge-center"></div>
+                  </div>
+                  <div class="gauge-label">
+                      <span data-lang="fear_greed_index">恐怖与贪婪指数</span>: <span class="gauge-value" id="fearGreedIndex">51</span>
+                  </div>
+              </div>
+          </div>
+          
+          <div class="coins-section">
+              <div class="coin-category">
+                  <div class="category-title" data-lang="hot_coins">热门币种</div>
+                  <div class="coin-item">
+                      <div class="coin-info">
+                          <div class="coin-icon" id="btcIcon" data-symbol="BTC">
+                              <span class="coin-icon-text">B</span>
+                          </div>
+                          <div>
+                              <span class="coin-name">BTC</span>
+                              <span class="coin-full-name">(Bitcoin)</span>
+                          </div>
+                      </div>
+                      <div class="coin-price" id="btcPrice">$114,063</div>
+                  </div>
+                  <div class="coin-item">
+                      <div class="coin-info">
+                          <div class="coin-icon" id="ethIcon" data-symbol="ETH">
+                              <span class="coin-icon-text">E</span>
+                          </div>
+                          <div>
+                              <span class="coin-name">ETH</span>
+                              <span class="coin-full-name">(Ethereum)</span>
+                          </div>
+                      </div>
+                      <div class="coin-price" id="ethPrice">$4,118</div>
+                  </div>
+              </div>
+              
+              <div class="coin-category">
+                  <div class="category-title" data-lang="top_gainers">最大涨幅币种</div>
+                  <div class="coin-item">
+                      <div class="coin-info">
+                          <div class="coin-icon" id="gainer1Icon" data-symbol="VULT">
+                              <span class="coin-icon-text">V</span>
+                          </div>
+                          <div>
+                              <span class="coin-name" id="vultSymbol">VULT</span>
+                              <span class="coin-full-name" id="vultName">(Vultisig)</span>
+                          </div>
+                      </div>
+                      <div class="coin-change positive" id="vultChange">+150%</div>
+                  </div>
+                  <div class="coin-item">
+                      <div class="coin-info">
+                          <div class="coin-icon" id="gainer2Icon" data-symbol="AMIKO">
+                              <span class="coin-icon-text">A</span>
+                          </div>
+                          <div>
+                              <span class="coin-name" id="amikoSymbol">AMIKO</span>
+                              <span class="coin-full-name" id="amikoName">(Amiko)</span>
+                          </div>
+                      </div>
+                      <div class="coin-change positive" id="amikoChange">+120%</div>
+                  </div>
+              </div>
+          </div>
+          
+          <div class="news-section">
+              <div class="news-title" data-lang="market_news">行情早报</div>
+              <div id="newsContainer">
+                  <div class="news-item">1.美联储10月降息25个基点的概率为97.3%</div>
+                  <div class="news-item">2.MegaETH公售目前已募集4.05亿美元，超额认购8.1倍</div>
+                  <div class="news-item">3.马斯克：Grokipedia v0.1现已上线</div>
+                  <div class="news-item">4.灰度宣布其Solana信托已支持质押功能</div>
+                  <div class="news-item">5.贝莱德的IBIT仅用341天已达到700亿美元资产管理规模</div>
+                  <div class="news-item">6.香港证监会启动虚拟资产交易监控系统招标</div>
+                  <div class="news-item">7.花旗银行与Coinbase合作，探索为客户提供稳定币支付</div>
+                  <div class="news-item">8.特朗普支持的稳定币USD1与Enso达成合作，以拓展其在各链上的DeFi业务版图</div>
+              </div>
+          </div>
+      </div>
+  </div>
+  
+  <script>
+      // 代币ID映射表（CoinMarketCap ID）
+      const coinIdMap = {
+          'BTC': 1,
+          'ETH': 1027,
+          'USDT': 825,
+          'BNB': 1839,
+          'SOL': 5426,
+          'USDC': 3408,
+          'XRP': 52,
+          'DOGE': 74,
+          'ADA': 2010,
+          'TRX': 1958,
+          'AVAX': 5805,
+          'SHIB': 5994,
+          'DOT': 6636,
+          'LINK': 1975,
+          'MATIC': 3890,
+          'UNI': 7083,
+          'LTC': 2,
+          'BCH': 1831,
+          'ATOM': 3794,
+          'XLM': 512,
+          'ETC': 1321,
+          'FIL': 2280,
+          'APT': 21794,
+          'ARB': 11841,
+          'OP': 11840,
+          'SUI': 20947,
+          'PEPE': 24478,
+          'WIF': 28752,
+          'BONK': 23095,
+          'FLOKI': 10804
+      };
+      
+      // 代币图标缓存
+      const iconCache = {};
+      
+      // 获取代币图标
+      async function getCoinIcon(symbol) {
+          symbol = symbol.toUpperCase();
+          
+          // 如果已缓存，直接返回
+          if (iconCache[symbol]) {
+              return iconCache[symbol];
+          }
+          
+          // 尝试从 CoinMarketCap 获取
+          const coinId = coinIdMap[symbol];
+          if (coinId) {
+              const iconUrl = `https://s2.coinmarketcap.com/static/img/coins/64x64/${coinId}.png`;
+              iconCache[symbol] = iconUrl;
+              return iconUrl;
+          }
+          
+          // 如果没有映射，尝试从 CoinGecko 获取
+          try {
+              const response = await fetch(`https://api.coingecko.com/api/v3/search?query=${symbol}`);
+              const data = await response.json();
+              
+              if (data.coins && data.coins.length > 0) {
+                  // 找到匹配的币种
+                  const coin = data.coins.find(c => c.symbol.toUpperCase() === symbol);
+                  if (coin && coin.large) {
+                      iconCache[symbol] = coin.large;
+                      return coin.large;
+                  }
+              }
+          } catch (error) {
+              console.log(`无法获取 ${symbol} 的图标，使用首字母`);
+          }
+          
+          // 如果都失败，返回 null（使用首字母）
+          return null;
+      }
+      
+      // 更新币种图标
+      async function updateCoinIcon(iconElementId, symbol) {
+          const iconElement = document.getElementById(iconElementId);
+          if (!iconElement) return;
+          
+          const iconUrl = await getCoinIcon(symbol);
+          
+          if (iconUrl) {
+              // 创建图片元素
+              const img = document.createElement('img');
+              img.src = iconUrl;
+              img.onerror = () => {
+                  // 如果图片加载失败，显示首字母
+                  iconElement.innerHTML = `<span class="coin-icon-text">${symbol.charAt(0).toUpperCase()}</span>`;
+              };
+              img.onload = () => {
+                  // 图片加载成功，替换内容
+                  iconElement.innerHTML = '';
+                  iconElement.appendChild(img);
+              };
+          } else {
+              // 使用首字母
+              iconElement.innerHTML = `<span class="coin-icon-text">${symbol.charAt(0).toUpperCase()}</span>`;
+          }
+      }
+      
+      // 生成随机渐变色
+      function getRandomGradient() {
+          const gradients = [
+              'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+              'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+              'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+              'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+              'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
+              'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+              'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+              'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+              'linear-gradient(135deg, #ff6e7f 0%, #bfe9ff 100%)'
+          ];
+          return gradients[Math.floor(Math.random() * gradients.length)];
+      }
+      
+      // 多语言翻译配置
+      const translations = {
+          'zh-CN': {
+              input_title: '数据输入区',
+              input_placeholder: '在此粘贴您的数据...\n\n示例格式：\n[date] 2025-10-28\n[platform] WEEX\n[fear_greed_index] 51\n\n[hot_coins]\n  [BTC_price] $114,063\n  [ETH_price] $4,118\n\n[top_gainers]\n  [VULT_symbol] VULT\n  [VULT_name] Vultisig\n  [VULT_change] +150%\n  [AMIKO_symbol] AMIKO\n  [AMIKO_name] Amiko\n  [AMIKO_change] +120%\n\n[market_news]\n  [news_1] 新闻内容1\n  [news_2] 新闻内容2\n  ...',
+              btn_update: '更新内容',
+              btn_export: '导出图片',
+              daily_news: '每日资讯',
+              fear_greed_index: '恐怖与贪婪指数',
+              hot_coins: '热门币种',
+              top_gainers: '最大涨幅币种',
+              market_news: '行情早报'
+          },
+          'zh-TW': {
+              input_title: '數據輸入區',
+              input_placeholder: '在此粘貼您的數據...\n\n示例格式：\n[date] 2025-10-28\n[platform] WEEX\n[fear_greed_index] 51\n\n[hot_coins]\n  [BTC_price] $114,063\n  [ETH_price] $4,118\n\n[top_gainers]\n  [VULT_symbol] VULT\n  [VULT_name] Vultisig\n  [VULT_change] +150%\n  [AMIKO_symbol] AMIKO\n  [AMIKO_name] Amiko\n  [AMIKO_change] +120%\n\n[market_news]\n  [news_1] 新聞內容1\n  [news_2] 新聞內容2\n  ...',
+              btn_update: '更新內容',
+              btn_export: '導出圖片',
+              daily_news: '每日資訊',
+              fear_greed_index: '恐懼與貪婪指數',
+              hot_coins: '熱門幣種',
+              top_gainers: '最大漲幅幣種',
+              market_news: '行情早報'
+          },
+          'en': {
+              input_title: 'Data Input',
+              input_placeholder: 'Paste your data here...\n\nExample format:\n[date] 2025-10-28\n[platform] WEEX\n[fear_greed_index] 51\n\n[hot_coins]\n  [BTC_price] $114,063\n  [ETH_price] $4,118\n\n[top_gainers]\n  [VULT_symbol] VULT\n  [VULT_name] Vultisig\n  [VULT_change] +150%\n  [AMIKO_symbol] AMIKO\n  [AMIKO_name] Amiko\n  [AMIKO_change] +120%\n\n[market_news]\n  [news_1] News content 1\n  [news_2] News content 2\n  ...',
+              btn_update: 'Update',
+              btn_export: 'Export Image',
+              daily_news: 'Daily News',
+              fear_greed_index: 'Fear & Greed Index',
+              hot_coins: 'Hot Coins',
+              top_gainers: 'Top Gainers',
+              market_news: 'Market News'
+          },
+          'ja': {
+              input_title: 'データ入力',
+              input_placeholder: 'ここにデータを貼り付けてください...\n\n例：\n[date] 2025-10-28\n[platform] WEEX\n[fear_greed_index] 51\n\n[hot_coins]\n  [BTC_price] $114,063\n  [ETH_price] $4,118\n\n[top_gainers]\n  [VULT_symbol] VULT\n  [VULT_name] Vultisig\n  [VULT_change] +150%\n  [AMIKO_symbol] AMIKO\n  [AMIKO_name] Amiko\n  [AMIKO_change] +120%\n\n[market_news]\n  [news_1] ニュース内容1\n  [news_2] ニュース内容2\n  ...',
+              btn_update: '更新',
+              btn_export: '画像出力',
+              daily_news: 'デイリーニュース',
+              fear_greed_index: '恐怖と貪欲指数',
+              hot_coins: '人気コイン',
+              top_gainers: '上昇率トップ',
+              market_news: '市場ニュース'
+          },
+          'ko': {
+              input_title: '데이터 입력',
+              input_placeholder: '여기에 데이터를 붙여넣으세요...\n\n예시:\n[date] 2025-10-28\n[platform] WEEX\n[fear_greed_index] 51\n\n[hot_coins]\n  [BTC_price] $114,063\n  [ETH_price] $4,118\n\n[top_gainers]\n  [VULT_symbol] VULT\n  [VULT_name] Vultisig\n  [VULT_change] +150%\n  [AMIKO_symbol] AMIKO\n  [AMIKO_name] Amiko\n  [AMIKO_change] +120%\n\n[market_news]\n  [news_1] 뉴스 내용1\n  [news_2] 뉴스 내용2\n  ...',
+              btn_update: '업데이트',
+              btn_export: '이미지 내보내기',
+              daily_news: '일일 뉴스',
+              fear_greed_index: '공포 탐욕 지수',
+              hot_coins: '인기 코인',
+              top_gainers: '최대 상승',
+              market_news: '시장 뉴스'
+          },
+          'vi': {
+              input_title: 'Nhập dữ liệu',
+              input_placeholder: 'Dán dữ liệu của bạn tại đây...\n\nVí dụ:\n[date] 2025-10-28\n[platform] WEEX\n[fear_greed_index] 51\n\n[hot_coins]\n  [BTC_price] $114,063\n  [ETH_price] $4,118\n\n[top_gainers]\n  [VULT_symbol] VULT\n  [VULT_name] Vultisig\n  [VULT_change] +150%\n  [AMIKO_symbol] AMIKO\n  [AMIKO_name] Amiko\n  [AMIKO_change] +120%\n\n[market_news]\n  [news_1] Nội dung tin tức 1\n  [news_2] Nội dung tin tức 2\n  ...',
+              btn_update: 'Cập nhật',
+              btn_export: 'Xuất hình ảnh',
+              daily_news: 'Tin tức hàng ngày',
+              fear_greed_index: 'Chỉ số sợ hãi & tham lam',
+              hot_coins: 'Coin phổ biến',
+              top_gainers: 'Tăng mạnh nhất',
+              market_news: 'Tin thị trường'
+          },
+          'ru': {
+              input_title: 'Ввод данных',
+              input_placeholder: 'Вставьте данные здесь...\n\nПример:\n[date] 2025-10-28\n[platform] WEEX\n[fear_greed_index] 51\n\n[hot_coins]\n  [BTC_price] $114,063\n  [ETH_price] $4,118\n\n[top_gainers]\n  [VULT_symbol] VULT\n  [VULT_name] Vultisig\n  [VULT_change] +150%\n  [AMIKO_symbol] AMIKO\n  [AMIKO_name] Amiko\n  [AMIKO_change] +120%\n\n[market_news]\n  [news_1] Новость 1\n  [news_2] Новость 2\n  ...',
+              btn_update: 'Обновить',
+              btn_export: 'Экспорт изображения',
+              daily_news: 'Ежедневные новости',
+              fear_greed_index: 'Индекс страха и жадности',
+              hot_coins: 'Популярные монеты',
+              top_gainers: 'Лучший рост',
+              market_news: 'Рыночные новости'
+          },
+          'ar': {
+              input_title: 'إدخال البيانات',
+              input_placeholder: 'الصق بياناتك هنا...\n\nمثال:\n[date] 2025-10-28\n[platform] WEEX\n[fear_greed_index] 51\n\n[hot_coins]\n  [BTC_price] $114,063\n  [ETH_price] $4,118\n\n[top_gainers]\n  [VULT_symbol] VULT\n  [VULT_name] Vultisig\n  [VULT_change] +150%\n  [AMIKO_symbol] AMIKO\n  [AMIKO_name] Amiko\n  [AMIKO_change] +120%\n\n[market_news]\n  [news_1] محتوى الأخبار 1\n  [news_2] محتوى الأخبار 2\n  ...',
+              btn_update: 'تحديث',
+              btn_export: 'تصدير الصورة',
+              daily_news: 'الأخبار اليومية',
+              fear_greed_index: 'مؤشر الخوف والجشع',
+              hot_coins: 'العملات الشائعة',
+              top_gainers: 'الأعلى ارتفاعاً',
+              market_news: 'أخبار السوق'
+          }
+      };
+      
+      // 切换语言
+      function switchLanguage() {
+          const lang = document.getElementById('langSelector').value;
+          const trans = translations[lang];
+          
+          // 设置RTL方向（阿拉伯语）
+          if (lang === 'ar') {
+              document.body.classList.add('rtl');
+          } else {
+              document.body.classList.remove('rtl');
+          }
+          
+          // 更新所有带有 data-lang 属性的元素
+          document.querySelectorAll('[data-lang]').forEach(elem => {
+              const key = elem.getAttribute('data-lang');
+              if (trans[key]) {
+                  elem.textContent = trans[key];
+              }
+          });
+          
+          // 更新 placeholder
+          const input = document.getElementById('dataInput');
+          const placeholderKey = input.getAttribute('data-lang-placeholder');
+          if (trans[placeholderKey]) {
+              input.placeholder = trans[placeholderKey];
+          }
+      }
+      
+      // 更新仪表指针位置
+      function updateGauge(value) {
+          const needle = document.getElementById('gaugeNeedle');
+          const angle = (value / 100) * 180 - 90;
+          needle.style.transform = `translateX(-50%) rotate(${angle}deg)`;
+      }
+      
+      // 格式化日期
+      function formatDate(dateStr) {
+          const lang = document.getElementById('langSelector').value;
+          const date = new Date(dateStr);
+          
+          if (lang === 'zh-CN') {
+              const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+              const weekday = weekdays[date.getDay()];
+              const month = date.getMonth() + 1;
+              const day = date.getDate();
+              const year = date.getFullYear();
+              return `${weekday} ${month}/${day} ${year}年`;
+          } else if (lang === 'zh-TW') {
+              const weekdays = ['週日', '週一', '週二', '週三', '週四', '週五', '週六'];
+              const weekday = weekdays[date.getDay()];
+              const month = date.getMonth() + 1;
+              const day = date.getDate();
+              const year = date.getFullYear();
+              return `${weekday} ${month}/${day} ${year}年`;
+          } else if (lang === 'ja') {
+              const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+              const weekday = weekdays[date.getDay()];
+              const month = date.getMonth() + 1;
+              const day = date.getDate();
+              const year = date.getFullYear();
+              return `${year}年${month}月${day}日 (${weekday})`;
+          } else if (lang === 'ko') {
+              const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+              const weekday = weekdays[date.getDay()];
+              const month = date.getMonth() + 1;
+              const day = date.getDate();
+              const year = date.getFullYear();
+              return `${year}년 ${month}월 ${day}일 (${weekday})`;
+          } else if (lang === 'ar') {
+              const weekdays = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+              const weekday = weekdays[date.getDay()];
+              const month = date.getMonth() + 1;
+              const day = date.getDate();
+              const year = date.getFullYear();
+              return `${weekday} ${day}/${month} ${year}`;
+          } else {
+              // English and other languages
+              const options = { weekday: 'short', year: 'numeric', month: 'numeric', day: 'numeric' };
+              return date.toLocaleDateString(lang, options);
+          }
+      }
+      
+      // 解析输入数据
+      function parseData(text) {
+          const data = {};
+          const lines = text.split('\n');
+          
+          lines.forEach(line => {
+              line = line.trim();
+              if (!line) return;
+              
+              const match = line.match(/\[([^\]]+)\]\s*(.+)/);
+              if (match) {
+                  const key = match[1].trim();
+                  const value = match[2].trim();
+                  data[key] = value;
+              }
+          });
+          
+          return data;
+      }
+      
+      // 更新页面内容
+      async function updateContent() {
+          const input = document.getElementById('dataInput').value;
+          const data = parseData(input);
+          
+          // 更新日期
+          if (data.date) {
+              document.getElementById('date').textContent = formatDate(data.date);
+          }
+          
+          // 更新平台名称
+          if (data.platform) {
+              document.getElementById('platform').textContent = data.platform;
+          }
+          
+          // 更新恐怖贪婪指数
+          if (data.fear_greed_index) {
+              const value = parseInt(data.fear_greed_index);
+              document.getElementById('fearGreedIndex').textContent = value;
+              updateGauge(value);
+          }
+          
+          // 更新BTC
+          if (data.BTC_price) {
+              document.getElementById('btcPrice').textContent = data.BTC_price;
+          }
+          await updateCoinIcon('btcIcon', 'BTC');
+          
+          // 更新ETH
+          if (data.ETH_price) {
+              document.getElementById('ethPrice').textContent = data.ETH_price;
+          }
+          await updateCoinIcon('ethIcon', 'ETH');
+          
+          // 更新第一个涨幅币种
+          if (data.VULT_symbol) {
+              document.getElementById('vultSymbol').textContent = data.VULT_symbol;
+              await updateCoinIcon('gainer1Icon', data.VULT_symbol);
+          }
+          if (data.VULT_name) {
+              document.getElementById('vultName').textContent = `(${data.VULT_name})`;
+          }
+          if (data.VULT_change) {
+              document.getElementById('vultChange').textContent = data.VULT_change;
+          }
+          
+          // 更新第二个涨幅币种
+          if (data.AMIKO_symbol) {
+              document.getElementById('amikoSymbol').textContent = data.AMIKO_symbol;
+              await updateCoinIcon('gainer2Icon', data.AMIKO_symbol);
+          }
+          if (data.AMIKO_name) {
+              document.getElementById('amikoName').textContent = `(${data.AMIKO_name})`;
+          }
+          if (data.AMIKO_change) {
+              document.getElementById('amikoChange').textContent = data.AMIKO_change;
+          }
+          
+          // 更新新闻
+          const newsContainer = document.getElementById('newsContainer');
+          let newsHTML = '';
+          for (let i = 1; i <= 20; i++) {
+              const newsKey = `news_${i}`;
+              if (data[newsKey]) {
+                  newsHTML += `<div class="news-item">${i}.${data[newsKey]}</div>`;
+              }
+          }
+          if (newsHTML) {
+              newsContainer.innerHTML = newsHTML;
+          }
+          
+          // 显示成功提示
+          alert('✅ ' + (translations[document.getElementById('langSelector').value].btn_update || '更新成功') + '!');
+      }
+      
+      // 导出为图片
+      function exportImage() {
+          const contentArea = document.getElementById('contentArea');
+          
+          html2canvas(contentArea, {
+              backgroundColor: '#1a1a1a',
+              scale: 2,
+              logging: false,
+              useCORS: true,
+              allowTaint: true
+          }).then(canvas => {
+              // 创建下载链接
+              const link = document.createElement('a');
+              const timestamp = new Date().getTime();
+              link.download = `crypto-daily-news-${timestamp}.png`;
+              link.href = canvas.toDataURL('image/png');
+              link.click();
+              
+              alert('✅ ' + (translations[document.getElementById('langSelector').value].btn_export || '导出成功') + '!');
+          }).catch(err => {
+              console.error('导出失败:', err);
+              alert('❌ 导出失败，请重试');
+          });
+      }
+      
+      // 初始化
+      updateGauge(51);
+      switchLanguage();
+      
+      // 初始化加载默认币种图标
+      updateCoinIcon('btcIcon', 'BTC');
+      updateCoinIcon('ethIcon', 'ETH');
+      updateCoinIcon('gainer1Icon', 'VULT');
+      updateCoinIcon('gainer2Icon', 'AMIKO');
+  </script>
+</body>
+</html>
