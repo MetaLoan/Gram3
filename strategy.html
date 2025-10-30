@@ -171,6 +171,28 @@
           border-color: #667eea;
           transform: scale(1.1);
       }
+
+      /* 头图历史缩略图 */
+      .header-history {
+          display: flex;
+          gap: 8px;
+          margin-top: 10px;
+          align-items: center;
+      }
+
+      .header-thumb {
+          width: 100px;
+          height: 70px;
+          object-fit: cover;
+          border-radius: 8px;
+          cursor: pointer;
+          border: 2px solid transparent;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      }
+
+      .header-thumb.selected {
+          border-color: #667eea;
+      }
   </style>
 </head>
 <body>
@@ -180,45 +202,45 @@
           <h2>📊 策略参数输入</h2>
           
           <div class="form-group">
-              <label>策略编号 (Strategy ID)</label>
+              <label>策略编号</label>
               <input type="text" id="strategy_id" value="209898" placeholder="例如: 209898">
           </div>
           
           <div class="form-group">
-              <label>交易标的 (Symbol Name)</label>
+              <label>交易标的</label>
               <div style="display: flex; gap: 8px;">
                   <select id="symbol_name" style="flex: 1;">
-                      <option value="BTC">BTC (比特币)</option>
-                      <option value="ETH">ETH (以太坊)</option>
+                      <option value="BTC">BTC</option>
+                      <option value="ETH">ETH</option>
                   </select>
               </div>
           </div>
           
           <div class="form-group">
-              <label>操作方向 (Direction)</label>
+              <label>操作方向</label>
               <select id="direction">
-                  <option value="long">Long</option>
-                  <option value="short">Short</option>
+                  <option value="long">LONG (多)</option>
+                  <option value="short">SHORT (空)</option>
               </select>
           </div>
           
           <div class="form-group">
-              <label>基础进场价 (Entry Price)</label>
+              <label>基础进场价</label>
               <input type="number" id="entry_price" value="110947" placeholder="例如: 110947">
           </div>
           
           <div class="form-group">
-              <label>语言选择</label>
+              <label>生成图片语言</label>
               <select id="language">
-                  <option value="en">English (英语)</option>
-                  <option value="ru">Русский (俄语)</option>
-                  <option value="vi">Tiếng Việt (越南语)</option>
-                  <option value="ar">العربية (阿拉伯语)</option>
+                  <option value="en">英语</option>
+                  <option value="ru">俄语</option>
+                  <option value="vi">越南语</option>
+                  <option value="ar">阿拉伯语</option>
               </select>
           </div>
           
           <div class="style-section">
-              <h3>🎨 文字样式</h3>
+              <h3>🎨 图片样式设置</h3>
               
               <div class="row">
                   <div class="form-group">
@@ -226,7 +248,7 @@
                       <input type="number" id="fontSize" value="25" min="12" max="36">
                   </div>
                   <div class="form-group">
-                      <label>导出分辨率倍数</label>
+                      <label>图片分辨率倍数</label>
                       <input type="number" id="exportScale" value="2" min="1" max="5" step="0.5">
                   </div>
               </div>
@@ -275,8 +297,10 @@
           </div>
           
           <div class="form-group">
-              <label>上传头图 (Header Image)</label>
+              <label>上传头图</label>
               <input type="file" id="headerImage" accept="image/*">
+              <div style="font-size:12px;color:#666;margin-top:8px;">最近头图（最多 4 条，点击可恢复）</div>
+              <div id="headerHistory" class="header-history" aria-live="polite"></div>
           </div>
           
           <button onclick="generateImage()">🎨 生成策略图片</button>
@@ -284,7 +308,7 @@
       
       <!-- 右侧预览面板 -->
       <div class="panel preview-section">
-          <h2>🖼️ 预览效果</h2>
+          <h2>🖼️ 图片预览</h2>
           <canvas id="canvas" width="800" height="1000"></canvas>
           <button class="download-btn" onclick="downloadImage()">⬇️ 下载图片</button>
       </div>
@@ -417,6 +441,17 @@
               colorPicker.value = color;
               hexInput.value = color;
               generateImage(); // 应用新颜色并重新生成图片
+              // 只有在用户点击【确定】时，才把当前颜色保存到对应的历史记录
+              try {
+                  if (type === 'text') {
+                      saveTextColor();
+                  } else {
+                      saveBgColor();
+                  }
+              } catch (e) {
+                  // 忽略保存错误，仍然保持预览更新
+                  console.warn('保存颜色失败', e);
+              }
           } else {
               alert('请输入有效的颜色值，例如: #FF0000');
               // 恢复为颜色选择器的当前值
@@ -458,22 +493,274 @@
               document.getElementById('textBgColor').value = color;
               document.getElementById('textBgColorHex').value = color;
           }
+          // 仅刷新预览，不保存历史（用户需点击“确定”来保存）
+          generateImage();
       }
 
       // 上传头图
-      document.getElementById('headerImage').addEventListener('change', (e) => {
-          const file = e.target.files[0];
-          if (file) {
-              const reader = new FileReader();
-              reader.onload = (event) => {
+      // 保存配置到本地存储
+      function saveConfig() {
+          const config = {
+              strategy_id: document.getElementById('strategy_id').value,
+              symbol_name: document.getElementById('symbol_name').value,
+              direction: document.getElementById('direction').value,
+              entry_price: document.getElementById('entry_price').value,
+              language: document.getElementById('language').value,
+              fontSize: document.getElementById('fontSize').value,
+              exportScale: document.getElementById('exportScale').value
+          };
+          localStorage.setItem('lastConfig', JSON.stringify(config));
+      }
+
+      // 加载上次的配置
+      function loadLastConfig() {
+          const lastConfig = localStorage.getItem('lastConfig');
+          if (lastConfig) {
+              const config = JSON.parse(lastConfig);
+              Object.entries(config).forEach(([key, value]) => {
+                  const element = document.getElementById(key);
+                  if (element) {
+                      element.value = value;
+                  }
+              });
+          }
+      }
+
+      // 颜色记录管理
+      const MAX_COLOR_HISTORY = 4;
+      
+      function loadSavedColors() {
+          // 加载文字颜色和背景颜色的独立历史记录
+          const textHistory = JSON.parse(localStorage.getItem('textColorHistory') || '[]');
+          const bgHistory = JSON.parse(localStorage.getItem('bgColorHistory') || '[]');
+
+          if (textHistory.length > 0) {
+              document.getElementById('textColor').value = textHistory[0];
+              document.getElementById('textColorHex').value = textHistory[0];
+          }
+          if (bgHistory.length > 0) {
+              document.getElementById('textBgColor').value = bgHistory[0];
+              document.getElementById('textBgColorHex').value = bgHistory[0];
+          }
+
+          // 创建两组历史按钮
+          createColorHistoryButtons('text', textHistory);
+          createColorHistoryButtons('bg', bgHistory);
+      }
+
+      // 创建颜色历史按钮（type = 'text' 或 'bg'）
+      function createColorHistoryButtons(type, history) {
+          const selector = type === 'text' ? '.form-group:has(#textColor) .quick-colors' : '.form-group:has(#textBgColor) .quick-colors';
+          const container = document.querySelector(selector);
+          if (!container) return;
+
+          container.innerHTML = '';
+
+          history.slice(0, MAX_COLOR_HISTORY).forEach((color, index) => {
+              const btn = document.createElement('div');
+              btn.className = 'quick-color';
+              btn.style.background = color;
+              btn.title = `历史颜色 ${index + 1}`;
+              btn.dataset.color = color;
+              btn.onclick = () => {
+                  if (type === 'text') {
+                      document.getElementById('textColor').value = color;
+                      document.getElementById('textColorHex').value = color;
+                  } else {
+                      document.getElementById('textBgColor').value = color;
+                      document.getElementById('textBgColorHex').value = color;
+                  }
+                  generateImage();
+              };
+              container.appendChild(btn);
+          });
+      }
+
+      // 保存文字颜色历史
+      function saveTextColor() {
+          const color = document.getElementById('textColor').value.toLowerCase();
+          let history = JSON.parse(localStorage.getItem('textColorHistory') || '[]');
+          history = history.filter(c => c.toLowerCase() !== color);
+          history.unshift(color);
+          history = history.slice(0, MAX_COLOR_HISTORY);
+          localStorage.setItem('textColorHistory', JSON.stringify(history));
+          createColorHistoryButtons('text', history);
+      }
+
+      // 保存背景颜色历史
+      function saveBgColor() {
+          const color = document.getElementById('textBgColor').value.toLowerCase();
+          let history = JSON.parse(localStorage.getItem('bgColorHistory') || '[]');
+          history = history.filter(c => c.toLowerCase() !== color);
+          history.unshift(color);
+          history = history.slice(0, MAX_COLOR_HISTORY);
+          localStorage.setItem('bgColorHistory', JSON.stringify(history));
+          createColorHistoryButtons('bg', history);
+      }
+
+      // 保存最后使用的头图
+      function saveLastHeaderImage(file) {
+          return new Promise((resolve, reject) => {
+              try {
+                  const reader = new FileReader();
+                  reader.onload = (event) => {
+                      // 创建一个临时图片来获取图片尺寸
+                      const img = new Image();
+                      img.onload = () => {
+                          // 创建canvas来压缩图片
+                          const canvas = document.createElement('canvas');
+                          const ctx = canvas.getContext('2d');
+                          
+                          // 计算压缩后的尺寸，保持宽高比
+                          let width = img.width;
+                          let height = img.height;
+                          const MAX_WIDTH = 1200; // 最大宽度
+                          
+                          if (width > MAX_WIDTH) {
+                              height = Math.round(height * (MAX_WIDTH / width));
+                              width = MAX_WIDTH;
+                          }
+                          
+                          canvas.width = width;
+                          canvas.height = height;
+                          
+                          // 绘制并压缩图片
+                          ctx.drawImage(img, 0, 0, width, height);
+                          
+                          // 转换为较小的JPEG格式
+                          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                          
+                          // 保存压缩后的图片数据
+                          // 持久化为最近一次，并加入历史
+                          localStorage.setItem('lastHeaderImage', compressedDataUrl);
+                          localStorage.setItem('headerImageTimestamp', Date.now());
+                          // 将图片加入历史（recent 4）
+                          try {
+                              saveHeaderHistory(compressedDataUrl);
+                          } catch (e) {
+                              console.warn('保存头图历史失败', e);
+                          }
+                          resolve(compressedDataUrl);
+                      };
+                      img.onerror = reject;
+                      img.src = event.target.result;
+                  };
+                  reader.onerror = reject;
+                  reader.readAsDataURL(file);
+              } catch (error) {
+                  reject(error);
+              }
+          });
+      }
+
+      // 保存头图到历史（最多保留 4 条），dataUrl 必须是压缩后的 DataURL
+      function saveHeaderHistory(dataUrl) {
+          if (!dataUrl) return;
+          let history = JSON.parse(localStorage.getItem('headerImageHistory') || '[]');
+          // 去重：若已存在则移除旧项
+          history = history.filter(item => item !== dataUrl);
+          history.unshift(dataUrl);
+          history = history.slice(0, 4);
+          localStorage.setItem('headerImageHistory', JSON.stringify(history));
+          renderHeaderHistory();
+      }
+
+      // 渲染头图历史缩略图
+      function renderHeaderHistory() {
+          const container = document.getElementById('headerHistory');
+          if (!container) return;
+          const history = JSON.parse(localStorage.getItem('headerImageHistory') || '[]');
+          container.innerHTML = '';
+          history.forEach((dataUrl, idx) => {
+              const img = document.createElement('img');
+              img.src = dataUrl;
+              img.className = 'header-thumb';
+              img.title = `最近头图 ${idx + 1}`;
+              img.addEventListener('click', () => {
+                  // 点击缩略图恢复为当前头图并持久化为 lastHeaderImage
+                  const restoreImg = new Image();
+                  restoreImg.onload = () => {
+                      headerImageData = restoreImg;
+                      // 将所选缩略图设为 lastHeaderImage
+                      localStorage.setItem('lastHeaderImage', dataUrl);
+                      localStorage.setItem('headerImageTimestamp', Date.now());
+                      // 更新缩略选中样式
+                      Array.from(container.children).forEach(c => c.classList.remove('selected'));
+                      img.classList.add('selected');
+                      generateImage();
+                  };
+                  restoreImg.src = dataUrl;
+              });
+              container.appendChild(img);
+          });
+      }
+
+      function loadLastHeaderImage() {
+          const lastImageData = localStorage.getItem('lastHeaderImage');
+          const timestamp = localStorage.getItem('headerImageTimestamp');
+          
+          if (lastImageData && timestamp) {
+              // 检查图片是否是在最近24小时内保存的
+              const isRecent = (Date.now() - parseInt(timestamp)) < (24 * 60 * 60 * 1000);
+              
+              if (isRecent) {
                   const img = new Image();
                   img.onload = () => {
                       headerImageData = img;
                       generateImage();
                   };
-                  img.src = event.target.result;
-              };
-              reader.readAsDataURL(file);
+                  img.src = lastImageData;
+              } else {
+                  // 如果图片太旧，清除存储
+                  localStorage.removeItem('lastHeaderImage');
+                  localStorage.removeItem('headerImageTimestamp');
+              }
+          }
+      }
+
+      // 加载头图历史并渲染（供初始化使用）
+      function loadHeaderHistory() {
+          renderHeaderHistory();
+          // 如果 lastHeaderImage 不存在但历史存在，则使用历史第一项作为 last
+          const last = localStorage.getItem('lastHeaderImage');
+          const history = JSON.parse(localStorage.getItem('headerImageHistory') || '[]');
+          if (!last && history.length > 0) {
+              localStorage.setItem('lastHeaderImage', history[0]);
+              localStorage.setItem('headerImageTimestamp', Date.now());
+          }
+      }
+
+      // 颜色变化时仅更新预览（不要在滑动/输入时记录历史）
+      document.getElementById('textColor').addEventListener('input', () => {
+          generateImage();
+      });
+      document.getElementById('textBgColor').addEventListener('input', () => {
+          generateImage();
+      });
+
+      // 配置变化时保存
+      ['strategy_id', 'symbol_name', 'direction', 'entry_price', 'language', 'fontSize', 'exportScale'].forEach(id => {
+          document.getElementById(id).addEventListener('change', saveConfig);
+      });
+
+      document.getElementById('headerImage').addEventListener('change', async (e) => {
+          const file = e.target.files[0];
+          if (file) {
+              try {
+                  // 保存并获取压缩后的图片数据
+                  const compressedDataUrl = await saveLastHeaderImage(file);
+                  
+                  // 加载压缩后的图片到预览
+                  const img = new Image();
+                  img.onload = () => {
+                      headerImageData = img;
+                      generateImage();
+                  };
+                  img.src = compressedDataUrl;
+              } catch (error) {
+                  console.error('Error processing image:', error);
+                  alert('图片处理失败，请尝试使用较小的图片');
+              }
           }
       });
 
@@ -647,6 +934,10 @@
       // 下载图片 — 以更高分辨率重新渲染原始长图（保持长图比例不变）
       function downloadImage() {
           const preview = document.getElementById('canvas');
+
+          // 先重新生成一次预览，保证策略信息、头图和颜色等都是最新的
+          generateImage();
+
           const baseW = preview.width;
           const baseH = preview.height;
 
@@ -671,6 +962,10 @@
 
       // 初始化生成
       window.onload = () => {
+          loadLastConfig();     // 加载上次的配置
+          loadSavedColors();    // 加载保存的颜色
+          loadHeaderHistory();  // 加载头图历史并渲染
+          loadLastHeaderImage(); // 加载上次使用的头图
           updateDirectionLabels();
           generateImage();
       };
