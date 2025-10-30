@@ -600,17 +600,28 @@
           contentLines.forEach((line, index) => {
               // 判断是否是 Direction 行
               if (line.includes(localizedDirection)) {
-                  // 保存当前颜色
-                  const originalColor = ctx.fillStyle;
-                  // 根据方向设置颜色
+                  // 保存当前状态
+                  ctx.save();
+                  
+                  // 设置描边样式
+                  ctx.strokeStyle = '#FFFFFF';  // 白色描边
+                  ctx.lineWidth = Math.max(1, Math.round(3 * scaleFactor));  // 描边宽度，随分辨率缩放
+                  ctx.lineJoin = 'round';      // 圆角连接
+                  ctx.miterLimit = 2;          // 限制尖角
+                  
+                  // 根据方向设置填充颜色
                   if (direction === 'long') {
                       ctx.fillStyle = '#00DA90'; // 多头绿色
                   } else if (direction === 'short') {
                       ctx.fillStyle = '#F04343'; // 空头红色
                   }
+                  
+                  // 先绘制描边，再绘制文字（这样文字会在描边上层）
+                  ctx.strokeText(line, textX, textY);
                   ctx.fillText(line, textX, textY);
-                  // 恢复原来的颜色
-                  ctx.fillStyle = originalColor;
+                  
+                  // 恢复之前的状态
+                  ctx.restore();
               } else {
                   ctx.fillText(line, textX, textY);
               }
