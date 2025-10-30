@@ -696,25 +696,15 @@
       }
 
       function loadLastHeaderImage() {
+          // 永久加载上次保存的头图（不再有有效期限制）
           const lastImageData = localStorage.getItem('lastHeaderImage');
-          const timestamp = localStorage.getItem('headerImageTimestamp');
-          
-          if (lastImageData && timestamp) {
-              // 检查图片是否是在最近24小时内保存的
-              const isRecent = (Date.now() - parseInt(timestamp)) < (24 * 60 * 60 * 1000);
-              
-              if (isRecent) {
-                  const img = new Image();
-                  img.onload = () => {
-                      headerImageData = img;
-                      generateImage();
-                  };
-                  img.src = lastImageData;
-              } else {
-                  // 如果图片太旧，清除存储
-                  localStorage.removeItem('lastHeaderImage');
-                  localStorage.removeItem('headerImageTimestamp');
-              }
+          if (lastImageData) {
+              const img = new Image();
+              img.onload = () => {
+                  headerImageData = img;
+                  generateImage();
+              };
+              img.src = lastImageData;
           }
       }
 
