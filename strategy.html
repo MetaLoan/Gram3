@@ -186,7 +186,12 @@
           
           <div class="form-group">
               <label>交易标的 (Symbol Name)</label>
-              <input type="text" id="symbol_name" value="BTC" placeholder="例如: BTC 或 ETH">
+              <div style="display: flex; gap: 8px;">
+                  <select id="symbol_name" style="flex: 1;">
+                      <option value="BTC">BTC (比特币)</option>
+                      <option value="ETH">ETH (以太坊)</option>
+                  </select>
+              </div>
           </div>
           
           <div class="form-group">
