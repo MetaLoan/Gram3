@@ -670,7 +670,7 @@
       const translations = {
           'zh-CN': {
               input_title: '数据输入区',
-              input_placeholder: '在此粘贴您的数据...\n\n示例格式：\n[date] 2025-10-28\n[platform] WEEX\n[fear_greed_index] 51\n\n[hot_coins]\n  [BTC_price] $114,063\n  [ETH_price] $4,118\n\n[top_gainers]\n  [VULT_symbol] VULT\n  [VULT_name] Vultisig\n  [VULT_change] +150%\n  [AMIKO_symbol] AMIKO\n  [AMIKO_name] Amiko\n  [AMIKO_change] +120%\n\n[market_news]\n  [news_1] 新闻内容1\n  [news_2] 新闻内容2\n  ...',
+              input_placeholder: '在此粘贴您的数据...\n\n示例格式：\n[date] 2025-10-28\n[platform] WEEX\n[fear_greed_index] 51\n\n[hot_coins]\n  [BTC_price] $114,063\n  [ETH_price] $4,118\n\n[top_gainers]\n  [token1_symbol] VULT\n  [token1_name] Vultisig\n  [token1_change] +150%\n  [token2_symbol] AMIKO\n  [token2_name] Amiko\n  [token2_change] +120%\n\n[market_news]\n  [news_1] 新闻内容1\n  [news_2] 新闻内容2\n  ...',
               btn_update: '更新内容',
               btn_export: '导出图片',
               daily_news: '每日资讯',
@@ -895,27 +895,27 @@
           await updateCoinIcon('ethIcon', 'ETH');
           
           // 更新第一个涨幅币种
-          if (data.VULT_symbol) {
-              document.getElementById('vultSymbol').textContent = data.VULT_symbol;
-              await updateCoinIcon('gainer1Icon', data.VULT_symbol);
+          if (data.token1_symbol) {
+              document.getElementById('vultSymbol').textContent = data.token1_symbol;
+              await updateCoinIcon('gainer1Icon', data.token1_symbol);
           }
-          if (data.VULT_name) {
-              document.getElementById('vultName').textContent = `(${data.VULT_name})`;
+          if (data.token1_name) {
+              document.getElementById('vultName').textContent = `(${data.token1_name})`;
           }
-          if (data.VULT_change) {
-              document.getElementById('vultChange').textContent = data.VULT_change;
+          if (data.token1_change) {
+              document.getElementById('vultChange').textContent = data.token1_change;
           }
           
           // 更新第二个涨幅币种
-          if (data.AMIKO_symbol) {
-              document.getElementById('amikoSymbol').textContent = data.AMIKO_symbol;
-              await updateCoinIcon('gainer2Icon', data.AMIKO_symbol);
+          if (data.token2_symbol) {
+              document.getElementById('amikoSymbol').textContent = data.token2_symbol;
+              await updateCoinIcon('gainer2Icon', data.token2_symbol);
           }
-          if (data.AMIKO_name) {
-              document.getElementById('amikoName').textContent = `(${data.AMIKO_name})`;
+          if (data.token2_name) {
+              document.getElementById('amikoName').textContent = `(${data.token2_name})`;
           }
-          if (data.AMIKO_change) {
-              document.getElementById('amikoChange').textContent = data.AMIKO_change;
+          if (data.token2_change) {
+              document.getElementById('amikoChange').textContent = data.token2_change;
           }
           
           // 更新新闻
