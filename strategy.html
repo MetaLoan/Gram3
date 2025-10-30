@@ -79,6 +79,15 @@
           align-items: center;
       }
       
+      .color-btn {
+          padding: 8px 12px;
+          margin: 0;
+          height: 38px;
+          width: auto;
+          font-size: 13px;
+          background: #667eea;
+      }
+      
       input[type="color"] {
           width: 50px;
           height: 38px;
@@ -222,6 +231,7 @@
                   <div class="color-input-group">
                       <input type="color" id="textColor" value="#ffffff">
                       <input type="text" id="textColorHex" value="#ffffff" placeholder="#ffffff">
+                      <button class="color-btn" onclick="applyColor('text')">确定</button>
                   </div>
                   <div class="quick-colors">
                       <div class="quick-color" style="background: #ffffff" onclick="setColor('text', '#ffffff')"></div>
@@ -237,6 +247,7 @@
                   <div class="color-input-group">
                       <input type="color" id="textBgColor" value="#1a1a2e">
                       <input type="text" id="textBgColorHex" value="#1a1a2e" placeholder="#1a1a2e">
+                      <button class="color-btn" onclick="applyColor('textBg')">确定</button>
                   </div>
                   <div class="quick-colors">
                       <div class="quick-color" style="background: #1a1a2e" onclick="setColor('textBg', '#1a1a2e')"></div>
@@ -371,22 +382,42 @@
           };
       }
 
-      // 颜色选择器同步
+      // 颜色选择器同步与应用
       document.getElementById('textColor').addEventListener('input', (e) => {
           document.getElementById('textColorHex').value = e.target.value;
-      });
-      
-      document.getElementById('textColorHex').addEventListener('input', (e) => {
-          document.getElementById('textColor').value = e.target.value;
+          generateImage(); // 颜色选择器变化时实时预览
       });
       
       document.getElementById('textBgColor').addEventListener('input', (e) => {
           document.getElementById('textBgColorHex').value = e.target.value;
+          generateImage(); // 颜色选择器变化时实时预览
       });
       
-      document.getElementById('textBgColorHex').addEventListener('input', (e) => {
-          document.getElementById('textBgColor').value = e.target.value;
-      });
+      // 确认按钮应用颜色
+      function applyColor(type) {
+          const hexInput = document.getElementById(type === 'text' ? 'textColorHex' : 'textBgColorHex');
+          const colorPicker = document.getElementById(type === 'text' ? 'textColor' : 'textBgColor');
+          
+          // 验证颜色格式
+          const colorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+          let color = hexInput.value.trim();
+          
+          // 如果没有#号，添加#号
+          if (!color.startsWith('#')) {
+              color = '#' + color;
+          }
+          
+          // 验证颜色值
+          if (colorRegex.test(color)) {
+              colorPicker.value = color;
+              hexInput.value = color;
+              generateImage(); // 应用新颜色并重新生成图片
+          } else {
+              alert('请输入有效的颜色值，例如: #FF0000');
+              // 恢复为颜色选择器的当前值
+              hexInput.value = colorPicker.value;
+          }
+      }
 
       // 当语言改变时，更新 direction 选项文本为对应语言
       function updateDirectionLabels() {
