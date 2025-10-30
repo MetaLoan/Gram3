@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>策略图片生成器</title>
+  <style>
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+      }
+      
+      body {
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          padding: 20px;
+          min-height: 100vh;
+      }
+      
+      .container {
+          max-width: 1400px;
+          margin: 0 auto;
+          display: grid;
+          grid-template-columns: 450px 1fr;
+          gap: 20px;
+      }
+      
+      .panel {
+          background: white;
+          border-radius: 12px;
+          padding: 25px;
+          box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      }
+      
+      h2 {
+          color: #333;
+          margin-bottom: 20px;
+          font-size: 20px;
+          border-bottom: 2px solid #667eea;
+          padding-bottom: 10px;
+      }
+      
+      .form-group {
+          margin-bottom: 15px;
+      }
+      
+      label {
+          display: block;
+          margin-bottom: 5px;
+          color: #555;
+          font-weight: 600;
+          font-size: 13px;
+      }
+      
+      input, select {
+          width: 100%;
+          padding: 10px;
+          border: 2px solid #e0e0e0;
+          border-radius: 6px;
+          font-size: 14px;
+          transition: border-color 0.3s;
+      }
+      
+      input:focus, select:focus {
+          outline: none;
+          border-color: #667eea;
+      }
+      
+      .row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+      }
+      
+      .color-input-group {
+          display: flex;
+          gap: 8px;
+          align-items: center;
+      }
+      
+      input[type="color"] {
+          width: 50px;
+          height: 38px;
+          border: none;
+          cursor: pointer;
+      }
+      
+      input[type="file"] {
+          padding: 8px;
+      }
+      
+      button {
+          width: 100%;
+          padding: 12px;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          border: none;
+          border-radius: 6px;
+          font-size: 15px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: transform 0.2s;
+          margin-top: 10px;
+      }
+      
+      button:hover {
+          transform: translateY(-2px);
+      }
+      
+      button:active {
+          transform: translateY(0);
+      }
+      
+      .preview-section {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+      }
+      
+      #canvas {
+          border: 2px solid #e0e0e0;
+          border-radius: 8px;
+          max-width: 100%;
+          box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      }
+      
+      .download-btn {
+          margin-top: 15px;
+          background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      }
+      
+      .style-section {
+          background: #f8f9fa;
+          padding: 15px;
+          border-radius: 8px;
+          margin-bottom: 15px;
+      }
+      
+      .style-section h3 {
+          font-size: 14px;
+          color: #667eea;
+          margin-bottom: 12px;
+      }
+      
+      .quick-colors {
+          display: flex;
+          gap: 8px;
+          margin-top: 8px;
+      }
+      
+      .quick-color {
+          width: 30px;
+          height: 30px;
+          border-radius: 4px;
+          cursor: pointer;
+          border: 2px solid transparent;
+          transition: all 0.2s;
+      }
+      
+      .quick-color:hover {
+          border-color: #667eea;
+          transform: scale(1.1);
+      }
+  </style>
+</head>
+<body>
+  <div class="container">
+      <!-- 左侧输入面板 -->
+      <div class="panel">
+          <h2>📊 策略参数输入</h2>
+          
+          <div class="form-group">
+              <label>策略编号 (Strategy ID)</label>
+              <input type="text" id="strategy_id" value="209898" placeholder="例如: 209898">
+          </div>
+          
+          <div class="form-group">
+              <label>交易标的 (Symbol Name)</label>
+              <input type="text" id="symbol_name" value="BTC" placeholder="例如: BTC 或 ETH">
+          </div>
+          
+          <div class="form-group">
+              <label>操作方向 (Direction)</label>
+              <select id="direction">
+                  <option value="long">Long</option>
+                  <option value="short">Short</option>
+              </select>
+          </div>
+          
+          <div class="form-group">
+              <label>基础进场价 (Entry Price)</label>
+              <input type="number" id="entry_price" value="110947" placeholder="例如: 110947">
+          </div>
+          
+          <div class="form-group">
+              <label>语言选择</label>
+              <select id="language">
+                  <option value="en">English (英语)</option>
+                  <option value="ru">Русский (俄语)</option>
+                  <option value="vi">Tiếng Việt (越南语)</option>
+                  <option value="ar">العربية (阿拉伯语)</option>
+              </select>
+          </div>
+          
+          <div class="style-section">
+              <h3>🎨 文字样式</h3>
+              
+              <div class="row">
+                  <div class="form-group">
+                      <label>字体大小</label>
+                      <input type="number" id="fontSize" value="25" min="12" max="36">
+                  </div>
+                  <div class="form-group">
+                      <label>导出分辨率倍数</label>
+                      <input type="number" id="exportScale" value="2" min="1" max="5" step="0.5">
+                  </div>
+              </div>
+              
+              <div class="form-group">
+                  <label>文字颜色</label>
+                  <div class="color-input-group">
+                      <input type="color" id="textColor" value="#ffffff">
+                      <input type="text" id="textColorHex" value="#ffffff" placeholder="#ffffff">
+                  </div>
+                  <div class="quick-colors">
+                      <div class="quick-color" style="background: #ffffff" onclick="setColor('text', '#ffffff')"></div>
+                      <div class="quick-color" style="background: #000000" onclick="setColor('text', '#000000')"></div>
+                      <div class="quick-color" style="background: #667eea" onclick="setColor('text', '#667eea')"></div>
+                      <div class="quick-color" style="background: #38ef7d" onclick="setColor('text', '#38ef7d')"></div>
+                      <div class="quick-color" style="background: #ffd700" onclick="setColor('text', '#ffd700')"></div>
+                  </div>
+              </div>
+              
+              <div class="form-group">
+                  <label>文字背景颜色</label>
+                  <div class="color-input-group">
+                      <input type="color" id="textBgColor" value="#1a1a2e">
+                      <input type="text" id="textBgColorHex" value="#1a1a2e" placeholder="#1a1a2e">
+                  </div>
+                  <div class="quick-colors">
+                      <div class="quick-color" style="background: #1a1a2e" onclick="setColor('textBg', '#1a1a2e')"></div>
+                      <div class="quick-color" style="background: #2d3436" onclick="setColor('textBg', '#2d3436')"></div>
+                      <div class="quick-color" style="background: #0f3460" onclick="setColor('textBg', '#0f3460')"></div>
+                      <div class="quick-color" style="background: rgba(0,0,0,0.7)" onclick="setColor('textBg', 'rgba(0,0,0,0.7)')"></div>
+                  </div>
+              </div>
+              
+              <div class="row">
+                  <div class="form-group">
+                      <label>背景圆角</label>
+                      <input type="number" id="bgRadius" value="15" min="0" max="50">
+                  </div>
+                  <div class="form-group">
+                      <label>背景透明度</label>
+                      <input type="number" id="bgOpacity" value="1" min="0" max="1" step="0.1">
+                  </div>
+              </div>
+          </div>
+          
+          <div class="form-group">
+              <label>上传头图 (Header Image)</label>
+              <input type="file" id="headerImage" accept="image/*">
+          </div>
+          
+          <button onclick="generateImage()">🎨 生成策略图片</button>
+      </div>
+      
+      <!-- 右侧预览面板 -->
+      <div class="panel preview-section">
+          <h2>🖼️ 预览效果</h2>
+          <canvas id="canvas" width="800" height="1000"></canvas>
+          <button class="download-btn" onclick="downloadImage()">⬇️ 下载图片</button>
+      </div>
+  </div>
+
+  <script>
+      // 语言模板
+      const templates = {
+          en: {
+              title: "✅ Strategy ID {strategy_id}",
+              lines: [
+                  "{symbol_name} (Total Position {total_position_pct}%)",
+                  "Entry Range: {price_low} – {price_high}",
+                  "Direction: {direction}",
+                  "Max Position Size: {total_position_pct}%",
+                  "Leverage: {leverage}x",
+                  "Partial Take-Profit Prices: {tp1} / {tp2} / {tp3}",
+                  "Stop Loss: {sl}"
+              ],
+              align: "left",
+              font: "Arial, sans-serif"
+              ,directionLabels: { long: 'Long', short: 'Short' }
+          },
+          ru: {
+              title: "✅ Стратегия №{strategy_id}",
+              lines: [
+                  "{symbol_name} (Общий объём позиции {total_position_pct}%)",
+                  "Диапазон входа: {price_low} – {price_high}",
+                  "Направление: {direction}",
+                  "Максимальный размер позиции: {total_position_pct}%",
+                  "Плечо: {leverage}x",
+                  "Цены частичной фиксации прибыли: {tp1} / {tp2} / {tp3}",
+                  "Стоп-лосс: {sl}"
+              ],
+              align: "left",
+              font: "Arial, sans-serif"
+              ,directionLabels: { long: 'Длинная', short: 'Короткая' }
+          },
+          vi: {
+              title: "✅ Chiến lược số {strategy_id}",
+              lines: [
+                  "{symbol_name} (Tổng vị thế {total_position_pct}%)",
+                  "Vùng vào lệnh: {price_low} – {price_high}",
+                  "Hướng giao dịch: {direction}",
+                  "Giới hạn vị thế: {total_position_pct}%",
+                  "Đòn bẩy: {leverage}x",
+                  "Giá chốt lời từng phần: {tp1} / {tp2} / {tp3}",
+                  "Cắt lỗ: {sl}"
+              ],
+              align: "left",
+              font: "Arial, sans-serif"
+              ,directionLabels: { long: 'Mua (Long)', short: 'Bán (Short)' }
+          },
+          ar: {
+              title: "✅ رقم الإستراتيجية {strategy_id}",
+              lines: [
+                  "{symbol_name} (إجمالي حجم الصفقة {total_position_pct}%)",
+                  "نطاق الدخول: {price_low} – {price_high}",
+                  "الاتجاه: {direction}",
+                  "الحد الأقصى لحجم الصفقة: {total_position_pct}%",
+                  "الرافعة المالية: {leverage}x",
+                  "أسعار جني الأرباح الجزئية: {tp1} / {tp2} / {tp3}",
+                  "إيقاف الخسارة: {sl}"
+              ],
+              align: "right",
+              font: "Arial, sans-serif"
+              ,directionLabels: { long: 'شراء', short: 'بيع' }
+          }
+      };
+
+      let headerImageData = null;
+
+      // 计算策略参数
+      function calculateStrategy(symbolName, entryPrice, direction) {
+          const symbol = symbolName.toUpperCase();
+          const offset = symbol.includes('BTC') ? 100 : 10;
+          
+          // 判断是多单还是空单
+          const isLong = direction === 'long';
+          
+          return {
+              price_low: Math.round(entryPrice - offset),    // BTC: entry_price-100, ETH: entry_price-10
+              price_high: Math.round(entryPrice + offset),   // BTC: entry_price+100, ETH: entry_price+10
+              leverage: 100,                                 // 固定值
+              total_position_pct: 5,                         // 固定值
+              // 多单：向上止盈，向下止损
+              // 空单：向下止盈，向上止损
+              tp1: isLong ? 
+                  Math.round(entryPrice * (1 + 0.012)) :    // 多单：entry_price × (1+0.012)
+                  Math.round(entryPrice * (1 - 0.012)),     // 空单：entry_price × (1-0.012)
+              tp2: isLong ? 
+                  Math.round(entryPrice * (1 + 0.018)) :    // 多单：entry_price × (1+0.018)
+                  Math.round(entryPrice * (1 - 0.018)),     // 空单：entry_price × (1-0.018)
+              tp3: isLong ? 
+                  Math.round(entryPrice * (1 + 0.03)) :     // 多单：entry_price × (1+0.03)
+                  Math.round(entryPrice * (1 - 0.03)),      // 空单：entry_price × (1-0.03)
+              sl: isLong ? 
+                  Math.round(entryPrice * (1 - 0.01)) :     // 多单：entry_price × (1-0.01)
+                  Math.round(entryPrice * (1 + 0.01))       // 空单：entry_price × (1+0.01)
+          };
+      }
+
+      // 颜色选择器同步
+      document.getElementById('textColor').addEventListener('input', (e) => {
+          document.getElementById('textColorHex').value = e.target.value;
+      });
+      
+      document.getElementById('textColorHex').addEventListener('input', (e) => {
+          document.getElementById('textColor').value = e.target.value;
+      });
+      
+      document.getElementById('textBgColor').addEventListener('input', (e) => {
+          document.getElementById('textBgColorHex').value = e.target.value;
+      });
+      
+      document.getElementById('textBgColorHex').addEventListener('input', (e) => {
+          document.getElementById('textBgColor').value = e.target.value;
+      });
+
+      // 当语言改变时，更新 direction 选项文本为对应语言
+      function updateDirectionLabels() {
+          const lang = document.getElementById('language').value;
+          const tpl = templates[lang] || templates['en'];
+          const labels = tpl.directionLabels || { long: 'Long', short: 'Short' };
+          const sel = document.getElementById('direction');
+          // 保留当前选中值
+          const current = sel.value;
+          sel.innerHTML = '';
+          const optLong = document.createElement('option');
+          optLong.value = 'long';
+          optLong.textContent = labels.long;
+          const optShort = document.createElement('option');
+          optShort.value = 'short';
+          optShort.textContent = labels.short;
+          sel.appendChild(optLong);
+          sel.appendChild(optShort);
+          // 恢复之前的选择（若仍可用）
+          if (current === 'long' || current === 'short') sel.value = current;
+      }
+
+      document.getElementById('language').addEventListener('change', () => {
+          updateDirectionLabels();
+      });
+
+      // 快速颜色选择
+      function setColor(type, color) {
+          if (type === 'text') {
+              document.getElementById('textColor').value = color;
+              document.getElementById('textColorHex').value = color;
+          } else {
+              document.getElementById('textBgColor').value = color;
+              document.getElementById('textBgColorHex').value = color;
+          }
+      }
+
+      // 上传头图
+      document.getElementById('headerImage').addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (file) {
+              const reader = new FileReader();
+              reader.onload = (event) => {
+                  const img = new Image();
+                  img.onload = () => {
+                      headerImageData = img;
+                      generateImage();
+                  };
+                  img.src = event.target.result;
+              };
+              reader.readAsDataURL(file);
+          }
+      });
+
+      // 生成图片（可选：传入 targetCanvas 与 scale 以生成更高清的导出画布）
+      function generateImage(targetCanvas = null, scale = 1) {
+          const canvas = targetCanvas || document.getElementById('canvas');
+
+          // 获取输入值
+          const strategyId = document.getElementById('strategy_id').value;
+          const symbolName = document.getElementById('symbol_name').value;
+          const direction = document.getElementById('direction').value;
+          const entryPrice = parseFloat(document.getElementById('entry_price').value);
+          const language = document.getElementById('language').value;
+          
+          // 样式参数
+          const fontSize = parseInt(document.getElementById('fontSize').value);
+          const textColor = document.getElementById('textColor').value;
+          const textBgColor = document.getElementById('textBgColor').value;
+          const bgRadius = parseInt(document.getElementById('bgRadius').value);
+          const bgOpacity = parseFloat(document.getElementById('bgOpacity').value);
+
+          // 计算策略参数
+          const calculated = calculateStrategy(symbolName, entryPrice, direction);
+          
+          // 准备数据
+          const data = {
+              strategy_id: strategyId,
+              symbol_name: symbolName,
+              direction: direction,
+              entry_price: entryPrice,
+              ...calculated
+          };
+          
+          // 获取模板
+          const template = templates[language] || templates['en'];
+
+          // 将 direction 内部值映射为模板语言的显示文本（long/short -> 本地化字符串）
+          const dirValue = document.getElementById('direction').value; // 'long' or 'short'
+          const localizedDirection = (template.directionLabels && template.directionLabels[dirValue]) ? template.directionLabels[dirValue] : (dirValue === 'long' ? 'Long' : 'Short');
+          
+          // 把本地化 direction 放入 data 中，这样模板替换 {direction} 时会使用正确语言
+          data.direction = localizedDirection;
+
+          // 先计算需要的高度（不改变现有 canvas 内容）
+          const scaleFactor = scale || 1;
+          const paddingScaled = Math.round(30 * scaleFactor);
+          const fontSizeScaled = Math.round(fontSize * scaleFactor);
+          const titleFontScaled = Math.round((fontSize + 4) * scaleFactor);
+          const lineHeight = fontSizeScaled * 1.8;
+          const titleText = template && template.title ? template.title.replace(/{(\w+)}/g, (m,k) => data[k] || m) : '';
+          const contentLines = template && template.lines ? template.lines.map(line => line.replace(/{(\w+)}/g, (m,k) => data[k] || m)) : [];
+
+          const bgHeight = Math.round(lineHeight * (contentLines.length + 2) + paddingScaled * 2);
+
+          // 头图高度预测（若有头图）
+          const canvasWidth = canvas.width;
+          let headerDrawHeight = 0;
+          let topSpacing = 0; // 若无头图，用作顶部空白
+          if (headerImageData) {
+              const imgAspect = headerImageData.width / headerImageData.height;
+              headerDrawHeight = Math.round(canvasWidth / imgAspect);
+              topSpacing = 0;
+          } else {
+              headerDrawHeight = 0;
+              topSpacing = Math.round(50 * scaleFactor); // 保持与之前一致的默认顶部空白，并随 scale 缩放
+          }
+
+          const bottomPadding = 40;
+          const totalHeight = topSpacing + headerDrawHeight + bgHeight + bottomPadding;
+
+          // 设置 canvas 高度（会重置画布状态），然后重新获取 ctx
+          canvas.height = Math.max(totalHeight, 200);
+          const ctx = canvas.getContext('2d', { alpha: false });
+          
+          // 针对高分辨率导出优化渲染设置
+          if (scale > 1) {
+              // 对于高分辨率导出，禁用平滑以实现点对点渲染
+              ctx.imageSmoothingEnabled = false;
+              // 设置文字渲染优化
+              ctx.textRendering = "geometricPrecision";
+              ctx.fontKerning = "normal";
+          } else {
+              // 预览时保持平滑
+              ctx.imageSmoothingEnabled = true;
+          }
+
+          // 清空画布 — 使用文字背景色作为画布底色以减少半透明层叠时的色差接缝
+          ctx.fillStyle = textBgColor || '#f0f0f0';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          // 绘制头图（若有），并紧贴后续内容（不额外增加间隙）
+          let currentY = topSpacing;
+          if (headerImageData) {
+              const headerWidth = canvas.width;
+              const drawHeight = headerDrawHeight;
+              ctx.drawImage(headerImageData, 0, 0, headerWidth, drawHeight);
+              currentY += drawHeight; // 直接紧贴
+          }
+
+          // 绘制文字背景
+          const bgY = Math.round(currentY);
+          // 绘制圆角矩形背景
+          ctx.globalAlpha = bgOpacity;
+          ctx.fillStyle = textBgColor;
+          const bgRadiusScaled = Math.round(bgRadius * scaleFactor);
+          roundRect(ctx, paddingScaled, bgY, canvas.width - paddingScaled * 2, bgHeight, bgRadiusScaled);
+          ctx.fill();
+          ctx.globalAlpha = 1;
+
+          // 设置文字样式（使用缩放后的字体尺寸）
+          ctx.fillStyle = textColor;
+          ctx.font = `bold ${titleFontScaled}px ${template.font}`;
+          ctx.textAlign = template.align;
+          
+          const textX = template.align === 'right' ? canvas.width - paddingScaled - Math.round(20 * scaleFactor) : paddingScaled + Math.round(20 * scaleFactor);
+          let textY = bgY + paddingScaled + fontSizeScaled + Math.round(10 * scaleFactor);
+
+          // 绘制标题
+          ctx.fillText(titleText.replace(/{(\w+)}/g, (m,k) => data[k] || m), textX, textY);
+
+          // 绘制内容
+          ctx.font = `${fontSizeScaled}px ${template.font}`;
+          textY += lineHeight * 1.5;
+          contentLines.forEach((line, index) => {
+              // 判断是否是 Direction 行
+              if (line.includes(localizedDirection)) {
+                  // 保存当前颜色
+                  const originalColor = ctx.fillStyle;
+                  // 根据方向设置颜色
+                  if (direction === 'long') {
+                      ctx.fillStyle = '#00DA90'; // 多头绿色
+                  } else if (direction === 'short') {
+                      ctx.fillStyle = '#F04343'; // 空头红色
+                  }
+                  ctx.fillText(line, textX, textY);
+                  // 恢复原来的颜色
+                  ctx.fillStyle = originalColor;
+              } else {
+                  ctx.fillText(line, textX, textY);
+              }
+              textY += lineHeight;
+          });
+      }
+
+      // 绘制圆角矩形
+      function roundRect(ctx, x, y, width, height, radius) {
+          ctx.beginPath();
+          ctx.moveTo(x + radius, y);
+          ctx.lineTo(x + width - radius, y);
+          ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+          ctx.lineTo(x + width, y + height - radius);
+          ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+          ctx.lineTo(x + radius, y + height);
+          ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+          ctx.lineTo(x, y + radius);
+          ctx.quadraticCurveTo(x, y, x + radius, y);
+          ctx.closePath();
+      }
+
+      // 下载图片 — 以更高分辨率重新渲染原始长图（保持长图比例不变）
+      function downloadImage() {
+          const preview = document.getElementById('canvas');
+          const baseW = preview.width;
+          const baseH = preview.height;
+
+          // 从输入框获取导出分辨率倍数
+          const exportScale = parseFloat(document.getElementById('exportScale').value) || 2;
+
+          // 创建一个用于高分辨率渲染的临时画布
+          const temp = document.createElement('canvas');
+          temp.width = Math.round(baseW * exportScale);
+          temp.height = Math.round(baseH * exportScale);
+
+          // 使用 generateImage 在临时画布上以 exportScale 重绘（向量方式渲染，文字更清晰）
+          generateImage(temp, exportScale);
+
+          // 导出 PNG
+          const link = document.createElement('a');
+          const strategyId = document.getElementById('strategy_id').value;
+          link.download = `strategy_${strategyId}_x${exportScale}.png`;
+          link.href = temp.toDataURL('image/png');
+          link.click();
+      }
+
+      // 初始化生成
+      window.onload = () => {
+          updateDirectionLabels();
+          generateImage();
+      };
+  </script>
+</body>
+</html>
