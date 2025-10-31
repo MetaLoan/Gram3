@@ -1,758 +1,1084 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>行情分析图片自动排版导出工具</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 20px;
-      min-height: 100vh;
-    }
-    
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>行情分析图片自动排版导出工具</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+    min-height: 100vh;
+  }
+  
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  
+  .panel {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+  }
+  
+  h1 {
+    color: #333;
+    margin-bottom: 25px;
+    font-size: 24px;
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 10px;
+  }
+  
+  h2 {
+    color: #555;
+    margin: 20px 0 15px 0;
+    font-size: 18px;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  
+  input[type="file"] {
+    display: none;
+  }
+  
+  .file-upload-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #667eea;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 14px;
+  }
+  
+  .file-upload-btn:hover {
+    background: #5568d3;
+    transform: translateY(-2px);
+  }
+  
+  .file-name {
+    display: inline-block;
+    margin-left: 10px;
+    color: #666;
+    font-size: 13px;
+  }
+  
+  textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: 'Courier New', monospace;
+    resize: vertical;
+    transition: border-color 0.3s;
+  }
+  
+  #rawContent {
+    min-height: 300px;
+  }
+  
+  textarea:focus {
+    outline: none;
+    border-color: #667eea;
+  }
+  
+  input[type="number"],
+  input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+  }
+  
+  input[type="number"]:focus,
+  input[type="text"]:focus {
+    outline: none;
+    border-color: #667eea;
+  }
+  
+  .color-input-group {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+  
+  .color-picker {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  input[type="color"] {
+    width: 50px;
+    height: 40px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .btn-primary {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 10px;
+  }
+  
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+  }
+  
+  .btn-primary:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  .btn-secondary {
+    width: 100%;
+    padding: 12px;
+    background: #10b981;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 10px;
+  }
+  
+  .btn-secondary:hover {
+    background: #059669;
+    transform: translateY(-2px);
+  }
+  
+  #preview {
+    background: #f5f5f5;
+    border-radius: 8px;
+    overflow: auto;
+    min-height: 400px;
+    max-height: 80vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 20px;
+  }
+  
+  .preview-canvas {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  }
+  
+  .preview-empty {
+    color: #999;
+    text-align: center;
+    padding: 40px;
+  }
+  
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+  }
+  
+  .tips {
+    background: #f0f7ff;
+    border-left: 4px solid #667eea;
+    padding: 12px;
+    margin-top: 15px;
+    font-size: 13px;
+    color: #555;
+    border-radius: 4px;
+  }
+  
+  /* 历史图片样式 */
+  .history-container {
+    margin-top: 15px;
+    padding: 15px;
+    background: #f9fafb;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+  }
+  
+  .history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .history-title {
+    font-size: 13px;
+    color: #666;
+    font-weight: 600;
+  }
+  
+  .btn-clear-history {
+    padding: 4px 12px;
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  
+  .btn-clear-history:hover {
+    background: #dc2626;
+  }
+  
+  .history-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  
+  .history-item {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.3s;
+  }
+  
+  .history-item:hover {
+    border-color: #667eea;
+    transform: scale(1.05);
+  }
+  
+  .history-item.selected {
+    border-color: #10b981;
+    box-shadow: 0 0 0 2px #10b981;
+  }
+  
+  .history-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .history-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 20px;
+    color: #999;
+    font-size: 13px;
+  }
+  
+  /* 折叠样式 */
+  .collapsible-section {
+    margin-top: 20px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .collapsible-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: #f9fafb;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.3s;
+  }
+  
+  .collapsible-header:hover {
+    background: #f3f4f6;
+  }
+  
+  .collapsible-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .collapsible-icon {
+    transition: transform 0.3s;
+    font-size: 12px;
+  }
+  
+  .collapsible-icon.expanded {
+    transform: rotate(180deg);
+  }
+  
+  .collapsible-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+  }
+  
+  .collapsible-content.expanded {
+    max-height: 2000px;
+    transition: max-height 0.5s ease-in;
+  }
+  
+  .collapsible-inner {
+    padding: 20px;
+  }
+  
+  @media (max-width: 1200px) {
     .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
+      grid-template-columns: 1fr;
     }
-    
-    .panel {
-      background: white;
-      border-radius: 12px;
-      padding: 25px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-    }
-    
-    h1 {
-      color: #333;
-      margin-bottom: 25px;
-      font-size: 24px;
-      border-bottom: 3px solid #667eea;
-      padding-bottom: 10px;
-    }
-    
-    h2 {
-      color: #555;
-      margin: 20px 0 15px 0;
-      font-size: 18px;
-    }
-    
-    .form-group {
-      margin-bottom: 20px;
-    }
-    
-    label {
-      display: block;
-      margin-bottom: 8px;
-      color: #555;
-      font-weight: 600;
-      font-size: 14px;
-    }
-    
-    input[type="file"] {
-      display: none;
-    }
-    
-    .file-upload-btn {
-      display: inline-block;
-      padding: 10px 20px;
-      background: #667eea;
-      color: white;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-size: 14px;
-    }
-    
-    .file-upload-btn:hover {
-      background: #5568d3;
-      transform: translateY(-2px);
-    }
-    
-    .file-name {
-      display: inline-block;
-      margin-left: 10px;
-      color: #666;
-      font-size: 13px;
-    }
-    
-    textarea {
-      width: 100%;
-      padding: 12px;
-      border: 2px solid #e0e0e0;
-      border-radius: 6px;
-      font-size: 14px;
-      font-family: 'Courier New', monospace;
-      resize: vertical;
-      transition: border-color 0.3s;
-    }
-    
-    #rawContent {
-      min-height: 300px;
-    }
-    
-    textarea:focus {
-      outline: none;
-      border-color: #667eea;
-    }
-    
-    input[type="number"],
-    input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      border: 2px solid #e0e0e0;
-      border-radius: 6px;
-      font-size: 14px;
-      transition: border-color 0.3s;
-    }
-    
-    input[type="number"]:focus,
-    input[type="text"]:focus {
-      outline: none;
-      border-color: #667eea;
-    }
-    
-    .color-input-group {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-    }
-    
-    .color-picker {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    
-    input[type="color"] {
-      width: 50px;
-      height: 40px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    
-    .btn-primary {
-      width: 100%;
-      padding: 15px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-      margin-top: 10px;
-    }
-    
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-    }
-    
-    .btn-primary:disabled {
-      background: #ccc;
-      cursor: not-allowed;
-      transform: none;
-    }
-    
-    .btn-secondary {
-      width: 100%;
-      padding: 12px;
-      background: #10b981;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-      margin-top: 10px;
-    }
-    
-    .btn-secondary:hover {
-      background: #059669;
-      transform: translateY(-2px);
-    }
-    
-    #preview {
-      background: #f5f5f5;
-      border-radius: 8px;
-      overflow: auto;
-      min-height: 400px;
-      max-height: 80vh;
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      padding: 20px;
-    }
-    
-    .preview-canvas {
-      max-width: 100%;
-      height: auto;
-      display: block;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-    }
-    
-    .preview-empty {
-      color: #999;
-      text-align: center;
-      padding: 40px;
-    }
-    
-    .checkbox-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      cursor: pointer;
-    }
-    
-    .tips {
-      background: #f0f7ff;
-      border-left: 4px solid #667eea;
-      padding: 12px;
-      margin-top: 15px;
-      font-size: 13px;
-      color: #555;
-      border-radius: 4px;
-    }
-    
-    .parsed-content {
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-      border-radius: 6px;
-      padding: 15px;
-      margin-top: 15px;
-      font-size: 13px;
-      max-height: 300px;
-      overflow-y: auto;
-    }
-    
-    .parsed-item {
-      margin-bottom: 10px;
-      padding-bottom: 10px;
-      border-bottom: 1px dashed #e5e7eb;
-    }
-    
-    .parsed-item:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-      padding-bottom: 0;
-    }
-    
-    .parsed-label {
-      font-weight: 600;
-      color: #667eea;
-      margin-bottom: 5px;
-    }
-    
-    .parsed-text {
-      color: #374151;
-      white-space: pre-wrap;
-      font-family: 'Courier New', monospace;
-      font-size: 12px;
-    }
-    
-    @media (max-width: 1200px) {
-      .container {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <!-- 左侧配置面板 -->
-    <div class="panel">
-      <h1>📊 配置面板</h1>
+<div class="container">
+  <!-- 左侧配置面板 -->
+  <div class="panel">
+    <h1>📊 配置面板</h1>
+    
+    <h2>1. 上传图片</h2>
+    <div class="form-group">
+      <label>头图 (Header Image)</label>
+      <label class="file-upload-btn" for="headerImage">选择文件</label>
+      <input type="file" id="headerImage" accept="image/*">
+      <span class="file-name" id="headerImageName">未选择文件</span>
       
-      <h2>1. 上传图片</h2>
-      <div class="form-group">
-        <label>头图 (Header Image)</label>
-        <label class="file-upload-btn" for="headerImage">选择文件</label>
-        <input type="file" id="headerImage" accept="image/*">
-        <span class="file-name" id="headerImageName">未选择文件</span>
-      </div>
-      
-      <div class="form-group">
-        <label>分析图 (Analysis Chart)</label>
-        <label class="file-upload-btn" for="chartImage">选择文件</label>
-        <input type="file" id="chartImage" accept="image/*">
-        <span class="file-name" id="chartImageName">未选择文件</span>
-      </div>
-      
-      <h2>2. 粘贴完整内容</h2>
-      <div class="form-group">
-        <label>直接粘贴完整文本（包含 [title]、[description]、[analysis]、[note] 标签）</label>
-        <textarea id="rawContent" placeholder="粘贴格式如下：&#10;[title]10-29大饼行情分析15图&#10;&#10;[description]大饼震荡上扬后冲高回落...&#10;&#10;[analysis]操作建议：...&#10;&#10;[note]投机有风险..."></textarea>
-        <button class="btn-secondary" onclick="parseContent()">🔍 解析内容</button>
-      </div>
-      
-      <div id="parsedResult" style="display: none;">
-        <h2>✅ 解析结果</h2>
-        <div class="parsed-content" id="parsedDisplay"></div>
-      </div>
-      
-      <h2>3. 样式设置</h2>
-      <div class="form-group">
-        <label>画布宽度 (px)</label>
-        <input type="number" id="canvasWidth" value="1200" min="400" max="2000">
-      </div>
-      
-      <div class="form-group color-input-group">
-        <div>
-          <label>标题字号</label>
-          <input type="number" id="titleFontSize" value="50" min="12" max="72">
+      <!-- 头图历史记录 -->
+      <div class="history-container" id="headerHistoryContainer" style="display: none;">
+        <div class="history-header">
+          <span class="history-title">📚 历史头图</span>
+          <button class="btn-clear-history" onclick="clearHistory('header')">清除历史</button>
         </div>
-        <div>
-          <label>标题颜色</label>
-          <div class="color-picker">
-            <input type="color" id="titleColor" value="#FFD700">
-            <input type="text" id="titleColorText" value="#FFD700" maxlength="7">
-          </div>
+        <div class="history-grid" id="headerHistory">
+          <div class="history-empty">暂无历史记录</div>
         </div>
       </div>
-      
-      <div class="form-group color-input-group">
-        <div>
-          <label>描述字号</label>
-          <input type="number" id="descriptionFontSize" value="35" min="12" max="48">
-        </div>
-        <div>
-          <label>描述颜色</label>
-          <div class="color-picker">
-            <input type="color" id="descriptionColor" value="#ffffff">
-            <input type="text" id="descriptionColorText" value="#ffffff" maxlength="7">
-          </div>
-        </div>
-      </div>
-      
-      <div class="form-group color-input-group">
-        <div>
-          <label>分析字号</label>
-          <input type="number" id="analysisFontSize" value="35" min="12" max="48">
-        </div>
-        <div>
-          <label>分析颜色</label>
-          <div class="color-picker">
-            <input type="color" id="analysisColor" value="#FFD700">
-            <input type="text" id="analysisColorText" value="#FFD700" maxlength="7">
-          </div>
-        </div>
-      </div>
-      
-      <div class="form-group color-input-group">
-        <div>
-          <label>注意事项字号</label>
-          <input type="number" id="noteFontSize" value="25" min="10" max="36">
-        </div>
-        <div>
-          <label>注意事项颜色</label>
-          <div class="color-picker">
-            <input type="color" id="noteColor" value="#FFFFFF">
-            <input type="text" id="noteColorText" value="#FFFFFF" maxlength="7">
-          </div>
-        </div>
-      </div>
-      
-      <div class="form-group">
-        <label>背景颜色</label>
-        <div class="color-picker">
-          <input type="color" id="bgColor" value="#000000">
-          <input type="text" id="bgColorText" value="#000000" maxlength="7">
-        </div>
-      </div>
-      
-      <div class="form-group">
-        <div class="checkbox-group">
-          <input type="checkbox" id="isArabic">
-          <label for="isArabic" style="margin: 0;">阿拉伯文模式 (右对齐)</label>
-        </div>
-      </div>
-      
-      <div class="tips">
-        💡 提示: 直接粘贴完整内容，点击"解析内容"自动拆分。阿拉伯文会自动右对齐，其他语言默认左对齐。
-      </div>
-      
-      <button class="btn-primary" onclick="generatePreview()">🎨 生成预览</button>
-      <button class="btn-primary" onclick="exportImage()">💾 导出图片</button>
     </div>
     
-    <!-- 右侧预览面板 -->
-    <div class="panel">
-      <h1>👁️ 预览</h1>
-      <div id="preview">
-        <div class="preview-empty">
-          <p>📋 请配置内容后点击"生成预览"</p>
+    <div class="form-group">
+      <label>分析图 (Analysis Chart)</label>
+      <label class="file-upload-btn" for="chartImage">选择文件</label>
+      <input type="file" id="chartImage" accept="image/*">
+      <span class="file-name" id="chartImageName">未选择文件</span>
+      
+      <!-- 分析图历史记录 -->
+      <div class="history-container" id="chartHistoryContainer" style="display: none;">
+        <div class="history-header">
+          <span class="history-title">📚 历史分析图</span>
+          <button class="btn-clear-history" onclick="clearHistory('chart')">清除历史</button>
         </div>
+        <div class="history-grid" id="chartHistory">
+          <div class="history-empty">暂无历史记录</div>
+        </div>
+      </div>
+    </div>
+    
+    <h2>2. 粘贴完整内容</h2>
+    <div class="form-group">
+      <label>直接粘贴完整文本（包含 [title]、[description]、[analysis]、[note] 标签）</label>
+      <textarea id="rawContent" placeholder="粘贴格式如下：&#10;[title]10-29大饼行情分析15图&#10;&#10;[description]大饼震荡上扬后冲高回落...&#10;&#10;[analysis]操作建议：...&#10;&#10;[note]投机有风险..."></textarea>
+    </div>
+    
+    <!-- 折叠的样式设置 -->
+    <div class="collapsible-section">
+      <div class="collapsible-header" onclick="toggleCollapsible()">
+        <span class="collapsible-title">
+          🎨 样式设置
+        </span>
+        <span class="collapsible-icon">▼</span>
+      </div>
+      <div class="collapsible-content" id="styleSettings">
+        <div class="collapsible-inner">
+          <div class="form-group">
+            <label>画布宽度 (px)</label>
+            <input type="number" id="canvasWidth" value="1200" min="400" max="2000">
+          </div>
+          
+          <div class="form-group color-input-group">
+            <div>
+              <label>标题字号</label>
+              <input type="number" id="titleFontSize" value="50" min="12" max="72">
+            </div>
+            <div>
+              <label>标题颜色</label>
+              <div class="color-picker">
+                <input type="color" id="titleColor" value="#FFD700">
+                <input type="text" id="titleColorText" value="#FFD700" maxlength="7">
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group color-input-group">
+            <div>
+              <label>描述字号</label>
+              <input type="number" id="descriptionFontSize" value="35" min="12" max="48">
+            </div>
+            <div>
+              <label>描述颜色</label>
+              <div class="color-picker">
+                <input type="color" id="descriptionColor" value="#ffffff">
+                <input type="text" id="descriptionColorText" value="#ffffff" maxlength="7">
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group color-input-group">
+            <div>
+              <label>分析字号</label>
+              <input type="number" id="analysisFontSize" value="35" min="12" max="48">
+            </div>
+            <div>
+              <label>分析颜色</label>
+              <div class="color-picker">
+                <input type="color" id="analysisColor" value="#FFD700">
+                <input type="text" id="analysisColorText" value="#FFD700" maxlength="7">
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group color-input-group">
+            <div>
+              <label>注意事项字号</label>
+              <input type="number" id="noteFontSize" value="25" min="10" max="36">
+            </div>
+            <div>
+              <label>注意事项颜色</label>
+              <div class="color-picker">
+                <input type="color" id="noteColor" value="#FFFFFF">
+                <input type="text" id="noteColorText" value="#FFFFFF" maxlength="7">
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>背景颜色</label>
+            <div class="color-picker">
+              <input type="color" id="bgColor" value="#000000">
+              <input type="text" id="bgColorText" value="#000000" maxlength="7">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <div class="checkbox-group">
+              <input type="checkbox" id="isArabic">
+              <label for="isArabic" style="margin: 0;">阿拉伯文模式 (右对齐)</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="tips">
+      💡 提示: 直接粘贴完整内容，点击"生成预览"自动解析并显示。阿拉伯文会自动右对齐，其他语言默认左对齐。英文单词不会从中间断开。
+    </div>
+    
+    <button class="btn-primary" onclick="generatePreview()">🎨 生成预览</button>
+    <button class="btn-primary" onclick="exportImage()">💾 导出图片</button>
+  </div>
+  
+  <!-- 右侧预览面板 -->
+  <div class="panel">
+    <h1>👁️ 预览</h1>
+    <div id="preview">
+      <div class="preview-empty">
+        <p>📋 请配置内容后点击"生成预览"</p>
       </div>
     </div>
   </div>
+</div>
+
+<canvas id="canvas" style="display: none;"></canvas>
+
+<script>
+  let headerImg = null;
+  let chartImg = null;
+  let parsedData = {
+    title: '',
+    description: '',
+    analysis: '',
+    note: ''
+  };
   
-  <canvas id="canvas" style="display: none;"></canvas>
+  // 历史记录管理
+  const MAX_HISTORY = 6;
+  let headerHistory = [];
+  let chartHistory = [];
   
-  <script>
-    let headerImg = null;
-    let chartImg = null;
-    let parsedData = {
-      title: '',
-      description: '',
-      analysis: '',
-      note: ''
+  // 从 localStorage 加载历史记录
+  function loadHistory() {
+    const savedHeaderHistory = localStorage.getItem('headerHistory');
+    const savedChartHistory = localStorage.getItem('chartHistory');
+    
+    if (savedHeaderHistory) {
+      headerHistory = JSON.parse(savedHeaderHistory);
+      renderHistory('header');
+    }
+    
+    if (savedChartHistory) {
+      chartHistory = JSON.parse(savedChartHistory);
+      renderHistory('chart');
+    }
+  }
+  
+  // 保存历史记录到 localStorage
+  function saveHistory(type) {
+    if (type === 'header') {
+      localStorage.setItem('headerHistory', JSON.stringify(headerHistory));
+    } else {
+      localStorage.setItem('chartHistory', JSON.stringify(chartHistory));
+    }
+  }
+  
+  // 添加到历史记录
+  function addToHistory(type, dataUrl, fileName) {
+    const history = type === 'header' ? headerHistory : chartHistory;
+    
+    // 检查是否已存在
+    const existingIndex = history.findIndex(item => item.dataUrl === dataUrl);
+    if (existingIndex !== -1) {
+      history.splice(existingIndex, 1);
+    }
+    
+    // 添加到开头
+    history.unshift({ dataUrl, fileName, timestamp: Date.now() });
+    
+    // 限制数量
+    if (history.length > MAX_HISTORY) {
+      history.pop();
+    }
+    
+    // 更新引用
+    if (type === 'header') {
+      headerHistory = history;
+    } else {
+      chartHistory = history;
+    }
+    
+    saveHistory(type);
+    renderHistory(type);
+  }
+  
+  // 渲染历史记录
+  function renderHistory(type) {
+    const history = type === 'header' ? headerHistory : chartHistory;
+    const containerId = type === 'header' ? 'headerHistory' : 'chartHistory';
+    const containerElement = document.getElementById(containerId);
+    const historyContainer = document.getElementById(type === 'header' ? 'headerHistoryContainer' : 'chartHistoryContainer');
+    
+    if (history.length === 0) {
+      containerElement.innerHTML = '<div class="history-empty">暂无历史记录</div>';
+      historyContainer.style.display = 'none';
+      return;
+    }
+    
+    historyContainer.style.display = 'block';
+    
+    containerElement.innerHTML = history.map((item, index) => `
+      <div class="history-item" onclick="selectHistoryImage('${type}', ${index})" title="${item.fileName}">
+        <img src="${item.dataUrl}" alt="${item.fileName}">
+      </div>
+    `).join('');
+  }
+  
+  // 选择历史图片
+  function selectHistoryImage(type, index) {
+    const history = type === 'header' ? headerHistory : chartHistory;
+    const item = history[index];
+    
+    const img = new Image();
+    img.onload = function() {
+      if (type === 'header') {
+        headerImg = img;
+        document.getElementById('headerImageName').textContent = item.fileName;
+      } else {
+        chartImg = img;
+        document.getElementById('chartImageName').textContent = item.fileName;
+      }
+      
+      // 更新选中状态
+      const containerId = type === 'header' ? 'headerHistory' : 'chartHistory';
+      const items = document.querySelectorAll(`#${containerId} .history-item`);
+      items.forEach((el, i) => {
+        if (i === index) {
+          el.classList.add('selected');
+        } else {
+          el.classList.remove('selected');
+        }
+      });
+      
+      console.log(`${type}图从历史记录加载成功`);
     };
+    img.src = item.dataUrl;
+  }
+  
+  // 清除历史记录
+  function clearHistory(type) {
+    if (!confirm(`确定要清除所有${type === 'header' ? '头图' : '分析图'}历史记录吗？`)) {
+      return;
+    }
     
-    // 文件上传处理
-    document.getElementById('headerImage').addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        document.getElementById('headerImageName').textContent = file.name;
-        const reader = new FileReader();
-        reader.onload = function(event) {
-          headerImg = new Image();
-          headerImg.onload = function() {
-            console.log('头图加载成功');
-          };
-          headerImg.src = event.target.result;
+    if (type === 'header') {
+      headerHistory = [];
+      localStorage.removeItem('headerHistory');
+    } else {
+      chartHistory = [];
+      localStorage.removeItem('chartHistory');
+    }
+    
+    renderHistory(type);
+    console.log(`${type}历史记录已清除`);
+  }
+  
+  // 文件上传处理
+  document.getElementById('headerImage').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      document.getElementById('headerImageName').textContent = file.name;
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        headerImg = new Image();
+        headerImg.onload = function() {
+          addToHistory('header', event.target.result, file.name);
+          console.log('头图加载成功');
         };
-        reader.readAsDataURL(file);
+        headerImg.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+  
+  document.getElementById('chartImage').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      document.getElementById('chartImageName').textContent = file.name;
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        chartImg = new Image();
+        chartImg.onload = function() {
+          addToHistory('chart', event.target.result, file.name);
+          console.log('分析图加载成功');
+        };
+        chartImg.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+  
+  // 折叠功能
+  function toggleCollapsible() {
+    const content = document.getElementById('styleSettings');
+    const icon = document.querySelector('.collapsible-icon');
+    
+    if (content.classList.contains('expanded')) {
+      content.classList.remove('expanded');
+      icon.classList.remove('expanded');
+    } else {
+      content.classList.add('expanded');
+      icon.classList.add('expanded');
+    }
+  }
+  
+  // 颜色选择器同步
+  function syncColorPicker(colorId, textId) {
+    document.getElementById(colorId).addEventListener('input', function(e) {
+      document.getElementById(textId).value = e.target.value;
+    });
+    document.getElementById(textId).addEventListener('input', function(e) {
+      if (/^#[0-9A-F]{6}$/i.test(e.target.value)) {
+        document.getElementById(colorId).value = e.target.value;
+      }
+    });
+  }
+  
+  syncColorPicker('titleColor', 'titleColorText');
+  syncColorPicker('descriptionColor', 'descriptionColorText');
+  syncColorPicker('analysisColor', 'analysisColorText');
+  syncColorPicker('noteColor', 'noteColorText');
+  syncColorPicker('bgColor', 'bgColorText');
+  
+  // 解析内容
+  function parseContent() {
+    const rawContent = document.getElementById('rawContent').value;
+    
+    if (!rawContent.trim()) {
+      return false;
+    }
+    
+    // 使用正则表达式提取各部分内容
+    const titleMatch = rawContent.match(/\[title\]([\s\S]*?)(?=\[description\]|\[analysis\]|\[note\]|$)/i);
+    const descriptionMatch = rawContent.match(/\[description\]([\s\S]*?)(?=\[title\]|\[analysis\]|\[note\]|$)/i);
+    const analysisMatch = rawContent.match(/\[analysis\]([\s\S]*?)(?=\[title\]|\[description\]|\[note\]|$)/i);
+    const noteMatch = rawContent.match(/\[note\]([\s\S]*?)(?=\[title\]|\[description\]|\[analysis\]|$)/i);
+    
+    parsedData.title = titleMatch ? titleMatch[1].trim() : '';
+    parsedData.description = descriptionMatch ? descriptionMatch[1].trim() : '';
+    parsedData.analysis = analysisMatch ? analysisMatch[1].trim() : '';
+    parsedData.note = noteMatch ? noteMatch[1].trim() : '';
+    
+    // 自动检测是否为阿拉伯文
+    const arabicPattern = /[\u0600-\u06FF]/;
+    const hasArabic = arabicPattern.test(rawContent);
+    
+    // 如果当前是阿拉伯模式但内容不包含阿拉伯文，自动关闭
+    if (document.getElementById('isArabic').checked && !hasArabic) {
+      document.getElementById('isArabic').checked = false;
+    }
+    // 如果内容包含阿拉伯文但模式未开启，自动开启
+    else if (!document.getElementById('isArabic').checked && hasArabic) {
+      document.getElementById('isArabic').checked = true;
+    }
+    
+    console.log('内容解析完成', parsedData);
+    return true;
+  }
+  
+  // 检测是否为单词字符
+  function isWordChar(char) {
+    return /[a-zA-Z0-9]/.test(char);
+  }
+  
+  // 智能文本换行处理（不会从单词中间断开）
+  function wrapText(ctx, text, x, y, maxWidth, lineHeight, align) {
+    if (!text) return y;
+    
+    const lines = text.split('\n');
+    let currentY = y;
+    
+    lines.forEach(line => {
+      if (!line.trim()) {
+        currentY += lineHeight;
+        return;
+      }
+      
+      let words = [];
+      let currentWord = '';
+      
+      // 将文本分割成单词和非单词字符
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (isWordChar(char)) {
+          currentWord += char;
+        } else {
+          if (currentWord) {
+            words.push(currentWord);
+            currentWord = '';
+          }
+          words.push(char);
+        }
+      }
+      if (currentWord) {
+        words.push(currentWord);
+      }
+      
+      // 按单词进行换行
+      let currentLine = '';
+      
+      for (let i = 0; i < words.length; i++) {
+        const word = words[i];
+        const testLine = currentLine + word;
+        const testWidth = ctx.measureText(testLine).width;
+        
+        if (testWidth > maxWidth && currentLine) {
+          // 如果当前行已有内容且加上新单词会超宽，先输出当前行
+          ctx.fillText(currentLine, x, currentY);
+          currentY += lineHeight;
+          currentLine = word;
+        } else {
+          currentLine = testLine;
+        }
+      }
+      
+      // 输出最后一行
+      if (currentLine) {
+        ctx.fillText(currentLine, x, currentY);
+        currentY += lineHeight;
       }
     });
     
-    document.getElementById('chartImage').addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        document.getElementById('chartImageName').textContent = file.name;
-        const reader = new FileReader();
-        reader.onload = function(event) {
-          chartImg = new Image();
-          chartImg.onload = function() {
-            console.log('分析图加载成功');
-          };
-          chartImg.src = event.target.result;
-        };
-        reader.readAsDataURL(file);
+    return currentY;
+  }
+  
+  // 预计算文本换行后的实际行数
+  function calculateWrappedLines(text, fontSize, maxTextWidth) {
+    const tempCanvas = document.createElement('canvas');
+    const tempCtx = tempCanvas.getContext('2d');
+    tempCtx.font = `${fontSize}px Arial, sans-serif`;
+    
+    let totalLines = 0;
+    const lines = text.split('\n');
+    
+    lines.forEach(line => {
+      if (!line.trim()) {
+        totalLines += 1;
+        return;
       }
+      
+      let words = [];
+      let currentWord = '';
+      
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (isWordChar(char)) {
+          currentWord += char;
+        } else {
+          if (currentWord) {
+            words.push(currentWord);
+            currentWord = '';
+          }
+          words.push(char);
+        }
+      }
+      if (currentWord) {
+        words.push(currentWord);
+      }
+      
+      let currentLine = '';
+      let lineCount = 0;
+      
+      for (let i = 0; i < words.length; i++) {
+        const word = words[i];
+        const testLine = currentLine + word;
+        const testWidth = tempCtx.measureText(testLine).width;
+        
+        if (testWidth > maxTextWidth && currentLine) {
+          lineCount++;
+          currentLine = word;
+        } else {
+          currentLine = testLine;
+        }
+      }
+      
+      if (currentLine) {
+        lineCount++;
+      }
+      
+      totalLines += lineCount;
     });
     
-    // 颜色选择器同步
-    function syncColorPicker(colorId, textId) {
-      document.getElementById(colorId).addEventListener('input', function(e) {
-        document.getElementById(textId).value = e.target.value;
-      });
-      document.getElementById(textId).addEventListener('input', function(e) {
-        if (/^#[0-9A-F]{6}$/i.test(e.target.value)) {
-          document.getElementById(colorId).value = e.target.value;
-        }
-      });
+    return totalLines;
+  }
+  
+  // 生成预览
+  function generatePreview() {
+    // 先解析内容
+    if (!parseContent()) {
+      alert('请先粘贴内容！');
+      return;
     }
     
-    syncColorPicker('titleColor', 'titleColorText');
-    syncColorPicker('descriptionColor', 'descriptionColorText');
-    syncColorPicker('analysisColor', 'analysisColorText');
-    syncColorPicker('noteColor', 'noteColorText');
-    syncColorPicker('bgColor', 'bgColorText');
-    
-    // 解析内容
-    function parseContent() {
-      const rawContent = document.getElementById('rawContent').value;
-      
-      if (!rawContent.trim()) {
-        alert('请先粘贴内容！');
-        return;
-      }
-      
-      // 使用正则表达式提取各部分内容
-      const titleMatch = rawContent.match(/\[title\]([\s\S]*?)(?=\[description\]|\[analysis\]|\[note\]|$)/i);
-      const descriptionMatch = rawContent.match(/\[description\]([\s\S]*?)(?=\[title\]|\[analysis\]|\[note\]|$)/i);
-      const analysisMatch = rawContent.match(/\[analysis\]([\s\S]*?)(?=\[title\]|\[description\]|\[note\]|$)/i);
-      const noteMatch = rawContent.match(/\[note\]([\s\S]*?)(?=\[title\]|\[description\]|\[analysis\]|$)/i);
-      
-      parsedData.title = titleMatch ? titleMatch[1].trim() : '';
-      parsedData.description = descriptionMatch ? descriptionMatch[1].trim() : '';
-      parsedData.analysis = analysisMatch ? analysisMatch[1].trim() : '';
-      parsedData.note = noteMatch ? noteMatch[1].trim() : '';
-      
-      // 显示解析结果
-      const parsedDisplay = document.getElementById('parsedDisplay');
-      parsedDisplay.innerHTML = `
-        <div class="parsed-item">
-          <div class="parsed-label">📌 标题 [title]</div>
-          <div class="parsed-text">${parsedData.title || '(未找到)'}</div>
-        </div>
-        <div class="parsed-item">
-          <div class="parsed-label">📝 描述 [description]</div>
-          <div class="parsed-text">${parsedData.description || '(未找到)'}</div>
-        </div>
-        <div class="parsed-item">
-          <div class="parsed-label">📊 分析 [analysis]</div>
-          <div class="parsed-text">${parsedData.analysis || '(未找到)'}</div>
-        </div>
-        <div class="parsed-item">
-          <div class="parsed-label">⚠️ 注意事项 [note]</div>
-          <div class="parsed-text">${parsedData.note || '(未找到)'}</div>
-        </div>
-      `;
-      
-      document.getElementById('parsedResult').style.display = 'block';
-      
-      // 自动检测是否为阿拉伯文
-      const arabicPattern = /[\u0600-\u06FF]/;
-      if (arabicPattern.test(rawContent)) {
-        document.getElementById('isArabic').checked = true;
-      }
-      
-      console.log('内容解析完成', parsedData);
+    if (!parsedData.title && !parsedData.description && !parsedData.analysis && !parsedData.note) {
+      alert('未能解析到有效内容，请检查格式！');
+      return;
     }
     
-    // 文本换行处理
-    function wrapText(ctx, text, x, y, maxWidth, lineHeight, align) {
-      if (!text) return y;
-      
-      const lines = text.split('\n');
-      let currentY = y;
-      
-      lines.forEach(line => {
-        if (!line.trim()) {
-          currentY += lineHeight;
-          return;
-        }
-        
-        let currentStr = '';
-        let start = 0;
-        let currentWidth = 0;
-        
-        for (let i = 0; i < line.length; i++) {
-          const char = line[i];
-          const charWidth = ctx.measureText(char).width;
-          currentWidth += charWidth;
-          
-          if (currentWidth > maxWidth) {
-            ctx.fillText(line.substring(start, i), x, currentY);
-            currentY += lineHeight;
-            start = i;
-            currentWidth = charWidth;
-          }
-        }
-        
-        // 绘制最后一行
-        if (start < line.length) {
-          ctx.fillText(line.substring(start), x, currentY);
-          currentY += lineHeight;
-        }
-      });
-      
-      return currentY;
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // 获取配置
+    const canvasWidth = parseInt(document.getElementById('canvasWidth').value);
+    const padding = 40;
+    const maxWidth = canvasWidth - padding * 2;
+    
+    const titleFontSize = parseInt(document.getElementById('titleFontSize').value);
+    const descriptionFontSize = parseInt(document.getElementById('descriptionFontSize').value);
+    const analysisFontSize = parseInt(document.getElementById('analysisFontSize').value);
+    const noteFontSize = parseInt(document.getElementById('noteFontSize').value);
+    
+    const titleColor = document.getElementById('titleColor').value;
+    const descriptionColor = document.getElementById('descriptionColor').value;
+    const analysisColor = document.getElementById('analysisColor').value;
+    const noteColor = document.getElementById('noteColor').value;
+    const bgColor = document.getElementById('bgColor').value;
+    
+    const isArabic = document.getElementById('isArabic').checked;
+    const textAlign = isArabic ? 'right' : 'left';
+    const textX = isArabic ? canvasWidth - padding : padding;
+    
+    // 计算总高度
+    let totalHeight = 0;
+    
+    // 头图高度
+    if (headerImg && headerImg.complete) {
+      const headerHeight = (headerImg.height / headerImg.width) * canvasWidth;
+      totalHeight += headerHeight;
     }
     
-    // 生成预览
-    function generatePreview() {
-      if (!parsedData.title && !parsedData.description && !parsedData.analysis && !parsedData.note) {
-        alert('请先解析内容！');
-        return;
-      }
-      
-      const canvas = document.getElementById('canvas');
-      const ctx = canvas.getContext('2d');
-      
-      // 获取配置
-      const canvasWidth = parseInt(document.getElementById('canvasWidth').value);
-      const padding = 40;
-      const maxWidth = canvasWidth - padding * 2;
-      
-      const titleFontSize = parseInt(document.getElementById('titleFontSize').value);
-      const descriptionFontSize = parseInt(document.getElementById('descriptionFontSize').value);
-      const analysisFontSize = parseInt(document.getElementById('analysisFontSize').value);
-      const noteFontSize = parseInt(document.getElementById('noteFontSize').value);
-      
-      const titleColor = document.getElementById('titleColor').value;
-      const descriptionColor = document.getElementById('descriptionColor').value;
-      const analysisColor = document.getElementById('analysisColor').value;
-      const noteColor = document.getElementById('noteColor').value;
-      const bgColor = document.getElementById('bgColor').value;
-      
-      const isArabic = document.getElementById('isArabic').checked;
-      const textAlign = isArabic ? 'right' : 'left';
-      const textX = isArabic ? canvasWidth - padding : padding;
-      
-      // 计算总高度
-      let totalHeight = 0;  // 从0开始，去掉顶部padding
-      
-      // 头图高度
-      if (headerImg && headerImg.complete) {
-        const headerHeight = (headerImg.height / headerImg.width) * canvasWidth;
-        totalHeight += headerHeight;
-      }
-      
-      // 分析图高度
-      if (chartImg && chartImg.complete) {
-        const chartHeight = (chartImg.height / chartImg.width) * canvasWidth;
-        totalHeight += chartHeight + 30;
-      }
-      
-      // 预计算文本换行后的实际行数
-      function calculateWrappedLines(text, fontSize, maxTextWidth) {
-        const tempCanvas = document.createElement('canvas');
-        const tempCtx = tempCanvas.getContext('2d');
-        tempCtx.font = `${fontSize}px Arial, sans-serif`;
-        
-        let totalLines = 0;
-        const lines = text.split('\n');
-        
-        lines.forEach(line => {
-          if (!line.trim()) {
-            totalLines += 1;
-            return;
-          }
-          
-          let currentWidth = 0;
-          let lineCount = 1;
-          
-          for (let i = 0; i < line.length; i++) {
-            const char = line[i];
-            const charWidth = tempCtx.measureText(char).width;
-            currentWidth += charWidth;
-            
-            if (currentWidth > maxTextWidth) {
-              lineCount++;
-              currentWidth = charWidth;
-            }
-          }
-          
-          totalLines += lineCount;
-        });
-        
-        return totalLines;
-      }
-      
-      // 文本高度估算（更准确的计算）
-      const maxTextWidth = canvasWidth - padding * 2;
-      
-      if (parsedData.title) {
-        const titleLines = calculateWrappedLines(parsedData.title, titleFontSize, maxTextWidth);
-        totalHeight += titleFontSize * 1.8 * titleLines + 40;
-      }
-      if (parsedData.description) {
-        const descLines = calculateWrappedLines(parsedData.description, descriptionFontSize, maxTextWidth);
-        totalHeight += descriptionFontSize * 1.8 * descLines + 40;
-      }
-      if (parsedData.analysis) {
-        const analysisLines = calculateWrappedLines(parsedData.analysis, analysisFontSize, maxTextWidth);
-        totalHeight += analysisFontSize * 1.8 * analysisLines + 40;
-      }
-      if (parsedData.note) {
-        const noteLines = calculateWrappedLines(parsedData.note, noteFontSize, maxTextWidth);
-        totalHeight += noteFontSize * 1.8 * noteLines + 40;
-      }
-      
-      // 设置画布尺寸
-      canvas.width = canvasWidth;
-      canvas.height = totalHeight;
-      
-      // 填充背景
-      ctx.fillStyle = bgColor;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      let currentY = 0;  // 从0开始，去掉顶部padding
-      
-      // 绘制头图
-      if (headerImg && headerImg.complete) {
-        const headerHeight = (headerImg.height / headerImg.width) * canvasWidth;
-        ctx.drawImage(headerImg, 0, currentY, canvasWidth, headerHeight);
-        currentY += headerHeight;
-      }
-      
-      // 绘制分析图
-      if (chartImg && chartImg.complete) {
-        const chartHeight = (chartImg.height / chartImg.width) * canvasWidth;
-        ctx.drawImage(chartImg, 0, currentY, canvasWidth, chartHeight);
-        currentY += chartHeight;
-      }
-      
-      // 设置文本对齐
-      ctx.textAlign = textAlign;
-      ctx.direction = isArabic ? 'rtl' : 'ltr';
-      
-      // 绘制标题
-      if (parsedData.title) {
-        ctx.font = `bold ${titleFontSize}px Arial, sans-serif`;
-        ctx.fillStyle = titleColor;
-        currentY = wrapText(ctx, parsedData.title, textX, currentY + titleFontSize, maxWidth, titleFontSize * 1.5, textAlign);
-        currentY += 30;
-      }
-      
-      // 绘制描述
-      if (parsedData.description) {
-        ctx.font = `${descriptionFontSize}px Arial, sans-serif`;
-        ctx.fillStyle = descriptionColor;
-        currentY = wrapText(ctx, parsedData.description, textX, currentY + descriptionFontSize, maxWidth, descriptionFontSize * 1.5, textAlign);
-        currentY += 30;
-      }
-      
-      // 绘制分析
-      if (parsedData.analysis) {
-        ctx.font = `${analysisFontSize}px Arial, sans-serif`;
-        ctx.fillStyle = analysisColor;
-        currentY = wrapText(ctx, parsedData.analysis, textX, currentY + analysisFontSize, maxWidth, analysisFontSize * 1.5, textAlign);
-        currentY += 30;
-      }
-      
-      // 绘制注意事项
-      if (parsedData.note) {
-        ctx.font = `italic ${noteFontSize}px Arial, sans-serif`;
-        ctx.fillStyle = noteColor;
-        currentY = wrapText(ctx, parsedData.note, textX, currentY + noteFontSize, maxWidth, noteFontSize * 1.5, textAlign);
-      }
-      
-      // 显示预览
-      const preview = document.getElementById('preview');
-      preview.innerHTML = '';
-      const previewCanvas = document.createElement('canvas');
-      previewCanvas.width = canvas.width;
-      previewCanvas.height = canvas.height;
-      previewCanvas.className = 'preview-canvas';
-      const previewCtx = previewCanvas.getContext('2d');
-      previewCtx.drawImage(canvas, 0, 0);
-      preview.appendChild(previewCanvas);
-      
-      console.log('预览生成成功');
+    // 分析图高度
+    if (chartImg && chartImg.complete) {
+      const chartHeight = (chartImg.height / chartImg.width) * canvasWidth;
+      totalHeight += chartHeight + 30;
     }
     
-    // 导出图片
-    function exportImage() {
-      const canvas = document.getElementById('canvas');
-      if (canvas.width === 0 || canvas.height === 0) {
-        alert('请先生成预览！');
-        return;
-      }
-      
-      try {
-        const link = document.createElement('a');
-        const timestamp = new Date().getTime();
-        link.download = `market-analysis-${timestamp}.png`;
-        link.href = canvas.toDataURL('image/png', 1.0);
-        link.click();
-        console.log('图片导出成功');
-      } catch (e) {
-        console.error('导出失败', e);
-        alert('导出失败，请重试');
-      }
+    // 文本高度估算
+    const maxTextWidth = canvasWidth - padding * 2;
+    
+    if (parsedData.title) {
+      const titleLines = calculateWrappedLines(parsedData.title, titleFontSize, maxTextWidth);
+      totalHeight += titleFontSize * 1.8 * titleLines + 40;
     }
-  </script>
+    if (parsedData.description) {
+      const descLines = calculateWrappedLines(parsedData.description, descriptionFontSize, maxTextWidth);
+      totalHeight += descriptionFontSize * 1.8 * descLines + 40;
+    }
+    if (parsedData.analysis) {
+      const analysisLines = calculateWrappedLines(parsedData.analysis, analysisFontSize, maxTextWidth);
+      totalHeight += analysisFontSize * 1.8 * analysisLines + 40;
+    }
+    if (parsedData.note) {
+      const noteLines = calculateWrappedLines(parsedData.note, noteFontSize, maxTextWidth);
+      totalHeight += noteFontSize * 1.8 * noteLines + 40;
+    }
+    
+    // 设置画布尺寸
+    canvas.width = canvasWidth;
+    canvas.height = totalHeight;
+    
+    // 填充背景
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    let currentY = 0;
+    
+    // 绘制头图
+    if (headerImg && headerImg.complete) {
+      const headerHeight = (headerImg.height / headerImg.width) * canvasWidth;
+      ctx.drawImage(headerImg, 0, currentY, canvasWidth, headerHeight);
+      currentY += headerHeight;
+    }
+    
+    // 绘制分析图
+    if (chartImg && chartImg.complete) {
+      const chartHeight = (chartImg.height / chartImg.width) * canvasWidth;
+      ctx.drawImage(chartImg, 0, currentY, canvasWidth, chartHeight);
+      currentY += chartHeight;
+    }
+    
+    // 设置文本对齐
+    ctx.textAlign = textAlign;
+    ctx.direction = isArabic ? 'rtl' : 'ltr';
+    
+    // 绘制标题
+    if (parsedData.title) {
+      ctx.font = `bold ${titleFontSize}px Arial, sans-serif`;
+      ctx.fillStyle = titleColor;
+      currentY = wrapText(ctx, parsedData.title, textX, currentY + titleFontSize, maxWidth, titleFontSize * 1.5, textAlign);
+      currentY += 30;
+    }
+    
+    // 绘制描述
+    if (parsedData.description) {
+      ctx.font = `${descriptionFontSize}px Arial, sans-serif`;
+      ctx.fillStyle = descriptionColor;
+      currentY = wrapText(ctx, parsedData.description, textX, currentY + descriptionFontSize, maxWidth, descriptionFontSize * 1.5, textAlign);
+      currentY += 30;
+    }
+    
+    // 绘制分析
+    if (parsedData.analysis) {
+      ctx.font = `${analysisFontSize}px Arial, sans-serif`;
+      ctx.fillStyle = analysisColor;
+      currentY = wrapText(ctx, parsedData.analysis, textX, currentY + analysisFontSize, maxWidth, analysisFontSize * 1.5, textAlign);
+      currentY += 30;
+    }
+    
+    // 绘制注意事项
+    if (parsedData.note) {
+      ctx.font = `italic ${noteFontSize}px Arial, sans-serif`;
+      ctx.fillStyle = noteColor;
+      currentY = wrapText(ctx, parsedData.note, textX, currentY + noteFontSize, maxWidth, noteFontSize * 1.5, textAlign);
+    }
+    
+    // 显示预览
+    const preview = document.getElementById('preview');
+    preview.innerHTML = '';
+    const previewCanvas = document.createElement('canvas');
+    previewCanvas.width = canvas.width;
+    previewCanvas.height = canvas.height;
+    previewCanvas.className = 'preview-canvas';
+    const previewCtx = previewCanvas.getContext('2d');
+    previewCtx.drawImage(canvas, 0, 0);
+    preview.appendChild(previewCanvas);
+    
+    console.log('预览生成成功');
+  }
+  
+  // 导出图片
+  function exportImage() {
+    // 导出前重新解析和生成
+    if (!parseContent()) {
+      alert('请先粘贴内容！');
+      return;
+    }
+    
+    // 重新生成画布（不显示预览）
+    generatePreview();
+    
+    const canvas = document.getElementById('canvas');
+    if (canvas.width === 0 || canvas.height === 0) {
+      alert('生成失败，请检查内容！');
+      return;
+    }
+    
+    try {
+      const link = document.createElement('a');
+      const timestamp = new Date().getTime();
+      link.download = `market-analysis-${timestamp}.png`;
+      link.href = canvas.toDataURL('image/png', 1.0);
+      link.click();
+      console.log('图片导出成功');
+    } catch (e) {
+      console.error('导出失败', e);
+      alert('导出失败，请重试');
+    }
+  }
+  
+  // 页面加载时初始化
+  window.addEventListener('load', function() {
+    loadHistory();
+  });
+</script>
 </body>
 </html>
