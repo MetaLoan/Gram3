@@ -245,7 +245,7 @@
               <div class="row">
                   <div class="form-group">
                       <label>字体大小</label>
-                      <input type="number" id="fontSize" value="25" min="12" max="36">
+                      <input type="number" id="fontSize" value="38" min="12" max="60">
                   </div>
                   <div class="form-group">
                       <label>图片分辨率倍数</label>
@@ -325,7 +325,8 @@
                   "Direction: {direction}",
                   "Max Position Size: {total_position_pct}%",
                   "Leverage: {leverage}x",
-                  "Partial Take-Profit Prices: {tp1} / {tp2} / {tp3}",
+                  "Partial Take-Profit Prices:",
+                  "{tp1} / {tp2} / {tp3}",
                   "Stop Loss: {sl}"
               ],
               align: "left",
@@ -340,7 +341,8 @@
                   "Направление: {direction}",
                   "Максимальный размер позиции: {total_position_pct}%",
                   "Плечо: {leverage}x",
-                  "Цены частичной фиксации прибыли: {tp1} / {tp2} / {tp3}",
+                  "Цены частичной фиксации прибыли:",
+                  "{tp1} / {tp2} / {tp3}",
                   "Стоп-лосс: {sl}"
               ],
               align: "left",
@@ -355,7 +357,8 @@
                   "Hướng giao dịch: {direction}",
                   "Giới hạn vị thế: {total_position_pct}%",
                   "Đòn bẩy: {leverage}x",
-                  "Giá chốt lời từng phần: {tp1} / {tp2} / {tp3}",
+                  "Giá chốt lời từng phần:",
+                  "{tp1} / {tp2} / {tp3}",
                   "Cắt lỗ: {sl}"
               ],
               align: "left",
@@ -370,7 +373,8 @@
                   "الاتجاه: {direction}",
                   "الحد الأقصى لحجم الصفقة: {total_position_pct}%",
                   "الرافعة المالية: {leverage}x",
-                  "أسعار جني الأرباح الجزئية: {tp1} / {tp2} / {tp3}",
+                  "أسعار جني الأرباح الجزئية:",
+                  "{tp1} / {tp2} / {tp3}",
                   "إيقاف الخسارة: {sl}"
               ],
               align: "right",
@@ -847,19 +851,13 @@
           ctx.fillText(titleText.replace(/{(\w+)}/g, (m,k) => data[k] || m), textX, textY);
 
           // 绘制内容
-          ctx.font = `${fontSizeScaled}px ${template.font}`;
+          ctx.font = `bold ${fontSizeScaled}px ${template.font}`;
           textY += lineHeight * 1.5;
           contentLines.forEach((line, index) => {
-              // 判断是否是 Direction 行
+              // 判断是否是 Direction 行（设置颜色但不描边）
               if (line.includes(localizedDirection)) {
                   // 保存当前状态
                   ctx.save();
-                  
-                  // 设置描边样式
-                  ctx.strokeStyle = '#FFFFFF';  // 白色描边
-                  ctx.lineWidth = Math.max(1, Math.round(3 * scaleFactor));  // 描边宽度，随分辨率缩放
-                  ctx.lineJoin = 'round';      // 圆角连接
-                  ctx.miterLimit = 2;          // 限制尖角
                   
                   // 根据方向设置填充颜色
                   if (direction === 'long') {
@@ -868,8 +866,6 @@
                       ctx.fillStyle = '#F04343'; // 空头红色
                   }
                   
-                  // 先绘制描边，再绘制文字（这样文字会在描边上层）
-                  ctx.strokeText(line, textX, textY);
                   ctx.fillText(line, textX, textY);
                   
                   // 恢复之前的状态
