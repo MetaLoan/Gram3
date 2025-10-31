@@ -25,7 +25,8 @@
       }
       
       .container {
-          max-width: 1000px;
+          width: 1200px;
+          max-width: 1200px;
           margin: 0 auto;
       }
       
@@ -123,16 +124,25 @@
       }
       
       #contentArea {
+          width: 1200px;
           background: #1a1a1a;
-          padding: 28px;
+          padding: 32px;
           border-radius: 12px;
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          grid-template-areas:
+              "header header"
+              "stats stats"
+              "cards cards"
+              "news news";
+          gap: 32px;
       }
       
       .header {
+          grid-area: header;
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 28px;
       }
       
       .logo {
@@ -166,10 +176,10 @@
       }
       
       .stats-section {
+          grid-area: stats;
           display: flex;
           justify-content: center;
           align-items: center;
-          margin-bottom: 28px;
       }
       
       .gauge-section {
@@ -228,10 +238,10 @@
       }
       
       .coins-section {
+          grid-area: cards;
           display: grid;
-          grid-template-columns: 1fr 1fr;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
           gap: 24px;
-          margin-bottom: 28px;
       }
       
       .coin-category {
@@ -343,6 +353,7 @@
       }
       
       .news-section {
+          grid-area: news;
           background: linear-gradient(135deg, #f5a623 0%, #ff8c00 100%);
           padding: 22px;
           border-radius: 16px;
@@ -376,14 +387,35 @@
       
       .news-item {
           color: #000;
-          font-size: 26px;
-          line-height: 1.5;
+          font-size: 32px;
+          line-height: 1.4;
           margin-bottom: 10px;
           font-weight: bold;
       }
       
       .news-item:last-child {
           margin-bottom: 0;
+      }
+      
+      @media (max-width: 1240px) {
+          .container,
+          #contentArea {
+              width: 100%;
+              max-width: 100%;
+          }
+          
+          #contentArea {
+              grid-template-columns: 1fr;
+              grid-template-areas:
+                  "header"
+                  "stats"
+                  "cards"
+                  "news";
+          }
+          
+          .coins-section {
+              grid-template-columns: 1fr;
+          }
       }
       
       @media (max-width: 768px) {
