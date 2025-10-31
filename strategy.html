@@ -219,8 +219,8 @@
           <div class="form-group">
               <label>操作方向</label>
               <select id="direction">
-                  <option value="long">LONG (多)</option>
-                  <option value="short">SHORT (空)</option>
+                  <option value="long">做多</option>
+                  <option value="short">做空</option>
               </select>
           </div>
           
@@ -329,8 +329,8 @@
                   "Stop Loss: {sl}"
               ],
               align: "left",
-              font: "Arial, sans-serif"
-              ,directionLabels: { long: 'Long', short: 'Short' }
+              font: "Arial, sans-serif",
+              directionLabels: { long: 'Long', short: 'Short' }
           },
           ru: {
               title: "✅ Стратегия №{strategy_id}",
@@ -344,8 +344,8 @@
                   "Стоп-лосс: {sl}"
               ],
               align: "left",
-              font: "Arial, sans-serif"
-              ,directionLabels: { long: 'Длинная', short: 'Короткая' }
+              font: "Arial, sans-serif",
+              directionLabels: { long: 'Длинная', short: 'Короткая' }
           },
           vi: {
               title: "✅ Chiến lược số {strategy_id}",
@@ -359,8 +359,8 @@
                   "Cắt lỗ: {sl}"
               ],
               align: "left",
-              font: "Arial, sans-serif"
-              ,directionLabels: { long: 'Mua (Long)', short: 'Bán (Short)' }
+              font: "Arial, sans-serif",
+              directionLabels: { long: 'Mua (Long)', short: 'Bán (Short)' }
           },
           ar: {
               title: "✅ رقم الإستراتيجية {strategy_id}",
@@ -374,8 +374,8 @@
                   "إيقاف الخسارة: {sl}"
               ],
               align: "right",
-              font: "Arial, sans-serif"
-              ,directionLabels: { long: 'شراء', short: 'بيع' }
+              font: "Arial, sans-serif",
+              directionLabels: { long: 'شراء', short: 'بيع' }
           }
       };
 
@@ -459,31 +459,6 @@
           }
       }
 
-      // 当语言改变时，更新 direction 选项文本为对应语言
-      function updateDirectionLabels() {
-          const lang = document.getElementById('language').value;
-          const tpl = templates[lang] || templates['en'];
-          const labels = tpl.directionLabels || { long: 'Long', short: 'Short' };
-          const sel = document.getElementById('direction');
-          // 保留当前选中值
-          const current = sel.value;
-          sel.innerHTML = '';
-          const optLong = document.createElement('option');
-          optLong.value = 'long';
-          optLong.textContent = labels.long;
-          const optShort = document.createElement('option');
-          optShort.value = 'short';
-          optShort.textContent = labels.short;
-          sel.appendChild(optLong);
-          sel.appendChild(optShort);
-          // 恢复之前的选择（若仍可用）
-          if (current === 'long' || current === 'short') sel.value = current;
-      }
-
-      document.getElementById('language').addEventListener('change', () => {
-          updateDirectionLabels();
-      });
-
       // 快速颜色选择
       function setColor(type, color) {
           if (type === 'text') {
@@ -493,7 +468,7 @@
               document.getElementById('textBgColor').value = color;
               document.getElementById('textBgColorHex').value = color;
           }
-          // 仅刷新预览，不保存历史（用户需点击“确定”来保存）
+          // 仅刷新预览，不保存历史（用户需点击"确定"来保存）
           generateImage();
       }
 
@@ -956,7 +931,6 @@
           loadSavedColors();    // 加载保存的颜色
           loadHeaderHistory();  // 加载头图历史并渲染
           loadLastHeaderImage(); // 加载上次使用的头图
-          updateDirectionLabels();
           generateImage();
       };
   </script>
