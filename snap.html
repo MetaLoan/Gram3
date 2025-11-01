@@ -331,11 +331,30 @@
           font-size: 18px;
           color: #999;
           margin-left: 8px;
+          unicode-bidi: isolate;
+          direction: ltr;
       }
       
       body.rtl .coin-full-name {
           margin-left: 0;
           margin-right: 8px;
+      }
+      
+      /* 特殊处理阿拉伯语中的括号 */
+      body.rtl .coin-full-name::before {
+          content: "\200E(";
+      }
+      
+      body.rtl .coin-full-name::after {
+          content: ")\200E";
+      }
+      
+      body:not(.rtl) .coin-full-name::before {
+          content: "(";
+      }
+      
+      body:not(.rtl) .coin-full-name::after {
+          content: ")";
       }
       
       .coin-price {
@@ -517,7 +536,7 @@
                           </div>
                           <div>
                               <span class="coin-name">BTC</span>
-                              <span class="coin-full-name">(Bitcoin)</span>
+                              <span class="coin-full-name">Bitcoin</span>
                           </div>
                       </div>
                       <div class="coin-price" id="btcPrice">$114,063</div>
@@ -529,7 +548,7 @@
                           </div>
                           <div>
                               <span class="coin-name">ETH</span>
-                              <span class="coin-full-name">(Ethereum)</span>
+                              <span class="coin-full-name">Ethereum</span>
                           </div>
                       </div>
                       <div class="coin-price" id="ethPrice">$4,118</div>
@@ -545,7 +564,7 @@
                           </div>
                           <div>
                               <span class="coin-name" id="vultSymbol">VULT</span>
-                              <span class="coin-full-name" id="vultName">(Vultisig)</span>
+                              <span class="coin-full-name" id="vultName">Vultisig</span>
                           </div>
                       </div>
                       <div class="coin-change positive" id="vultChange">+150%</div>
@@ -557,7 +576,7 @@
                           </div>
                           <div>
                               <span class="coin-name" id="amikoSymbol">AMIKO</span>
-                              <span class="coin-full-name" id="amikoName">(Amiko)</span>
+                              <span class="coin-full-name" id="amikoName">Amiko</span>
                           </div>
                       </div>
                       <div class="coin-change positive" id="amikoChange">+120%</div>
@@ -987,7 +1006,7 @@
               await updateCoinIcon('gainer1Icon', data.token1_symbol);
           }
           if (data.token1_name) {
-              document.getElementById('vultName').textContent = `(${data.token1_name})`;
+              document.getElementById('vultName').textContent = data.token1_name;
           }
           if (data.token1_change) {
               document.getElementById('vultChange').textContent = data.token1_change;
@@ -999,7 +1018,7 @@
               await updateCoinIcon('gainer2Icon', data.token2_symbol);
           }
           if (data.token2_name) {
-              document.getElementById('amikoName').textContent = `(${data.token2_name})`;
+              document.getElementById('amikoName').textContent = data.token2_name;
           }
           if (data.token2_change) {
               document.getElementById('amikoChange').textContent = data.token2_change;
