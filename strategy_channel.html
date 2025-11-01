@@ -1,1266 +1,1335 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>策略图片生成器 - 频道版</title>
-  <style>
-      * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-      }
-      
-      body {
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-          font-weight: bold;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          padding: 20px;
-          min-height: 100vh;
-      }
-      
-      .container {
-          max-width: 1400px;
-          margin: 0 auto;
-          display: grid;
-          grid-template-columns: 450px 1fr;
-          gap: 20px;
-      }
-      
-      .panel {
-          background: white;
-          border-radius: 12px;
-          padding: 25px;
-          box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-      }
-      
-      h2 {
-          color: #333;
-          margin-bottom: 20px;
-          font-size: 20px;
-          border-bottom: 2px solid #667eea;
-          padding-bottom: 10px;
-      }
-      
-      .form-group {
-          margin-bottom: 15px;
-      }
-      
-      label {
-          display: block;
-          margin-bottom: 5px;
-          color: #555;
-          font-weight: 600;
-          font-size: 13px;
-      }
-      
-      input, select {
-          width: 100%;
-          padding: 10px;
-          border: 2px solid #e0e0e0;
-          border-radius: 6px;
-          font-size: 14px;
-          transition: border-color 0.3s;
-      }
-      
-      input:focus, select:focus {
-          outline: none;
-          border-color: #667eea;
-      }
-      
-      .row {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 10px;
-      }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>策略图片生成器 - 频道版</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-weight: bold;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px;
+        min-height: 100vh;
+    }
+    
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 450px 1fr;
+        gap: 20px;
+    }
+    
+    .panel {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+    
+    h2 {
+        color: #333;
+        margin-bottom: 20px;
+        font-size: 20px;
+        border-bottom: 2px solid #667eea;
+        padding-bottom: 10px;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    label {
+        display: block;
+        margin-bottom: 5px;
+        color: #555;
+        font-weight: 600;
+        font-size: 13px;
+    }
+    
+    input, select {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #e0e0e0;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: border-color 0.3s;
+    }
+    
+    input:focus, select:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+    
+    .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
 
-      input[type="file"] {
-          padding: 8px;
-      }
-      
-      button {
-          width: 100%;
-          padding: 12px;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          border: none;
-          border-radius: 6px;
-          font-size: 15px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: transform 0.2s;
-          margin-top: 10px;
-      }
-      
-      button:hover {
-          transform: translateY(-2px);
-      }
-      
-      button:active {
-          transform: translateY(0);
-      }
-      
-      .preview-section {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-      }
-      
-      #canvas {
-          border: 2px solid #e0e0e0;
-          border-radius: 8px;
-          max-width: 100%;
-          box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-      }
-      
-      .download-btn {
-          margin-top: 15px;
-          background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-      }
-      
-      .style-section {
-          background: #f8f9fa;
-          padding: 15px;
-          border-radius: 8px;
-          margin-bottom: 15px;
-      }
-      
-      .style-section h3 {
-          font-size: 14px;
-          color: #667eea;
-          margin-bottom: 12px;
-      }
+    input[type="file"] {
+        padding: 8px;
+    }
+    
+    button {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s;
+        margin-top: 10px;
+    }
+    
+    button:hover {
+        transform: translateY(-2px);
+    }
+    
+    button:active {
+        transform: translateY(0);
+    }
+    
+    .preview-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    #canvas {
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        max-width: 100%;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+    
+    .download-btn {
+        margin-top: 15px;
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
+    
+    .style-section {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+    
+    .style-section h3 {
+        font-size: 14px;
+        color: #667eea;
+        margin-bottom: 12px;
+    }
 
-      /* 频道卡片样式 */
-      .channel-section {
-          background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-          padding: 15px;
-          border-radius: 8px;
-          margin-bottom: 20px;
-      }
+    /* 频道卡片样式 */
+    .channel-section {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
 
-      .channel-section h3 {
-          font-size: 14px;
-          color: white;
-          margin-bottom: 12px;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-      }
+    .channel-section h3 {
+        font-size: 14px;
+        color: white;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
 
-      .channel-grid {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 10px;
-      }
+    .channel-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
 
-      .channel-card {
-          background: white;
-          border-radius: 8px;
-          padding: 12px;
-          cursor: pointer;
-          transition: all 0.3s;
-          border: 2px solid transparent;
-          position: relative;
-      }
+    .channel-card {
+        background: white;
+        border-radius: 8px;
+        padding: 12px;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: 2px solid transparent;
+        position: relative;
+    }
 
-      .channel-card:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-          border-color: #667eea;
-      }
+    .channel-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        border-color: #667eea;
+    }
 
-      .channel-card.active {
-          border-color: #38ef7d;
-          background: #f0fff4;
-      }
+    .channel-card.active {
+        border-color: #38ef7d;
+        background: #f0fff4;
+    }
 
-      .channel-name {
-          font-weight: bold;
-          color: #333;
-          font-size: 13px;
-          margin-bottom: 6px;
-      }
+    .channel-name {
+        font-weight: bold;
+        color: #333;
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
 
-      .channel-info {
-          font-size: 11px;
-          color: #666;
-          display: flex;
-          flex-direction: column;
-          gap: 3px;
-      }
+    .channel-info {
+        font-size: 11px;
+        color: #666;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
 
-      .channel-preview {
-          width: 100%;
-          height: 60px;
-          border-radius: 4px;
-          margin-bottom: 8px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 11px;
-          color: white;
-          font-weight: bold;
-      }
+    .channel-preview {
+        width: 100%;
+        height: 60px;
+        border-radius: 4px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        color: white;
+        font-weight: bold;
+    }
 
-      .channel-actions {
-          display: flex;
-          gap: 8px;
-          margin-top: 12px;
-      }
+    .channel-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+    }
 
-      .channel-btn {
-          flex: 1;
-          padding: 8px;
-          font-size: 12px;
-          margin: 0;
-          border-radius: 4px;
-      }
+    .channel-btn {
+        flex: 1;
+        padding: 8px;
+        font-size: 12px;
+        margin: 0;
+        border-radius: 4px;
+    }
 
-      .btn-add {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      }
+    .btn-add {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
 
-      .btn-manage {
-          background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-      }
+    .btn-manage {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
 
-      .btn-generate-all {
-          background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-          font-size: 16px;
-          padding: 15px;
-      }
+    .btn-generate-all {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        font-size: 16px;
+        padding: 15px;
+    }
 
-      /* 弹窗样式 */
-      .modal {
-          display: none;
-          position: fixed;
-          z-index: 1000;
-          left: 0;
-          top: 0;
-          width: 100%;
-          height: 100%;
-          background-color: rgba(0,0,0,0.5);
-          animation: fadeIn 0.3s;
-      }
+    /* 弹窗样式 */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        animation: fadeIn 0.3s;
+    }
 
-      @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-      }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
 
-      .modal-content {
-          background-color: white;
-          margin: 5% auto;
-          padding: 30px;
-          border-radius: 12px;
-          width: 90%;
-          max-width: 700px;
-          max-height: 80vh;
-          overflow-y: auto;
-          animation: slideIn 0.3s;
-      }
+    .modal-content {
+        background-color: white;
+        margin: 5% auto;
+        padding: 30px;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 700px;
+        max-height: 80vh;
+        overflow-y: auto;
+        animation: slideIn 0.3s;
+    }
 
-      @keyframes slideIn {
-          from {
-              transform: translateY(-50px);
-              opacity: 0;
-          }
-          to {
-              transform: translateY(0);
-              opacity: 1;
-          }
-      }
+    @keyframes slideIn {
+        from {
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
 
-      .modal-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 20px;
-          padding-bottom: 15px;
-          border-bottom: 2px solid #667eea;
-      }
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #667eea;
+    }
 
-      .modal-header h2 {
-          margin: 0;
-          border: none;
-          padding: 0;
-      }
+    .modal-header h2 {
+        margin: 0;
+        border: none;
+        padding: 0;
+    }
 
-      .close {
-          font-size: 28px;
-          font-weight: bold;
-          color: #aaa;
-          cursor: pointer;
-          line-height: 1;
-      }
+    .close {
+        font-size: 28px;
+        font-weight: bold;
+        color: #aaa;
+        cursor: pointer;
+        line-height: 1;
+    }
 
-      .close:hover {
-          color: #000;
-      }
+    .close:hover {
+        color: #000;
+    }
 
-      .channel-list {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-      }
+    .channel-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
 
-      .channel-item {
-          background: #f8f9fa;
-          padding: 15px;
-          border-radius: 8px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          border: 2px solid transparent;
-          transition: all 0.3s;
-      }
+    .channel-item {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 2px solid transparent;
+        transition: all 0.3s;
+    }
 
-      .channel-item:hover {
-          border-color: #667eea;
-      }
+    .channel-item:hover {
+        border-color: #667eea;
+    }
 
-      .channel-item-info {
-          flex: 1;
-      }
+    .channel-item-info {
+        flex: 1;
+    }
 
-      .channel-item-actions {
-          display: flex;
-          gap: 8px;
-      }
+    .channel-item-actions {
+        display: flex;
+        gap: 8px;
+    }
 
-      .icon-btn {
-          padding: 8px 12px;
-          font-size: 12px;
-          border-radius: 4px;
-          cursor: pointer;
-          border: none;
-          color: white;
-          transition: all 0.2s;
-          margin: 0;
-          width: auto;
-      }
+    .icon-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        border: none;
+        color: white;
+        transition: all 0.2s;
+        margin: 0;
+        width: auto;
+    }
 
-      .icon-btn:hover {
-          transform: scale(1.05);
-      }
+    .icon-btn:hover {
+        transform: scale(1.05);
+    }
 
-      .btn-delete {
-          background: #f5222d;
-      }
+    .btn-delete {
+        background: #f5222d;
+    }
 
-      .btn-edit {
-          background: #1890ff;
-      }
+    .btn-edit {
+        background: #1890ff;
+    }
 
-      .color-preview {
-          width: 30px;
-          height: 30px;
-          border-radius: 4px;
-          border: 2px solid #ddd;
-          display: inline-block;
-          vertical-align: middle;
-          margin-left: 8px;
-      }
+    .color-preview {
+        width: 30px;
+        height: 30px;
+        border-radius: 4px;
+        border: 2px solid #ddd;
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: 8px;
+    }
 
-      .image-upload-group {
-          display: flex;
-          gap: 10px;
-          margin-bottom: 10px;
-      }
+    .image-upload-group {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
 
-      .image-upload-item {
-          flex: 1;
-      }
+    .image-upload-item {
+        flex: 1;
+    }
 
-      .image-preview {
-          width: 100%;
-          height: 100px;
-          object-fit: cover;
-          border-radius: 4px;
-          margin-top: 8px;
-          border: 2px solid #e0e0e0;
-      }
+    .image-preview {
+        width: 100%;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 4px;
+        margin-top: 8px;
+        border: 2px solid #e0e0e0;
+    }
 
-      /* 批量生成进度 */
-      .progress-section {
-          margin-top: 20px;
-          padding: 15px;
-          background: #f8f9fa;
-          border-radius: 8px;
-          display: none;
-      }
+    /* 批量生成进度 */
+    .progress-section {
+        margin-top: 20px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        display: none;
+    }
 
-      .progress-bar {
-          width: 100%;
-          height: 20px;
-          background: #e0e0e0;
-          border-radius: 10px;
-          overflow: hidden;
-          margin-bottom: 10px;
-      }
+    .progress-bar {
+        width: 100%;
+        height: 20px;
+        background: #e0e0e0;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 10px;
+    }
 
-      .progress-fill {
-          height: 100%;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          transition: width 0.3s;
-      }
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        transition: width 0.3s;
+    }
 
-      .progress-text {
-          text-align: center;
-          color: #666;
-          font-size: 13px;
-      }
+    .progress-text {
+        text-align: center;
+        color: #666;
+        font-size: 13px;
+    }
 
-      /* 生成结果网格 */
-      .result-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-          gap: 15px;
-          margin-top: 20px;
-      }
+    /* 生成结果网格 */
+    .result-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 20px;
+    }
 
-      .result-item {
-          background: white;
-          border-radius: 8px;
-          padding: 10px;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      }
+    .result-item {
+        background: white;
+        border-radius: 8px;
+        padding: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
 
-      .result-image {
-          width: 100%;
-          border-radius: 4px;
-          margin-bottom: 8px;
-      }
+    .result-image {
+        width: 100%;
+        border-radius: 4px;
+        margin-bottom: 8px;
+    }
 
-      .result-name {
-          font-size: 12px;
-          font-weight: bold;
-          margin-bottom: 5px;
-          color: #333;
-      }
+    .result-name {
+        font-size: 12px;
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #333;
+    }
 
-      .result-download {
-          width: 100%;
-          padding: 6px;
-          font-size: 11px;
-          margin: 0;
-      }
+    .result-download {
+        width: 100%;
+        padding: 6px;
+        font-size: 11px;
+        margin: 0;
+    }
 
-      .warning-text {
-          font-size: 11px;
-          color: #f5222d;
-          margin-top: 5px;
-      }
+    .warning-text {
+        font-size: 11px;
+        color: #f5222d;
+        margin-top: 5px;
+    }
 
-      /* 添加实时预览样式 */
-      .live-preview-container {
-          margin-top: 20px;
-          border: 2px solid #e0e0e0;
-          border-radius: 8px;
-          overflow: hidden;
-      }
+    /* 添加实时预览样式 */
+    .live-preview-container {
+        margin-top: 20px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        overflow: hidden;
+    }
 
-      .live-preview-header {
-          padding: 10px 15px;
-          background: #f8f9fa;
-          border-bottom: 1px solid #e0e0e0;
-          font-size: 13px;
-          font-weight: bold;
-          color: #555;
-      }
+    .live-preview-header {
+        padding: 10px 15px;
+        background: #f8f9fa;
+        border-bottom: 1px solid #e0e0e0;
+        font-size: 13px;
+        font-weight: bold;
+        color: #555;
+    }
 
-      .live-preview-content {
-          padding: 15px;
-          min-height: 100px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-      }
+    .live-preview-content {
+        padding: 15px;
+        min-height: 100px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
 
-      .live-preview-text {
-          padding: 10px 15px;
-          border-radius: 6px;
-          margin-top: 10px;
-          font-weight: bold;
-          text-align: center;
-      }
-  </style>
+    .live-preview-text {
+        padding: 10px 15px;
+        border-radius: 6px;
+        margin-top: 10px;
+        font-weight: bold;
+        text-align: center;
+    }
+</style>
 </head>
 <body>
-  <div class="container">
-      <!-- 左侧输入面板 -->
-      <div class="panel">
-          <h2>📊 策略参数输入</h2>
-          
-          <!-- 频道选择 -->
-          <div class="channel-section">
-              <h3>📢 频道配置</h3>
-              <div class="channel-grid" id="channelGrid">
-                  <!-- 频道卡片将通过 JS 动态生成 -->
-              </div>
-              <div class="channel-actions">
-                  <button class="channel-btn btn-add" onclick="openAddChannelModal()">➕ 添加频道</button>
-                  <button class="channel-btn btn-manage" onclick="openManageChannelModal()">⚙️ 管理频道</button>
-              </div>
-          </div>
-
-          <div class="form-group">
-              <label>策略编号</label>
-              <input type="text" id="strategy_id" value="209898" placeholder="例如: 209898">
-          </div>
-          
-          <div class="form-group">
-              <label>交易标的</label>
-              <select id="symbol_name">
-                  <option value="BTC">BTC</option>
-                  <option value="ETH">ETH</option>
-              </select>
-          </div>
-          
-          <div class="form-group">
-              <label>操作方向</label>
-              <select id="direction">
-                  <option value="long">做多</option>
-                  <option value="short">做空</option>
-              </select>
-          </div>
-          
-          <div class="form-group">
-              <label>基础进场价</label>
-              <input type="number" id="entry_price" value="110947" placeholder="例如: 110947">
-          </div>
-
-          <div class="style-section">
-              <h3>🎨 导出设置</h3>
-              <div class="form-group">
-                  <label>图片分辨率倍数</label>
-                  <input type="number" id="exportScale" value="2" min="1" max="5" step="0.5">
-              </div>
-          </div>
-          
-          <button class="btn-generate-all" onclick="generateAllChannels()">🚀 一键生成所有频道图片</button>
-
-          <!-- 进度显示 -->
-          <div class="progress-section" id="progressSection">
-              <div class="progress-bar">
-                  <div class="progress-fill" id="progressFill"></div>
-              </div>
-              <div class="progress-text" id="progressText">准备生成...</div>
-          </div>
-      </div>
-      
-      <!-- 右侧预览面板 -->
-      <div class="panel preview-section">
-          <h2>🖼️ 预览与下载</h2>
-          <canvas id="canvas" width="800" height="1000" style="display:none;"></canvas>
-          <div class="result-grid" id="resultGrid">
-              <div style="text-align:center;color:#999;padding:40px;grid-column:1/-1;">
-                  点击"一键生成所有频道图片"开始生成
-              </div>
-          </div>
-      </div>
-  </div>
-
-  <!-- 添加频道弹窗 -->
-  <div id="addChannelModal" class="modal">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h2>➕ 添加新频道</h2>
-              <span class="close" onclick="closeAddChannelModal()">&times;</span>
-          </div>
-          <div class="form-group">
-              <label>频道名称</label>
-              <input type="text" id="channelName" placeholder="例如: 英语频道" oninput="updateLivePreview()">
-          </div>
-          <div class="form-group">
-              <label>频道语言</label>
-              <select id="channelLanguage">
-                  <option value="en">英语</option>
-                  <option value="ru">俄语</option>
-                  <option value="vi">越南语</option>
-                  <option value="ar">阿拉伯语</option>
-              </select>
-          </div>
-          <div class="row">
-              <div class="form-group">
-                  <label>文字颜色</label>
-                  <input type="color" id="channelTextColor" value="#ffffff" oninput="updateLivePreview()">
-              </div>
-              <div class="form-group">
-                  <label>背景颜色</label>
-                  <input type="color" id="channelBgColor" value="#1a1a2e" oninput="updateLivePreview()">
-              </div>
-          </div>
-          <div class="row">
-              <div class="form-group">
-                  <label>字体大小</label>
-                  <input type="number" id="channelFontSize" value="38" min="12" max="72" oninput="updateLivePreview()">
-              </div>
-              <div class="form-group">
-                  <label>背景透明度</label>
-                  <input type="number" id="channelBgOpacity" value="1" min="0" max="1" step="0.1" oninput="updateLivePreview()">
-              </div>
-          </div>
-          
-          <!-- 添加实时预览区域 -->
-          <div class="live-preview-container">
-              <div class="live-preview-header">实时预览效果</div>
-              <div class="live-preview-content" id="livePreviewContent">
-                  <div class="channel-preview" id="livePreviewBox" style="background: #1a1a2e; color: #ffffff;">
-                      预览文本
-                  </div>
-                  <div class="live-preview-text" id="livePreviewText" style="background: #1a1a2e; color: #ffffff;">
-                      示例文本
-                  </div>
-              </div>
-          </div>
-          
-          <div class="form-group">
-              <label>做多头图 (建议小于 500KB)</label>
-              <input type="file" id="channelLongImage" accept="image/*">
-              <img id="channelLongPreview" class="image-preview" style="display:none;">
-              <div class="warning-text" id="longImageWarning" style="display:none;">⚠️ 图片过大，已自动压缩</div>
-          </div>
-          <div class="form-group">
-              <label>做空头图 (建议小于 500KB)</label>
-              <input type="file" id="channelShortImage" accept="image/*">
-              <img id="channelShortPreview" class="image-preview" style="display:none;">
-              <div class="warning-text" id="shortImageWarning" style="display:none;">⚠️ 图片过大，已自动压缩</div>
-          </div>
-          <button onclick="saveChannel()">💾 保存频道</button>
-      </div>
-  </div>
-
-  <!-- 管理频道弹窗 -->
-  <div id="manageChannelModal" class="modal">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h2>⚙️ 管理频道</h2>
-              <span class="close" onclick="closeManageChannelModal()">&times;</span>
-          </div>
-          <div class="channel-list" id="channelList">
-              <!-- 频道列表将通过 JS 动态生成 -->
-          </div>
-      </div>
-  </div>
-
-  <script>
-      // 语言模板
-      const templates = {
-          en: {
-              title: "✅ Strategy ID {strategy_id}",
-              lines: [
-                  "{symbol_name} (Total Position {total_position_pct}%)",
-                  "Entry Range: {price_low} – {price_high}",
-                  "Direction: {direction}",
-                  "Max Position Size: {total_position_pct}%",
-                  "Leverage: {leverage}x",
-                  "Partial Take-Profit Prices:",
-                  "{tp1} / {tp2} / {tp3}",
-                  "Stop Loss: {sl}"
-              ],
-              align: "left",
-              font: "Arial, sans-serif",
-              directionLabels: { long: 'Long', short: 'Short' }
-          },
-          ru: {
-              title: "✅ Стратегия №{strategy_id}",
-              lines: [
-                  "{symbol_name} (Общий объём позиции {total_position_pct}%)",
-                  "Диапазон входа: {price_low} – {price_high}",
-                  "Направление: {direction}",
-                  "Максимальный размер позиции: {total_position_pct}%",
-                  "Плечо: {leverage}x",
-                  "Цены частичной фиксации прибыли: {tp1} / {tp2} / {tp3}",
-                  "Стоп-лосс: {sl}"
-              ],
-              align: "left",
-              font: "Arial, sans-serif",
-              directionLabels: { long: 'Длинная', short: 'Короткая' }
-          },
-          vi: {
-              title: "✅ Chiến lược số {strategy_id}",
-              lines: [
-                  "{symbol_name} (Tổng vị thế {total_position_pct}%)",
-                  "Vùng vào lệnh: {price_low} – {price_high}",
-                  "Hướng giao dịch: {direction}",
-                  "Giới hạn vị thế: {total_position_pct}%",
-                  "Đòn bẩy: {leverage}x",
-                  "Giá chốt lời từng phần: {tp1} / {tp2} / {tp3}",
-                  "Cắt lỗ: {sl}"
-              ],
-              align: "left",
-              font: "Arial, sans-serif",
-              directionLabels: { long: 'Mua (Long)', short: 'Bán (Short)' }
-          },
-          ar: {
-              title: "✅ رقم الإستراتيجية {strategy_id}",
-              lines: [
-                  "{symbol_name} (إجمالي حجم الصفقة {total_position_pct}%)",
-                  "نطاق الدخول: {price_low} – {price_high}",
-                  "الاتجاه: {direction}",
-                  "الحد الأقصى لحجم الصفقة: {total_position_pct}%",
-                  "الرافعة المالية: {leverage}x",
-                  "أسعار جني الأرباح الجزئية: {tp1} / {tp2} / {tp3}",
-                  "إيقاف الخسارة: {sl}"
-              ],
-              align: "right",
-              font: "Arial, sans-serif",
-              directionLabels: { long: 'شراء', short: 'بيع' }
-          }
-      };
-
-      let currentActiveChannel = null;
-      let channelLongImageData = null;
-      let channelShortImageData = null;
-
-      // ========== 图片压缩函数 ==========
-      function compressImage(file, maxWidth = 800, quality = 0.7) {
-          return new Promise((resolve, reject) => {
-              const reader = new FileReader();
-              reader.onload = (e) => {
-                  const img = new Image();
-                  img.onload = () => {
-                      const canvas = document.createElement('canvas');
-                      let width = img.width;
-                      let height = img.height;
-
-                      // 限制最大宽度
-                      if (width > maxWidth) {
-                          height = Math.round(height * (maxWidth / width));
-                          width = maxWidth;
-                      }
-
-                      canvas.width = width;
-                      canvas.height = height;
-
-                      const ctx = canvas.getContext('2d');
-                      ctx.drawImage(img, 0, 0, width, height);
-
-                      // 压缩为 JPEG 格式
-                      const compressed = canvas.toDataURL('image/jpeg', quality);
-                      resolve(compressed);
-                  };
-                  img.onerror = reject;
-                  img.src = e.target.result;
-              };
-              reader.onerror = reject;
-              reader.readAsDataURL(file);
-          });
-      }
-
-      // ========== 频道管理功能 ==========
-      
-      function getChannels() {
-          try {
-              return JSON.parse(localStorage.getItem('strategyChannels') || '[]');
-          } catch (e) {
-              console.error('读取频道数据失败:', e);
-              return [];
-          }
-      }
-
-      function saveChannels(channels) {
-          try {
-              localStorage.setItem('strategyChannels', JSON.stringify(channels));
-          } catch (e) {
-              if (e.name === 'QuotaExceededError') {
-                  alert('存储空间不足！请删除一些频道或使用更小的图片。');
-                  throw e;
-              }
-          }
-      }
-
-      function renderChannelGrid() {
-          const grid = document.getElementById('channelGrid');
-          const channels = getChannels();
-          
-          if (channels.length === 0) {
-              grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:white; padding:20px;">暂无频道，点击"添加频道"创建</div>';
-              return;
-          }
-
-          grid.innerHTML = '';
-          channels.forEach((channel, index) => {
-              const card = document.createElement('div');
-              card.className = 'channel-card';
-              if (currentActiveChannel === index) {
-                  card.classList.add('active');
-              }
-              
-              const languageMap = {
-                  'en': '英语',
-                  'ru': '俄语',
-                  'vi': '越南语',
-                  'ar': '阿拉伯语'
-              };
-
-              card.innerHTML = `
-                  <div class="channel-preview" style="background: ${channel.bgColor}; color: ${channel.textColor};">
-                      ${channel.name}
-                  </div>
-                  <div class="channel-name">${channel.name}</div>
-                  <div class="channel-info">
-                      <div>语言: ${languageMap[channel.language] || channel.language}</div>
-                      <div>字号: ${channel.fontSize}px</div>
-                  </div>
-              `;
-              
-              card.onclick = () => {
-                  currentActiveChannel = index;
-                  renderChannelGrid();
-                  showToast(`已选择频道: ${channel.name}`);
-              };
-              grid.appendChild(card);
-          });
-      }
-
-      function openAddChannelModal() {
-          document.getElementById('addChannelModal').style.display = 'block';
-          channelLongImageData = null;
-          channelShortImageData = null;
-          
-          // 初始化实时预览
-          updateLivePreview();
-      }
-
-      function closeAddChannelModal() {
-          document.getElementById('addChannelModal').style.display = 'none';
-          document.getElementById('channelName').value = '';
-          document.getElementById('channelLongImage').value = '';
-          document.getElementById('channelShortImage').value = '';
-          document.getElementById('channelLongPreview').style.display = 'none';
-          document.getElementById('channelShortPreview').style.display = 'none';
-          document.getElementById('longImageWarning').style.display = 'none';
-          document.getElementById('shortImageWarning').style.display = 'none';
-      }
-
-      // 实时预览功能
-      function updateLivePreview() {
-          const name = document.getElementById('channelName').value.trim() || '预览文本';
-          const textColor = document.getElementById('channelTextColor').value;
-          const bgColor = document.getElementById('channelBgColor').value;
-          const fontSize = parseInt(document.getElementById('channelFontSize').value) || 38;
-          const bgOpacity = parseFloat(document.getElementById('channelBgOpacity').value) || 1;
-          
-          // 更新预览框
-          const previewBox = document.getElementById('livePreviewBox');
-          previewBox.style.background = bgColor;
-          previewBox.style.color = textColor;
-          previewBox.style.fontSize = `${fontSize}px`;
-          previewBox.textContent = name;
-          
-          // 更新文本预览
-          const previewText = document.getElementById('livePreviewText');
-          previewText.style.background = bgColor;
-          previewText.style.color = textColor;
-          previewText.style.fontSize = `${fontSize}px`;
-          previewText.style.opacity = bgOpacity;
-          previewText.textContent = '示例文本';
-      }
-
-      // 预览并压缩上传的图片
-      document.getElementById('channelLongImage').addEventListener('change', async function(e) {
-          const file = e.target.files[0];
-          if (file) {
-              try {
-                  // 显示压缩提示
-                  if (file.size > 500 * 1024) {
-                      document.getElementById('longImageWarning').style.display = 'block';
-                  } else {
-                      document.getElementById('longImageWarning').style.display = 'none';
-                  }
-
-                  channelLongImageData = await compressImage(file, 800, 0.7);
-                  const preview = document.getElementById('channelLongPreview');
-                  preview.src = channelLongImageData;
-                  preview.style.display = 'block';
-              } catch (error) {
-                  alert('图片处理失败，请重试');
-                  console.error(error);
-              }
-          }
-      });
-
-      document.getElementById('channelShortImage').addEventListener('change', async function(e) {
-          const file = e.target.files[0];
-          if (file) {
-              try {
-                  if (file.size > 500 * 1024) {
-                      document.getElementById('shortImageWarning').style.display = 'block';
-                  } else {
-                      document.getElementById('shortImageWarning').style.display = 'none';
-                  }
-
-                  channelShortImageData = await compressImage(file, 800, 0.7);
-                  const preview = document.getElementById('channelShortPreview');
-                  preview.src = channelShortImageData;
-                  preview.style.display = 'block';
-              } catch (error) {
-                  alert('图片处理失败，请重试');
-                  console.error(error);
-              }
-          }
-      });
-
-      async function saveChannel() {
-          const name = document.getElementById('channelName').value.trim();
-          const language = document.getElementById('channelLanguage').value;
-          const textColor = document.getElementById('channelTextColor').value;
-          const bgColor = document.getElementById('channelBgColor').value;
-          const fontSize = parseInt(document.getElementById('channelFontSize').value);
-          const bgOpacity = parseFloat(document.getElementById('channelBgOpacity').value);
-          
-          if (!name) {
-              alert('请输入频道名称');
-              return;
-          }
-
-          if (!channelLongImageData || !channelShortImageData) {
-              alert('请上传做多和做空头图');
-              return;
-          }
-
-          try {
-              const channels = getChannels();
-              channels.push({
-                  name,
-                  language,
-                  textColor,
-                  bgColor,
-                  fontSize,
-                  bgOpacity,
-                  longImage: channelLongImageData,
-                  shortImage: channelShortImageData,
-                  createdAt: Date.now()
-              });
-              saveChannels(channels);
-
-              closeAddChannelModal();
-              renderChannelGrid();
-              showToast('频道已保存');
-          } catch (error) {
-              console.error('保存频道失败:', error);
-          }
-      }
-
-      function openManageChannelModal() {
-          document.getElementById('manageChannelModal').style.display = 'block';
-          renderChannelList();
-      }
-
-      function closeManageChannelModal() {
-          document.getElementById('manageChannelModal').style.display = 'none';
-      }
-
-      function renderChannelList() {
-          const list = document.getElementById('channelList');
-          const channels = getChannels();
-          
-          if (channels.length === 0) {
-              list.innerHTML = '<div style="text-align:center;color:#999;padding:40px;">暂无频道</div>';
-              return;
-          }
-
-          list.innerHTML = '';
-          channels.forEach((channel, index) => {
-              const item = document.createElement('div');
-              item.className = 'channel-item';
-              
-              const languageMap = {
-                  'en': '英语',
-                  'ru': '俄语',
-                  'vi': '越南语',
-                  'ar': '阿拉伯语'
-              };
-
-              item.innerHTML = `
-                  <div class="channel-item-info">
-                      <div style="font-weight:bold;margin-bottom:5px;">${channel.name}</div>
-                      <div style="font-size:12px;color:#666;">
-                          ${languageMap[channel.language]} | 字号: ${channel.fontSize}px
-                          <span class="color-preview" style="background:${channel.textColor}"></span>
-                          <span class="color-preview" style="background:${channel.bgColor}"></span>
-                      </div>
-                  </div>
-                  <div class="channel-item-actions">
-                      <button class="icon-btn btn-delete" onclick="deleteChannel(${index})">🗑️ 删除</button>
-                  </div>
-              `;
-              
-              list.appendChild(item);
-          });
-      }
-
-      function deleteChannel(index) {
-          if (!confirm('确定要删除这个频道吗？')) return;
-          
-          const channels = getChannels();
-          channels.splice(index, 1);
-          saveChannels(channels);
-          
-          renderChannelList();
-          renderChannelGrid();
-          showToast('频道已删除');
-      }
-
-      // ========== 批量生成功能 ==========
-
-      async function generateAllChannels() {
-          const channels = getChannels();
-          
-          if (channels.length === 0) {
-              alert('请先添加频道配置');
-              return;
-          }
-
-          const strategyId = document.getElementById('strategy_id').value;
-          const symbolName = document.getElementById('symbol_name').value;
-          const direction = document.getElementById('direction').value;
-          const entryPrice = parseFloat(document.getElementById('entry_price').value);
-
-          if (!strategyId || !entryPrice) {
-              alert('请填写完整的策略参数');
-              return;
-          }
-
-          // 显示进度
-          const progressSection = document.getElementById('progressSection');
-          const progressFill = document.getElementById('progressFill');
-          const progressText = document.getElementById('progressText');
-          progressSection.style.display = 'block';
-
-          const resultGrid = document.getElementById('resultGrid');
-          resultGrid.innerHTML = '';
-
-          const exportScale = parseFloat(document.getElementById('exportScale').value) || 2;
-
-          for (let i = 0; i < channels.length; i++) {
-              const channel = channels[i];
-              const progress = ((i + 1) / channels.length) * 100;
-              
-              progressFill.style.width = progress + '%';
-              progressText.textContent = `正在生成 ${channel.name} (${i + 1}/${channels.length})`;
-
-              // 生成图片
-              const imageDataUrl = await generateChannelImage(channel, {
-                  strategyId,
-                  symbolName,
-                  direction,
-                  entryPrice
-              }, exportScale);
-
-              // 添加到结果网格
-              const resultItem = document.createElement('div');
-              resultItem.className = 'result-item';
-              resultItem.innerHTML = `
-                  <img src="${imageDataUrl}" class="result-image" alt="${channel.name}">
-                  <div class="result-name">${channel.name}</div>
-                  <button class="result-download" onclick="downloadChannelImage('${imageDataUrl}', '${strategyId}', '${channel.name}')">
-                      ⬇️ 下载
-                  </button>
-              `;
-              resultGrid.appendChild(resultItem);
-
-              // 短暂延迟，让UI更新
-              await new Promise(resolve => setTimeout(resolve, 100));
-          }
-
-          progressText.textContent = `✅ 完成！已生成 ${channels.length} 张图片`;
-          showToast('所有频道图片生成完成！');
-      }
-
-      function generateChannelImage(channel, strategyData, scale = 2) {
-          return new Promise((resolve) => {
-              const canvas = document.getElementById('canvas');
-              const { strategyId, symbolName, direction, entryPrice } = strategyData;
-
-              // 计算策略参数
-              const calculated = calculateStrategy(symbolName, entryPrice, direction);
-              
-              const data = {
-                  strategy_id: strategyId,
-                  symbol_name: symbolName,
-                  direction: direction,
-                  entry_price: entryPrice,
-                  ...calculated
-              };
-
-              // 获取模板
-              const template = templates[channel.language] || templates['en'];
-              const dirValue = direction;
-              const localizedDirection = (template.directionLabels && template.directionLabels[dirValue]) ? 
-                  template.directionLabels[dirValue] : (dirValue === 'long' ? 'Long' : 'Short');
-              
-              data.direction = localizedDirection;
-
-              // 加载对应的头图
-              const headerImageSrc = direction === 'long' ? channel.longImage : channel.shortImage;
-              const headerImage = new Image();
-              
-              headerImage.onload = () => {
-                  // 设置画布尺寸
-                  const baseWidth = 800;
-                  canvas.width = baseWidth * scale;
-
-                  const scaleFactor = scale;
-                  const paddingScaled = Math.round(30 * scaleFactor);
-                  const baseFontSize = channel.fontSize || 38;
-                  const fontSizeScaled = Math.round(baseFontSize * scaleFactor);
-                  const titleFontScaled = Math.round((baseFontSize + 4) * scaleFactor);
-                  const lineHeight = fontSizeScaled * 1.8;
-                  
-                  const titleText = template.title.replace(/{(\w+)}/g, (m,k) => data[k] || m);
-                  const contentLines = template.lines.map(line => line.replace(/{(\w+)}/g, (m,k) => data[k] || m));
-
-                  const bgHeight = Math.round(lineHeight * (contentLines.length + 2) + paddingScaled * 2);
-
-                  // 计算头图高度
-                  const canvasWidth = canvas.width;
-                  const imgAspect = headerImage.width / headerImage.height;
-                  const headerDrawHeight = Math.round(canvasWidth / imgAspect);
-
-                  const bottomPadding = 40;
-                  const totalHeight = headerDrawHeight + bgHeight + bottomPadding;
-
-                  canvas.height = Math.max(totalHeight, 200);
-                  const ctx = canvas.getContext('2d', { alpha: false });
-                  
-                  ctx.imageSmoothingEnabled = false;
-
-                  // 清空画布
-                  ctx.fillStyle = channel.bgColor;
-                  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                  // 绘制头图
-                  ctx.drawImage(headerImage, 0, 0, canvasWidth, headerDrawHeight);
-
-                  // 绘制文字背景
-                  const bgY = headerDrawHeight;
-                  ctx.globalAlpha = channel.bgOpacity;
-                  ctx.fillStyle = channel.bgColor;
-                  roundRect(ctx, paddingScaled, bgY, canvas.width - paddingScaled * 2, bgHeight, 15 * scaleFactor);
-                  ctx.fill();
-                  ctx.globalAlpha = 1;
-
-                  // 绘制文字
-                  ctx.fillStyle = channel.textColor;
-                  ctx.font = `bold ${titleFontScaled}px ${template.font}`;
-                  ctx.textAlign = template.align;
-                  
-                  const textX = template.align === 'right' ? 
-                      canvas.width - paddingScaled - Math.round(20 * scaleFactor) : 
-                      paddingScaled + Math.round(20 * scaleFactor);
-                  let textY = bgY + paddingScaled + fontSizeScaled + Math.round(10 * scaleFactor);
-
-                  ctx.fillText(titleText, textX, textY);
-
-                  ctx.font = `bold ${fontSizeScaled}px ${template.font}`;
-                  textY += lineHeight * 1.5;
-                  
-                  contentLines.forEach((line) => {
-                      if (line.includes(localizedDirection)) {
-                          ctx.save();
-                          if (direction === 'long') {
-                              ctx.fillStyle = '#00DA90';
-                          } else if (direction === 'short') {
-                              ctx.fillStyle = '#F04343';
-                          }
-                          
-                          ctx.fillText(line, textX, textY);
-                          ctx.restore();
-                      } else {
-                          ctx.fillText(line, textX, textY);
-                      }
-                      textY += lineHeight;
-                  });
-
-                  // 返回图片数据
-                  resolve(canvas.toDataURL('image/png'));
-              };
-
-              headerImage.src = headerImageSrc;
-          });
-      }
-
-      function downloadChannelImage(dataUrl, strategyId, channelName) {
-          const link = document.createElement('a');
-          const safeName = channelName.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '_');
-          link.download = `strategy_${strategyId}_${safeName}.png`;
-          link.href = dataUrl;
-          link.click();
-      }
-
-      // ========== 辅助函数 ==========
-
-      function calculateStrategy(symbolName, entryPrice, direction) {
-          const symbol = symbolName.toUpperCase();
-          const offset = symbol.includes('BTC') ? 100 : 10;
-          const isLong = direction === 'long';
-          
-          return {
-              price_low: Math.round(entryPrice - offset),
-              price_high: Math.round(entryPrice + offset),
-              leverage: 100,
-              total_position_pct: 5,
-              tp1: isLong ? Math.round(entryPrice * (1 + 0.012)) : Math.round(entryPrice * (1 - 0.012)),
-              tp2: isLong ? Math.round(entryPrice * (1 + 0.018)) : Math.round(entryPrice * (1 - 0.018)),
-              tp3: isLong ? Math.round(entryPrice * (1 + 0.03)) : Math.round(entryPrice * (1 - 0.03)),
-              sl: isLong ? Math.round(entryPrice * (1 - 0.01)) : Math.round(entryPrice * (1 + 0.01))
-          };
-      }
-
-      function roundRect(ctx, x, y, width, height, radius) {
-          ctx.beginPath();
-          ctx.moveTo(x + radius, y);
-          ctx.lineTo(x + width - radius, y);
-          ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-          ctx.lineTo(x + width, y + height - radius);
-          ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-          ctx.lineTo(x + radius, y + height);
-          ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-          ctx.lineTo(x, y + radius);
-          ctx.quadraticCurveTo(x, y, x + radius, y);
-          ctx.closePath();
-      }
-
-      function showToast(message) {
-          const toast = document.createElement('div');
-          toast.textContent = message;
-          toast.style.cssText = `
-              position: fixed;
-              top: 20px;
-              right: 20px;
-              background: #333;
-              color: white;
-              padding: 12px 20px;
-              border-radius: 6px;
-              z-index: 10000;
-              animation: slideInRight 0.3s;
-          `;
-          document.body.appendChild(toast);
-          
-          setTimeout(() => {
-              toast.style.animation = 'fadeOut 0.3s';
-              setTimeout(() => toast.remove(), 300);
-          }, 2000);
-      }
-
-      window.onclick = function(event) {
-          const addModal = document.getElementById('addChannelModal');
-          const manageModal = document.getElementById('manageChannelModal');
-          if (event.target === addModal) {
-              closeAddChannelModal();
-          }
-          if (event.target === manageModal) {
-              closeManageChannelModal();
-          }
-      };
-
-      window.onload = () => {
-          renderChannelGrid();
-      };
-  </script>
+<div class="container">
+    <!-- 左侧输入面板 -->
+    <div class="panel">
+        <h2>📊 策略参数输入</h2>
+        
+        <!-- 频道选择 -->
+        <div class="channel-section">
+            <h3>📢 频道配置</h3>
+            <div class="channel-grid" id="channelGrid">
+                <!-- 频道卡片将通过 JS 动态生成 -->
+            </div>
+            <div class="channel-actions">
+                <button class="channel-btn btn-add" onclick="openAddChannelModal()">➕ 添加频道</button>
+                <button class="channel-btn btn-manage" onclick="openManageChannelModal()">⚙️ 管理频道</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>策略编号</label>
+            <input type="text" id="strategy_id" value="209898" placeholder="例如: 209898">
+        </div>
+        
+        <div class="form-group">
+            <label>交易标的</label>
+            <select id="symbol_name">
+                <option value="BTC">BTC</option>
+                <option value="ETH">ETH</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>操作方向</label>
+            <select id="direction">
+                <option value="long">做多</option>
+                <option value="short">做空</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>基础进场价</label>
+            <input type="number" id="entry_price" value="110947" placeholder="例如: 110947">
+        </div>
+
+        <div class="style-section">
+            <h3>🎨 导出设置</h3>
+            <div class="form-group">
+                <label>图片分辨率倍数</label>
+                <input type="number" id="exportScale" value="2" min="1" max="5" step="0.5">
+            </div>
+        </div>
+        
+        <button class="btn-generate-all" onclick="generateAllChannels()">🚀 一键生成所有频道图片</button>
+
+        <!-- 进度显示 -->
+        <div class="progress-section" id="progressSection">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">准备生成...</div>
+        </div>
+    </div>
+    
+    <!-- 右侧预览面板 -->
+    <div class="panel preview-section">
+        <h2>🖼️ 预览与下载</h2>
+        <canvas id="canvas" width="800" height="1000" style="display:none;"></canvas>
+        <div class="result-grid" id="resultGrid">
+            <div style="text-align:center;color:#999;padding:40px;grid-column:1/-1;">
+                点击"一键生成所有频道图片"开始生成
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 添加频道弹窗 -->
+<div id="addChannelModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>➕ 添加新频道</h2>
+            <span class="close" onclick="closeAddChannelModal()">&times;</span>
+        </div>
+        <div class="form-group">
+            <label>频道名称</label>
+            <input type="text" id="channelName" placeholder="例如: 英语频道" oninput="updateLivePreview()">
+        </div>
+        <div class="form-group">
+            <label>频道语言</label>
+            <select id="channelLanguage">
+                <option value="en">英语</option>
+                <option value="ru">俄语</option>
+                <option value="vi">越南语</option>
+                <option value="ar">阿拉伯语</option>
+            </select>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                <label>文字颜色</label>
+                <input type="color" id="channelTextColor" value="#ffffff" oninput="updateLivePreview()">
+            </div>
+            <div class="form-group">
+                <label>背景颜色</label>
+                <input type="color" id="channelBgColor" value="#1a1a2e" oninput="updateLivePreview()">
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                <label>字体大小</label>
+                <input type="number" id="channelFontSize" value="38" min="12" max="72" oninput="updateLivePreview()">
+            </div>
+            <div class="form-group">
+                <label>背景透明度</label>
+                <input type="number" id="channelBgOpacity" value="1" min="0" max="1" step="0.1" oninput="updateLivePreview()">
+            </div>
+        </div>
+        
+        <!-- 添加实时预览区域 -->
+        <div class="live-preview-container">
+            <div class="live-preview-header">实时预览效果</div>
+            <div class="live-preview-content" id="livePreviewContent">
+                <div class="channel-preview" id="livePreviewBox" style="background: #1a1a2e; color: #ffffff;">
+                    预览文本
+                </div>
+                <div class="live-preview-text" id="livePreviewText" style="background: #1a1a2e; color: #ffffff;">
+                    示例文本
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>做多头图 (建议小于 500KB)</label>
+            <input type="file" id="channelLongImage" accept="image/*">
+            <img id="channelLongPreview" class="image-preview" style="display:none;">
+            <div class="warning-text" id="longImageWarning" style="display:none;">⚠️ 图片过大，已自动压缩</div>
+        </div>
+        <div class="form-group">
+            <label>做空头图 (建议小于 500KB)</label>
+            <input type="file" id="channelShortImage" accept="image/*">
+            <img id="channelShortPreview" class="image-preview" style="display:none;">
+            <div class="warning-text" id="shortImageWarning" style="display:none;">⚠️ 图片过大，已自动压缩</div>
+        </div>
+        <button onclick="saveChannel()">💾 保存频道</button>
+    </div>
+</div>
+
+<!-- 管理频道弹窗 -->
+<div id="manageChannelModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>⚙️ 管理频道</h2>
+            <span class="close" onclick="closeManageChannelModal()">&times;</span>
+        </div>
+        <div class="channel-list" id="channelList">
+            <!-- 频道列表将通过 JS 动态生成 -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // 语言模板 - 修改为支持换行的格式
+    const templates = {
+        en: {
+            title: "✅ Strategy ID {strategy_id}",
+            lines: [
+                "{symbol_name} (Total Position {total_position_pct}%)",
+                "Entry Range: {price_low} – {price_high}",
+                "Direction: {direction}",
+                "Max Position Size: {total_position_pct}%",
+                "Leverage: {leverage}x",
+                "Partial Take-Profit Prices:",
+                "{tp1} / {tp2} / {tp3}"
+            ],
+            slLine: "Stop Loss: {sl}",
+            align: "left",
+            font: "Arial, sans-serif",
+            directionLabels: { long: 'Long', short: 'Short' }
+        },
+        ru: {
+            title: "✅ Стратегия №{strategy_id}",
+            lines: [
+                "{symbol_name} (Общий объём позиции {total_position_pct}%)",
+                "Диапазон входа: {price_low} – {price_high}",
+                "Направление: {direction}",
+                "Максимальный размер позиции: {total_position_pct}%",
+                "Плечо: {leverage}x",
+                "Цены частичной фиксации прибыли:",
+                "{tp1} / {tp2} / {tp3}"
+            ],
+            slLine: "Стоп-лосс: {sl}",
+            align: "left",
+            font: "Arial, sans-serif",
+            directionLabels: { long: 'Длинная', short: 'Короткая' }
+        },
+        vi: {
+            title: "✅ Chiến lược số {strategy_id}",
+            lines: [
+                "{symbol_name} (Tổng vị thế {total_position_pct}%)",
+                "Vùng vào lệnh: {price_low} – {price_high}",
+                "Hướng giao dịch: {direction}",
+                "Giới hạn vị thế: {total_position_pct}%",
+                "Đòn bẩy: {leverage}x",
+                "Giá chốt lời từng phần:",
+                "{tp1} / {tp2} / {tp3}"
+            ],
+            slLine: "Cắt lỗ: {sl}",
+            align: "left",
+            font: "Arial, sans-serif",
+            directionLabels: { long: 'Mua (Long)', short: 'Bán (Short)' }
+        },
+        ar: {
+            title: "✅ رقم الإستراتيجية {strategy_id}",
+            lines: [
+                "{symbol_name} (إجمالي حجم الصفقة {total_position_pct}%)",
+                "نطاق الدخول: {price_low} – {price_high}",
+                "الاتجاه: {direction}",
+                "الحد الأقصى لحجم الصفقة: {total_position_pct}%",
+                "الرافعة المالية: {leverage}x",
+                "أسعار جني الأرباح الجزئية:",
+                "{tp1} / {tp2} / {tp3}"
+            ],
+            slLine: "إيقاف الخسارة: {sl}",
+            align: "right",
+            font: "Arial, sans-serif",
+            directionLabels: { long: 'شراء', short: 'بيع' }
+        }
+    };
+
+    let currentActiveChannel = null;
+    let channelLongImageData = null;
+    let channelShortImageData = null;
+
+    // ========== 图片压缩函数 ==========
+    function compressImage(file, maxWidth = 800, quality = 0.7) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+
+                    // 限制最大宽度
+                    if (width > maxWidth) {
+                        height = Math.round(height * (maxWidth / width));
+                        width = maxWidth;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // 压缩为 JPEG 格式
+                    const compressed = canvas.toDataURL('image/jpeg', quality);
+                    resolve(compressed);
+                };
+                img.onerror = reject;
+                img.src = e.target.result;
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // ========== 频道管理功能 ==========
+    
+    function getChannels() {
+        try {
+            return JSON.parse(localStorage.getItem('strategyChannels') || '[]');
+        } catch (e) {
+            console.error('读取频道数据失败:', e);
+            return [];
+        }
+    }
+
+    function saveChannels(channels) {
+        try {
+            localStorage.setItem('strategyChannels', JSON.stringify(channels));
+        } catch (e) {
+            if (e.name === 'QuotaExceededError') {
+                alert('存储空间不足！请删除一些频道或使用更小的图片。');
+                throw e;
+            }
+        }
+    }
+
+    function renderChannelGrid() {
+        const grid = document.getElementById('channelGrid');
+        const channels = getChannels();
+        
+        if (channels.length === 0) {
+            grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:white; padding:20px;">暂无频道，点击"添加频道"创建</div>';
+            return;
+        }
+
+        grid.innerHTML = '';
+        channels.forEach((channel, index) => {
+            const card = document.createElement('div');
+            card.className = 'channel-card';
+            if (currentActiveChannel === index) {
+                card.classList.add('active');
+            }
+            
+            const languageMap = {
+                'en': '英语',
+                'ru': '俄语',
+                'vi': '越南语',
+                'ar': '阿拉伯语'
+            };
+
+            card.innerHTML = `
+                <div class="channel-preview" style="background: ${channel.bgColor}; color: ${channel.textColor};">
+                    ${channel.name}
+                </div>
+                <div class="channel-name">${channel.name}</div>
+                <div class="channel-info">
+                    <div>语言: ${languageMap[channel.language] || channel.language}</div>
+                    <div>字号: ${channel.fontSize}px</div>
+                </div>
+            `;
+            
+            card.onclick = () => {
+                currentActiveChannel = index;
+                renderChannelGrid();
+                showToast(`已选择频道: ${channel.name}`);
+            };
+            grid.appendChild(card);
+        });
+    }
+
+    function openAddChannelModal() {
+        document.getElementById('addChannelModal').style.display = 'block';
+        channelLongImageData = null;
+        channelShortImageData = null;
+        
+        // 初始化实时预览
+        updateLivePreview();
+    }
+
+    function closeAddChannelModal() {
+        document.getElementById('addChannelModal').style.display = 'none';
+        document.getElementById('channelName').value = '';
+        document.getElementById('channelLongImage').value = '';
+        document.getElementById('channelShortImage').value = '';
+        document.getElementById('channelLongPreview').style.display = 'none';
+        document.getElementById('channelShortPreview').style.display = 'none';
+        document.getElementById('longImageWarning').style.display = 'none';
+        document.getElementById('shortImageWarning').style.display = 'none';
+    }
+
+    // 实时预览功能
+    function updateLivePreview() {
+        const name = document.getElementById('channelName').value.trim() || '预览文本';
+        const textColor = document.getElementById('channelTextColor').value;
+        const bgColor = document.getElementById('channelBgColor').value;
+        const fontSize = parseInt(document.getElementById('channelFontSize').value) || 38;
+        const bgOpacity = parseFloat(document.getElementById('channelBgOpacity').value) || 1;
+        
+        // 更新预览框
+        const previewBox = document.getElementById('livePreviewBox');
+        previewBox.style.background = bgColor;
+        previewBox.style.color = textColor;
+        previewBox.style.fontSize = `${fontSize}px`;
+        previewBox.textContent = name;
+        
+        // 更新文本预览
+        const previewText = document.getElementById('livePreviewText');
+        previewText.style.background = bgColor;
+        previewText.style.color = textColor;
+        previewText.style.fontSize = `${fontSize}px`;
+        previewText.style.opacity = bgOpacity;
+        previewText.textContent = '示例文本';
+    }
+
+    // 预览并压缩上传的图片
+    document.getElementById('channelLongImage').addEventListener('change', async function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            try {
+                // 显示压缩提示
+                if (file.size > 500 * 1024) {
+                    document.getElementById('longImageWarning').style.display = 'block';
+                } else {
+                    document.getElementById('longImageWarning').style.display = 'none';
+                }
+
+                channelLongImageData = await compressImage(file, 800, 0.7);
+                const preview = document.getElementById('channelLongPreview');
+                preview.src = channelLongImageData;
+                preview.style.display = 'block';
+            } catch (error) {
+                alert('图片处理失败，请重试');
+                console.error(error);
+            }
+        }
+    });
+
+    document.getElementById('channelShortImage').addEventListener('change', async function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            try {
+                if (file.size > 500 * 1024) {
+                    document.getElementById('shortImageWarning').style.display = 'block';
+                } else {
+                    document.getElementById('shortImageWarning').style.display = 'none';
+                }
+
+                channelShortImageData = await compressImage(file, 800, 0.7);
+                const preview = document.getElementById('channelShortPreview');
+                preview.src = channelShortImageData;
+                preview.style.display = 'block';
+            } catch (error) {
+                alert('图片处理失败，请重试');
+                console.error(error);
+            }
+        }
+    });
+
+    async function saveChannel() {
+        const name = document.getElementById('channelName').value.trim();
+        const language = document.getElementById('channelLanguage').value;
+        const textColor = document.getElementById('channelTextColor').value;
+        const bgColor = document.getElementById('channelBgColor').value;
+        const fontSize = parseInt(document.getElementById('channelFontSize').value);
+        const bgOpacity = parseFloat(document.getElementById('channelBgOpacity').value);
+        
+        if (!name) {
+            alert('请输入频道名称');
+            return;
+        }
+
+        if (!channelLongImageData || !channelShortImageData) {
+            alert('请上传做多和做空头图');
+            return;
+        }
+
+        try {
+            const channels = getChannels();
+            channels.push({
+                name,
+                language,
+                textColor,
+                bgColor,
+                fontSize,
+                bgOpacity,
+                longImage: channelLongImageData,
+                shortImage: channelShortImageData,
+                createdAt: Date.now()
+            });
+            saveChannels(channels);
+
+            closeAddChannelModal();
+            renderChannelGrid();
+            showToast('频道已保存');
+        } catch (error) {
+            console.error('保存频道失败:', error);
+        }
+    }
+
+    function openManageChannelModal() {
+        document.getElementById('manageChannelModal').style.display = 'block';
+        renderChannelList();
+    }
+
+    function closeManageChannelModal() {
+        document.getElementById('manageChannelModal').style.display = 'none';
+    }
+
+    function renderChannelList() {
+        const list = document.getElementById('channelList');
+        const channels = getChannels();
+        
+        if (channels.length === 0) {
+            list.innerHTML = '<div style="text-align:center;color:#999;padding:40px;">暂无频道</div>';
+            return;
+        }
+
+        list.innerHTML = '';
+        channels.forEach((channel, index) => {
+            const item = document.createElement('div');
+            item.className = 'channel-item';
+            
+            const languageMap = {
+                'en': '英语',
+                'ru': '俄语',
+                'vi': '越南语',
+                'ar': '阿拉伯语'
+            };
+
+            item.innerHTML = `
+                <div class="channel-item-info">
+                    <div style="font-weight:bold;margin-bottom:5px;">${channel.name}</div>
+                    <div style="font-size:12px;color:#666;">
+                        ${languageMap[channel.language]} | 字号: ${channel.fontSize}px
+                        <span class="color-preview" style="background:${channel.textColor}"></span>
+                        <span class="color-preview" style="background:${channel.bgColor}"></span>
+                    </div>
+                </div>
+                <div class="channel-item-actions">
+                    <button class="icon-btn btn-delete" onclick="deleteChannel(${index})">🗑️ 删除</button>
+                </div>
+            `;
+            
+            list.appendChild(item);
+        });
+    }
+
+    function deleteChannel(index) {
+        if (!confirm('确定要删除这个频道吗？')) return;
+        
+        const channels = getChannels();
+        channels.splice(index, 1);
+        saveChannels(channels);
+        
+        renderChannelList();
+        renderChannelGrid();
+        showToast('频道已删除');
+    }
+
+    // ========== 批量生成功能 ==========
+
+    async function generateAllChannels() {
+        const channels = getChannels();
+        
+        if (channels.length === 0) {
+            alert('请先添加频道配置');
+            return;
+        }
+
+        const strategyId = document.getElementById('strategy_id').value;
+        const symbolName = document.getElementById('symbol_name').value;
+        const direction = document.getElementById('direction').value;
+        const entryPrice = parseFloat(document.getElementById('entry_price').value);
+
+        if (!strategyId || !entryPrice) {
+            alert('请填写完整的策略参数');
+            return;
+        }
+
+        // 显示进度
+        const progressSection = document.getElementById('progressSection');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        progressSection.style.display = 'block';
+
+        const resultGrid = document.getElementById('resultGrid');
+        resultGrid.innerHTML = '';
+
+        const exportScale = parseFloat(document.getElementById('exportScale').value) || 2;
+
+        for (let i = 0; i < channels.length; i++) {
+            const channel = channels[i];
+            const progress = ((i + 1) / channels.length) * 100;
+            
+            progressFill.style.width = progress + '%';
+            progressText.textContent = `正在生成 ${channel.name} (${i + 1}/${channels.length})`;
+
+            // 生成图片
+            const imageDataUrl = await generateChannelImage(channel, {
+                strategyId,
+                symbolName,
+                direction,
+                entryPrice
+            }, exportScale);
+
+            // 添加到结果网格
+            const resultItem = document.createElement('div');
+            resultItem.className = 'result-item';
+            resultItem.innerHTML = `
+                <img src="${imageDataUrl}" class="result-image" alt="${channel.name}">
+                <div class="result-name">${channel.name}</div>
+                <button class="result-download" onclick="downloadChannelImage('${imageDataUrl}', '${strategyId}', '${channel.name}')">
+                    ⬇️ 下载
+                </button>
+            `;
+            resultGrid.appendChild(resultItem);
+
+            // 短暂延迟，让UI更新
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+
+        progressText.textContent = `✅ 完成！已生成 ${channels.length} 张图片`;
+        showToast('所有频道图片生成完成！');
+    }
+
+    function generateChannelImage(channel, strategyData, scale = 2) {
+        return new Promise((resolve) => {
+            const canvas = document.getElementById('canvas');
+            const { strategyId, symbolName, direction, entryPrice } = strategyData;
+
+            // 计算策略参数
+            const calculated = calculateStrategy(symbolName, entryPrice, direction);
+            
+            const data = {
+                strategy_id: strategyId,
+                symbol_name: symbolName,
+                direction: direction,
+                entry_price: entryPrice,
+                ...calculated
+            };
+
+            // 获取模板
+            const template = templates[channel.language] || templates['en'];
+            const dirValue = direction;
+            const localizedDirection = (template.directionLabels && template.directionLabels[dirValue]) ? 
+                template.directionLabels[dirValue] : (dirValue === 'long' ? 'Long' : 'Short');
+            
+            data.direction = localizedDirection;
+
+            // 加载对应的头图
+            const headerImageSrc = direction === 'long' ? channel.longImage : channel.shortImage;
+            const headerImage = new Image();
+            
+            headerImage.onload = () => {
+                // 设置画布尺寸
+                const baseWidth = 800;
+                canvas.width = baseWidth * scale;
+
+                const scaleFactor = scale;
+                const paddingScaled = Math.round(30 * scaleFactor);
+                const baseFontSize = channel.fontSize || 38;
+                const fontSizeScaled = Math.round(baseFontSize * scaleFactor);
+                const titleFontScaled = Math.round((baseFontSize + 4) * scaleFactor);
+                const lineHeight = fontSizeScaled * 1.8;
+                
+                const titleText = template.title.replace(/{(\w+)}/g, (m,k) => data[k] || m);
+                const contentLines = template.lines.map(line => line.replace(/{(\w+)}/g, (m,k) => data[k] || m));
+                const slLineText = template.slLine.replace(/{(\w+)}/g, (m,k) => data[k] || m);
+
+                // 创建临时 canvas 用于测量文本宽度
+                const tempCanvas = document.createElement('canvas');
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCtx.font = `bold ${fontSizeScaled}px ${template.font}`;
+                
+                // 计算可用宽度（考虑padding）
+                const availableWidth = canvas.width - paddingScaled * 2 - Math.round(40 * scaleFactor);
+                
+                // 检测止盈价格行是否需要换行
+                let tpPricesLine = contentLines[contentLines.length - 1]; // 最后一行是止盈价格
+                let tpLabelLine = contentLines[contentLines.length - 2]; // 倒数第二行是标签
+                let needWrapTP = false;
+                
+                // 检测止盈价格行宽度
+                const tpLineWidth = tempCtx.measureText(tpPricesLine).width;
+                if (tpLineWidth > availableWidth) {
+                    needWrapTP = true;
+                }
+                
+                // 检测止损行是否需要换行
+                let needWrapSL = false;
+                const slLineWidth = tempCtx.measureText(slLineText).width;
+                if (slLineWidth > availableWidth) {
+                    needWrapSL = true;
+                }
+
+                // 计算实际需要的行数
+                let totalLines = contentLines.length;
+                if (needWrapTP) totalLines++; // 止盈换行增加一行
+                totalLines++; // 止损行
+                if (needWrapSL) totalLines++; // 止损换行增加一行
+
+                const bgHeight = Math.round(lineHeight * (totalLines + 1) + paddingScaled * 2);
+
+                // 计算头图高度
+                const canvasWidth = canvas.width;
+                const imgAspect = headerImage.width / headerImage.height;
+                const headerDrawHeight = Math.round(canvasWidth / imgAspect);
+
+                const bottomPadding = 40;
+                const totalHeight = headerDrawHeight + bgHeight + bottomPadding;
+
+                canvas.height = Math.max(totalHeight, 200);
+                const ctx = canvas.getContext('2d', { alpha: false });
+                
+                ctx.imageSmoothingEnabled = false;
+
+                // 清空画布
+                ctx.fillStyle = channel.bgColor;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // 绘制头图
+                ctx.drawImage(headerImage, 0, 0, canvasWidth, headerDrawHeight);
+
+                // 绘制文字背景
+                const bgY = headerDrawHeight;
+                ctx.globalAlpha = channel.bgOpacity;
+                ctx.fillStyle = channel.bgColor;
+                roundRect(ctx, paddingScaled, bgY, canvas.width - paddingScaled * 2, bgHeight, 15 * scaleFactor);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+
+                // 绘制文字
+                ctx.fillStyle = channel.textColor;
+                ctx.font = `bold ${titleFontScaled}px ${template.font}`;
+                ctx.textAlign = template.align;
+                
+                const textX = template.align === 'right' ? 
+                    canvas.width - paddingScaled - Math.round(20 * scaleFactor) : 
+                    paddingScaled + Math.round(20 * scaleFactor);
+                let textY = bgY + paddingScaled + fontSizeScaled + Math.round(10 * scaleFactor);
+
+                ctx.fillText(titleText, textX, textY);
+
+                ctx.font = `bold ${fontSizeScaled}px ${template.font}`;
+                textY += lineHeight * 1.5;
+                
+                // 绘制内容行（不包括最后两行，因为它们是止盈相关）
+                for (let i = 0; i < contentLines.length - 2; i++) {
+                    const line = contentLines[i];
+                    if (line.includes(localizedDirection)) {
+                        ctx.save();
+                        if (direction === 'long') {
+                            ctx.fillStyle = '#00DA90';
+                        } else if (direction === 'short') {
+                            ctx.fillStyle = '#F04343';
+                        }
+                        ctx.fillText(line, textX, textY);
+                        ctx.restore();
+                    } else {
+                        ctx.fillText(line, textX, textY);
+                    }
+                    textY += lineHeight;
+                }
+
+                // 绘制止盈标签和价格（可能换行）
+                if (needWrapTP) {
+                    // 换行显示：标签单独一行，价格单独一行
+                    ctx.fillText(tpLabelLine, textX, textY);
+                    textY += lineHeight;
+                    ctx.fillText(tpPricesLine, textX, textY);
+                    textY += lineHeight;
+                } else {
+                    // 不换行：按原样显示
+                    ctx.fillText(tpLabelLine, textX, textY);
+                    textY += lineHeight;
+                    ctx.fillText(tpPricesLine, textX, textY);
+                    textY += lineHeight;
+                }
+
+                // 绘制止损行（可能换行）
+                if (needWrapSL) {
+                    // 将止损行分成两部分：标签和数值
+                    const slParts = slLineText.split(':');
+                    if (slParts.length === 2) {
+                        const slLabel = slParts[0] + ':';
+                        const slValue = slParts[1].trim();
+                        ctx.fillText(slLabel, textX, textY);
+                        textY += lineHeight;
+                        ctx.fillText(slValue, textX, textY);
+                    } else {
+                        ctx.fillText(slLineText, textX, textY);
+                    }
+                } else {
+                    ctx.fillText(slLineText, textX, textY);
+                }
+
+                // 返回图片数据
+                resolve(canvas.toDataURL('image/png'));
+            };
+
+            headerImage.src = headerImageSrc;
+        });
+    }
+
+    function downloadChannelImage(dataUrl, strategyId, channelName) {
+        const link = document.createElement('a');
+        const safeName = channelName.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '_');
+        link.download = `strategy_${strategyId}_${safeName}.png`;
+        link.href = dataUrl;
+        link.click();
+    }
+
+    // ========== 辅助函数 ==========
+
+    function calculateStrategy(symbolName, entryPrice, direction) {
+        const symbol = symbolName.toUpperCase();
+        const offset = symbol.includes('BTC') ? 100 : 10;
+        const isLong = direction === 'long';
+        
+        return {
+            price_low: Math.round(entryPrice - offset),
+            price_high: Math.round(entryPrice + offset),
+            leverage: 100,
+            total_position_pct: 5,
+            tp1: isLong ? Math.round(entryPrice * (1 + 0.012)) : Math.round(entryPrice * (1 - 0.012)),
+            tp2: isLong ? Math.round(entryPrice * (1 + 0.018)) : Math.round(entryPrice * (1 - 0.018)),
+            tp3: isLong ? Math.round(entryPrice * (1 + 0.03)) : Math.round(entryPrice * (1 - 0.03)),
+            sl: isLong ? Math.round(entryPrice * (1 - 0.01)) : Math.round(entryPrice * (1 + 0.01))
+        };
+    }
+
+    function roundRect(ctx, x, y, width, height, radius) {
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.lineTo(x + width - radius, y);
+        ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+        ctx.lineTo(x + width, y + height - radius);
+        ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+        ctx.lineTo(x + radius, y + height);
+        ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+        ctx.lineTo(x, y + radius);
+        ctx.quadraticCurveTo(x, y, x + radius, y);
+        ctx.closePath();
+    }
+
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.textContent = message;
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #333;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            z-index: 10000;
+            animation: slideInRight 0.3s;
+        `;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.animation = 'fadeOut 0.3s';
+            setTimeout(() => toast.remove(), 300);
+        }, 2000);
+    }
+
+    window.onclick = function(event) {
+        const addModal = document.getElementById('addChannelModal');
+        const manageModal = document.getElementById('manageChannelModal');
+        if (event.target === addModal) {
+            closeAddChannelModal();
+        }
+        if (event.target === manageModal) {
+            closeManageChannelModal();
+        }
+    };
+
+    window.onload = () => {
+        renderChannelGrid();
+    };
+</script>
 </body>
 </html>
