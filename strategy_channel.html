@@ -205,12 +205,13 @@
 
     .channel-actions {
         display: flex;
+        flex-wrap: wrap;
         gap: 8px;
         margin-top: 12px;
     }
 
     .channel-btn {
-        flex: 1;
+        flex: 1 1 calc(50% - 8px);
         padding: 8px;
         font-size: 12px;
         margin: 0;
@@ -223,6 +224,14 @@
 
     .btn-manage {
         background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .btn-export {
+        background: linear-gradient(135deg, #42e695 0%, #3bb2b8 100%);
+    }
+
+    .btn-import {
+        background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
     }
 
     .btn-generate-all {
@@ -502,7 +511,10 @@
             <div class="channel-actions">
                 <button class="channel-btn btn-add" onclick="openAddChannelModal()">➕ 添加频道</button>
                 <button class="channel-btn btn-manage" onclick="openManageChannelModal()">⚙️ 管理频道</button>
+                <button class="channel-btn btn-export" onclick="exportChannelConfig()">📦 导出配置</button>
+                <button class="channel-btn btn-import" onclick="triggerImportConfig()">📥 导入配置</button>
             </div>
+            <input type="file" id="importConfigInput" accept="application/json" style="display:none" onchange="handleImportConfig(event)">
         </div>
 
         <div class="form-group">
@@ -566,7 +578,7 @@
 <div id="addChannelModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2>➕ 添加新频道</h2>
+            <h2 id="channelModalTitle">➕ 添加新频道</h2>
             <span class="close" onclick="closeAddChannelModal()">&times;</span>
         </div>
         <div class="form-group">
@@ -628,7 +640,7 @@
             <img id="channelShortPreview" class="image-preview" style="display:none;">
             <div class="warning-text" id="shortImageWarning" style="display:none;">⚠️ 图片过大，已自动压缩</div>
         </div>
-        <button onclick="saveChannel()">💾 保存频道</button>
+        <button id="channelModalSaveBtn" onclick="saveChannel()">💾 保存频道</button>
     </div>
 </div>
 
@@ -717,6 +729,7 @@
     let currentActiveChannel = null;
     let channelLongImageData = null;
     let channelShortImageData = null;
+    let currentEditIndex = null;
 
     // ========== 图片压缩函数 ==========
     function compressImage(file, maxWidth = 800, quality = 0.7) {
@@ -775,6 +788,146 @@
         }
     }
 
+    function exportChannelConfig() {
+        const channels = getChannels();
+        if (channels.length === 0) {
+            alert('暂无频道配置可导出');
+            return;
+        }
+
+        const payload = {
+            type: 'strategy-channel-config',
+            version: 1,
+            exportedAt: new Date().toISOString(),
+            channels
+        };
+
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `strategy_channels_${Date.now()}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        showToast('配置已导出');
+    }
+
+    function triggerImportConfig() {
+        const input = document.getElementById('importConfigInput');
+        if (!input) return;
+        input.value = '';
+        input.click();
+    }
+
+    async function handleImportConfig(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        try {
+            const text = await file.text();
+            const parsed = JSON.parse(text);
+            const candidates = Array.isArray(parsed) ? parsed : parsed.channels;
+
+            if (!Array.isArray(candidates) || candidates.length === 0) {
+                alert('配置文件中没有找到频道数据');
+                return;
+            }
+
+            const existing = getChannels();
+            const existingNames = new Set(existing.map(item => item.name));
+            const merged = [...existing];
+            let addedCount = 0;
+            const importTimestamp = Date.now();
+
+            candidates.forEach(original => {
+                const normalized = normalizeImportedChannel(original);
+                if (!normalized) return;
+
+                normalized.name = ensureUniqueChannelName(normalized.name, existingNames);
+                normalized.createdAt = normalized.createdAt || importTimestamp;
+                normalized.updatedAt = importTimestamp;
+
+                merged.push(normalized);
+                addedCount++;
+            });
+
+            if (addedCount === 0) {
+                alert('未能导入任何有效频道，请检查文件内容');
+                return;
+            }
+
+            saveChannels(merged);
+            renderChannelGrid();
+            renderChannelList();
+            showToast(`成功导入 ${addedCount} 个频道`);
+        } catch (error) {
+            console.error('导入配置失败:', error);
+            alert('导入失败，请确认文件格式正确');
+        } finally {
+            event.target.value = '';
+        }
+    }
+
+    function normalizeImportedChannel(channel) {
+        if (!channel) return null;
+
+        const name = typeof channel.name === 'string' ? channel.name.trim() : '';
+        const longImage = channel.longImage;
+        const shortImage = channel.shortImage;
+
+        if (
+            !name ||
+            typeof longImage !== 'string' ||
+            typeof shortImage !== 'string' ||
+            !longImage.startsWith('data:image') ||
+            !shortImage.startsWith('data:image')
+        ) {
+            return null;
+        }
+
+        let fontSize = parseInt(channel.fontSize, 10);
+        if (isNaN(fontSize) || fontSize <= 0) {
+            fontSize = 38;
+        }
+
+        let bgOpacity = parseFloat(channel.bgOpacity);
+        if (isNaN(bgOpacity)) {
+            bgOpacity = 1;
+        }
+        bgOpacity = Math.min(Math.max(bgOpacity, 0), 1);
+
+        return {
+            name,
+            language: channel.language || 'en',
+            textColor: channel.textColor || '#ffffff',
+            bgColor: channel.bgColor || '#1a1a2e',
+            fontSize,
+            bgOpacity,
+            longImage,
+            shortImage,
+            createdAt: channel.createdAt || channel.updatedAt || Date.now()
+        };
+    }
+
+    function ensureUniqueChannelName(baseName, existingNames) {
+        let candidate = baseName || '未命名频道';
+        if (!existingNames.has(candidate)) {
+            existingNames.add(candidate);
+            return candidate;
+        }
+
+        let index = 2;
+        while (existingNames.has(`${candidate} (${index})`)) {
+            index++;
+        }
+
+        const uniqueName = `${candidate} (${index})`;
+        existingNames.add(uniqueName);
+        return uniqueName;
+    }
+
     function renderChannelGrid() {
         const grid = document.getElementById('channelGrid');
         const channels = getChannels();
@@ -819,24 +972,94 @@
         });
     }
 
-    function openAddChannelModal() {
-        document.getElementById('addChannelModal').style.display = 'block';
+    function resetChannelForm() {
+        document.getElementById('channelName').value = '';
+        document.getElementById('channelLanguage').value = 'en';
+        document.getElementById('channelTextColor').value = '#ffffff';
+        document.getElementById('channelBgColor').value = '#1a1a2e';
+        document.getElementById('channelFontSize').value = 38;
+        document.getElementById('channelBgOpacity').value = 1;
+        document.getElementById('channelLongImage').value = '';
+        document.getElementById('channelShortImage').value = '';
+
+        const longPreview = document.getElementById('channelLongPreview');
+        const shortPreview = document.getElementById('channelShortPreview');
+        longPreview.style.display = 'none';
+        longPreview.removeAttribute('src');
+        shortPreview.style.display = 'none';
+        shortPreview.removeAttribute('src');
+
+        document.getElementById('longImageWarning').style.display = 'none';
+        document.getElementById('shortImageWarning').style.display = 'none';
+
         channelLongImageData = null;
         channelShortImageData = null;
-        
-        // 初始化实时预览
+        currentEditIndex = null;
+
+        updateLivePreview();
+    }
+
+    function openAddChannelModal() {
+        resetChannelForm();
+        document.getElementById('channelModalTitle').textContent = '➕ 添加新频道';
+        const saveBtn = document.getElementById('channelModalSaveBtn');
+        saveBtn.textContent = '💾 保存频道';
+        saveBtn.dataset.mode = 'add';
+        document.getElementById('addChannelModal').style.display = 'block';
+    }
+
+    function openEditChannelModal(index) {
+        const channels = getChannels();
+        if (!Array.isArray(channels) || !channels[index]) {
+            alert('未找到需要编辑的频道');
+            return;
+        }
+
+        closeManageChannelModal();
+        resetChannelForm();
+
+        const channel = channels[index];
+        currentEditIndex = index;
+
+        document.getElementById('channelModalTitle').textContent = '✏️ 编辑频道';
+        const saveBtn = document.getElementById('channelModalSaveBtn');
+        saveBtn.textContent = '💾 更新频道';
+        saveBtn.dataset.mode = 'edit';
+
+        document.getElementById('channelName').value = channel.name || '';
+        document.getElementById('channelLanguage').value = channel.language || 'en';
+        document.getElementById('channelTextColor').value = channel.textColor || '#ffffff';
+        document.getElementById('channelBgColor').value = channel.bgColor || '#1a1a2e';
+        document.getElementById('channelFontSize').value = channel.fontSize || 38;
+        document.getElementById('channelBgOpacity').value = (channel.bgOpacity !== undefined && channel.bgOpacity !== null) ? channel.bgOpacity : 1;
+
+        channelLongImageData = channel.longImage || null;
+        channelShortImageData = channel.shortImage || null;
+
+        const longPreview = document.getElementById('channelLongPreview');
+        const shortPreview = document.getElementById('channelShortPreview');
+
+        if (channelLongImageData) {
+            longPreview.src = channelLongImageData;
+            longPreview.style.display = 'block';
+        }
+
+        if (channelShortImageData) {
+            shortPreview.src = channelShortImageData;
+            shortPreview.style.display = 'block';
+        }
+
+        document.getElementById('addChannelModal').style.display = 'block';
         updateLivePreview();
     }
 
     function closeAddChannelModal() {
         document.getElementById('addChannelModal').style.display = 'none';
-        document.getElementById('channelName').value = '';
-        document.getElementById('channelLongImage').value = '';
-        document.getElementById('channelShortImage').value = '';
-        document.getElementById('channelLongPreview').style.display = 'none';
-        document.getElementById('channelShortPreview').style.display = 'none';
-        document.getElementById('longImageWarning').style.display = 'none';
-        document.getElementById('shortImageWarning').style.display = 'none';
+        resetChannelForm();
+        document.getElementById('channelModalTitle').textContent = '➕ 添加新频道';
+        const saveBtn = document.getElementById('channelModalSaveBtn');
+        saveBtn.textContent = '💾 保存频道';
+        saveBtn.dataset.mode = 'add';
     }
 
     // 实时预览功能
@@ -845,7 +1068,11 @@
         const textColor = document.getElementById('channelTextColor').value;
         const bgColor = document.getElementById('channelBgColor').value;
         const fontSize = parseInt(document.getElementById('channelFontSize').value) || 38;
-        const bgOpacity = parseFloat(document.getElementById('channelBgOpacity').value) || 1;
+        let bgOpacity = parseFloat(document.getElementById('channelBgOpacity').value);
+        if (isNaN(bgOpacity)) {
+            bgOpacity = 1;
+        }
+        bgOpacity = Math.min(Math.max(bgOpacity, 0), 1);
         
         // 更新预览框
         const previewBox = document.getElementById('livePreviewBox');
@@ -912,8 +1139,8 @@
         const language = document.getElementById('channelLanguage').value;
         const textColor = document.getElementById('channelTextColor').value;
         const bgColor = document.getElementById('channelBgColor').value;
-        const fontSize = parseInt(document.getElementById('channelFontSize').value);
-        const bgOpacity = parseFloat(document.getElementById('channelBgOpacity').value);
+        let fontSize = parseInt(document.getElementById('channelFontSize').value, 10);
+        let bgOpacity = parseFloat(document.getElementById('channelBgOpacity').value);
         
         if (!name) {
             alert('请输入频道名称');
@@ -925,9 +1152,21 @@
             return;
         }
 
+        if (isNaN(fontSize) || fontSize <= 0) {
+            fontSize = 38;
+        }
+
+        if (isNaN(bgOpacity)) {
+            bgOpacity = 1;
+        }
+        bgOpacity = Math.min(Math.max(bgOpacity, 0), 1);
+
         try {
             const channels = getChannels();
-            channels.push({
+            const timestamp = Date.now();
+            const isEdit = Number.isInteger(currentEditIndex) && currentEditIndex >= 0 && currentEditIndex < channels.length;
+
+            const payload = {
                 name,
                 language,
                 textColor,
@@ -936,13 +1175,27 @@
                 bgOpacity,
                 longImage: channelLongImageData,
                 shortImage: channelShortImageData,
-                createdAt: Date.now()
-            });
+                updatedAt: timestamp
+            };
+
+            let toastMessage = '频道已保存';
+
+            if (isEdit) {
+                const existing = channels[currentEditIndex];
+                payload.createdAt = existing.createdAt || timestamp;
+                channels[currentEditIndex] = { ...existing, ...payload };
+                toastMessage = '频道已更新';
+            } else {
+                payload.createdAt = timestamp;
+                channels.push(payload);
+            }
+
             saveChannels(channels);
 
-            closeAddChannelModal();
             renderChannelGrid();
-            showToast('频道已保存');
+            renderChannelList();
+            closeAddChannelModal();
+            showToast(toastMessage);
         } catch (error) {
             console.error('保存频道失败:', error);
         }
@@ -988,6 +1241,7 @@
                     </div>
                 </div>
                 <div class="channel-item-actions">
+                    <button class="icon-btn btn-edit" onclick="openEditChannelModal(${index})">✏️ 编辑</button>
                     <button class="icon-btn btn-delete" onclick="deleteChannel(${index})">🗑️ 删除</button>
                 </div>
             `;
