@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>دليل تداول العقود للمبتدئين</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+      line-height: 1.8;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 40px;
+      text-align: center;
+    }
+    
+    .header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .header p {
+      font-size: 1.2em;
+      opacity: 0.9;
+    }
+    
+    .content {
+      padding: 40px;
+    }
+    
+    .section {
+      margin-bottom: 40px;
+      padding: 30px;
+      background: #f8f9fa;
+      border-radius: 15px;
+      border-right: 5px solid #667eea;
+    }
+    
+    .section h2 {
+      color: #667eea;
+      font-size: 1.8em;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .section h3 {
+      color: #764ba2;
+      font-size: 1.4em;
+      margin: 25px 0 15px 0;
+    }
+    
+    .example-box {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 15px 0;
+      border: 2px solid #e0e0e0;
+    }
+    
+    .example-box.success {
+      border-right: 4px solid #10b981;
+      background: #f0fdf4;
+    }
+    
+    .example-box.danger {
+      border-right: 4px solid #ef4444;
+      background: #fef2f2;
+    }
+    
+    .example-box.warning {
+      border-right: 4px solid #f59e0b;
+      background: #fffbeb;
+    }
+    
+    .highlight {
+      background: #fef3c7;
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    
+    .number-big {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #667eea;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    
+    th {
+      background: #667eea;
+      color: white;
+      padding: 15px;
+      text-align: right;
+      font-weight: bold;
+    }
+    
+    td {
+      padding: 15px;
+      border-bottom: 1px solid #e0e0e0;
+      text-align: right;
+    }
+    
+    tr:last-child td {
+      border-bottom: none;
+    }
+    
+    tr:hover {
+      background: #f8f9fa;
+    }
+    
+    .emoji {
+      font-size: 1.3em;
+    }
+    
+    .tips-box {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 15px;
+      margin: 30px 0;
+    }
+    
+    .tips-box h3 {
+      color: white;
+      margin-bottom: 15px;
+    }
+    
+    .tips-box ul {
+      list-style: none;
+      padding-right: 0;
+    }
+    
+    .tips-box li {
+      padding: 10px 0;
+      padding-right: 30px;
+      position: relative;
+    }
+    
+    .tips-box li:before {
+      content: "✅";
+      position: absolute;
+      right: 0;
+    }
+    
+    .footer {
+      background: #1f2937;
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+    
+    .cta-button {
+      display: inline-block;
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: white;
+      padding: 15px 40px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1.2em;
+      margin-top: 20px;
+      box-shadow: 0 5px 15px rgba(245, 158, 11, 0.4);
+      transition: transform 0.3s;
+    }
+    
+    .cta-button:hover {
+      transform: translateY(-3px);
+    }
+    
+    .stars {
+      color: #fbbf24;
+      font-size: 1.2em;
+    }
+    
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      .container {
+        box-shadow: none;
+      }
+      .cta-button {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📚 دليل تداول العقود للمبتدئين</h1>
+      <p>تعلم التداول بالعقود والرافعة المالية خطوة بخطوة</p>
+    </div>
+    
+    <div class="content">
+      <!-- Section 1 -->
+      <div class="section">
+        <h2><span class="emoji">1️⃣</span> ما هي العقود؟</h2>
+        <p style="font-size: 1.2em; margin-bottom: 15px;">
+          <strong>العقود = المراهنة على ارتفاع أو انخفاض السعر</strong>
+        </p>
+        <div class="example-box">
+          <ul style="list-style: none; padding-right: 0;">
+            <li style="padding: 8px 0;">✅ لا تحتاج لشراء العملة</li>
+            <li style="padding: 8px 0;">✅ فقط توقع: هل السعر سيرتفع أم سينخفض؟</li>
+            <li style="padding: 8px 0;">💰 إذا كنت على صواب → تربح</li>
+            <li style="padding: 8px 0;">❌ إذا كنت مخطئًا → تخسر</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Section 2 -->
+      <div class="section">
+        <h2><span class="emoji">2️⃣</span> ما هي الرافعة المالية؟</h2>
+        <p style="font-size: 1.2em; margin-bottom: 15px;">
+          <strong>الرافعة = تحويل أموالك الصغيرة إلى أموال كبيرة</strong>
+        </p>
+        
+        <h3>📊 مثال بسيط:</h3>
+        <div class="example-box">
+          <p><strong>لديك: <span class="number-big">$100</span></strong></p>
+        </div>
+        
+        <div class="example-box success">
+          <p><strong>بدون رافعة:</strong></p>
+          <p>• تتداول بـ $100</p>
+          <p>• السعر يرتفع 10%</p>
+          <p>• تربح: <span class="highlight">$10</span></p>
+        </div>
+        
+        <div class="example-box success">
+          <p><strong>رافعة 10x:</strong></p>
+          <p>• تتداول بـ $1,000 (100 × 10)</p>
+          <p>• السعر يرتفع 10%</p>
+          <p>• تربح: <span class="highlight">$100</span></p>
+        </div>
+        
+        <div class="example-box success">
+          <p><strong>رافعة 50x:</strong></p>
+          <p>• تتداول بـ $5,000 (100 × 50)</p>
+          <p>• السعر يرتفع 10%</p>
+          <p>• تربح: <span class="highlight">$500</span></p>
+        </div>
+        
+        <h3>⚠️ لكن احذر!</h3>
+        
+        <div class="example-box danger">
+          <p><strong>رافعة 10x:</strong></p>
+          <p>• إذا ارتفع السعر 10% → تربح 100%</p>
+          <p>• إذا انخفض السعر 10% → <span style="color: #ef4444; font-weight: bold;">تخسر كل شيء (تصفية)</span></p>
+        </div>
+        
+        <div class="example-box danger">
+          <p><strong>رافعة 50x:</strong></p>
+          <p>• إذا ارتفع السعر 2% → تربح 100%</p>
+          <p>• إذا انخفض السعر 2% → <span style="color: #ef4444; font-weight: bold;">تخسر كل شيء (تصفية)</span></p>
+        </div>
+      </div>
+
+      <!-- Section 3 -->
+      <div class="section">
+        <h2><span class="emoji">3️⃣</span> الهامش المعزول (Isolated)</h2>
+        <p style="font-size: 1.2em; margin-bottom: 15px;">
+          <strong>الهامش المعزول = كل صفقة لها محفظة منفصلة</strong>
+        </p>
+        
+        <h3>📊 مثال:</h3>
+        <div class="example-box">
+          <p><strong>لديك: <span class="number-big">$1,000</span></strong></p>
+        </div>
+        
+        <div class="example-box warning">
+          <p><strong>الصفقة 1: شراء BTC</strong></p>
+          <p>• تخصص: $300</p>
+          <p>• إذا خسرت → تخسر فقط $300</p>
+          <p>• يتبقى لديك: $700 ✅</p>
+        </div>
+        
+        <div class="example-box warning">
+          <p><strong>الصفقة 2: بيع ETH</strong></p>
+          <p>• تخصص: $400</p>
+          <p>• إذا خسرت → تخسر فقط $400</p>
+          <p>• الصفقة 1 آمنة ✅</p>
+        </div>
+        
+        <div class="example-box success">
+          <p><strong>المال المتبقي: $300 (آمن)</strong></p>
+        </div>
+        
+        <h3>✅ الميزة:</h3>
+        <p>• إذا خسرت صفقة واحدة، باقي أموالك آمنة</p>
+        <p>• مثل وضع المال في جيوب منفصلة</p>
+        
+        <h3>❌ العيب:</h3>
+        <p>• سهل التصفية لأن المال قليل في كل صفقة</p>
+      </div>
+
+      <!-- Section 4 -->
+      <div class="section">
+        <h2><span class="emoji">4️⃣</span> الهامش المشترك (Cross)</h2>
+        <p style="font-size: 1.2em; margin-bottom: 15px;">
+          <strong>الهامش المشترك = كل أموالك في محفظة واحدة</strong>
+        </p>
+        
+        <h3>📊 مثال:</h3>
+        <div class="example-box">
+          <p><strong>لديك: <span class="number-big">$1,000</span></strong></p>
+        </div>
+        
+        <div class="example-box warning">
+          <p><strong>الصفقة 1: شراء BTC</strong></p>
+          <p>• تستخدم: $300</p>
+          <p>• لكن يمكن استخدام كل الـ $1,000 إذا احتجت</p>
+        </div>
+        
+        <div class="example-box warning">
+          <p><strong>الصفقة 2: بيع ETH</strong></p>
+          <p>• تستخدم: $400</p>
+          <p>• لكن يمكن استخدام كل الـ $1,000 إذا احتجت</p>
+        </div>
+        
+        <h3>سيناريو 1: خسارة صغيرة</h3>
+        <div class="example-box success">
+          <p>• BTC يخسر $200</p>
+          <p>• النظام يأخذ من الـ $1,000 تلقائيًا</p>
+          <p>• الصفقة لا تُصفى ✅</p>
+        </div>
+        
+        <h3>سيناريو 2: خسارة كبيرة</h3>
+        <div class="example-box danger">
+          <p>• BTC يخسر $600</p>
+          <p>• ETH يخسر $500</p>
+          <p>• إجمالي الخسارة: $1,100</p>
+          <p>• <strong style="color: #ef4444;">تخسر كل شيء ❌</strong></p>
+        </div>
+        
+        <h3>✅ الميزة:</h3>
+        <p>• صعب التصفية</p>
+        <p>• أموالك تدعم بعضها</p>
+        
+        <h3>❌ العيب:</h3>
+        <p>• إذا حدثت تصفية → تخسر كل شيء</p>
+      </div>
+
+      <!-- Section 5 -->
+      <div class="section">
+        <h2><span class="emoji">5️⃣</span> مقارنة بسيطة</h2>
+        
+        <div class="example-box">
+          <p><strong>لديك: $1,000</strong></p>
+          <p><strong>تفتح صفقة: $200 برافعة 20x</strong></p>
+        </div>
+        
+        <table>
+          <thead>
+            <tr>
+              <th>الهامش المشترك</th>
+              <th>الهامش المعزول</th>
+              <th>الموضوع</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>$200</td>
+              <td>$200</td>
+              <td>المال المخصص</td>
+            </tr>
+            <tr>
+              <td>$1,000 كلها</td>
+              <td>$200 فقط</td>
+              <td>المال المتاح</td>
+            </tr>
+            <tr>
+              <td>قد تخسر $1,000</td>
+              <td>تخسر $200</td>
+              <td>إذا خسرت</td>
+            </tr>
+            <tr>
+              <td style="color: #ef4444; font-weight: bold;">$0 ❌</td>
+              <td style="color: #10b981; font-weight: bold;">$800 ✅</td>
+              <td>المال المتبقي</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Section 6 -->
+      <div class="section">
+        <h2><span class="emoji">6️⃣</span> قصة أحمد (مثال واقعي)</h2>
+        
+        <h3>اليوم الأول - الهامش المعزول:</h3>
+        <div class="example-box">
+          <p><strong>أحمد لديه: $1,000</strong></p>
+        </div>
+        
+        <div class="example-box success">
+          <p><strong>الساعة 10 صباحًا:</strong></p>
+          <p>• يشتري BTC بـ $200، رافعة 10x</p>
+          <p>• السعر يرتفع 5%</p>
+          <p>• يربح: <span class="highlight">$100</span></p>
+          <p>• الرصيد: $1,100 ✅</p>
+        </div>
+        
+        <div class="example-box danger">
+          <p><strong>الساعة 3 مساءً:</strong></p>
+          <p>• يبيع ETH بـ $200، رافعة 10x</p>
+          <p>• السعر يرتفع (خطأ!)</p>
+          <p>• يخسر: <span class="highlight">$200</span></p>
+          <p>• الرصيد: $900</p>
+          <p>• صفقة BTC آمنة ✅</p>
+        </div>
+        
+        <div class="example-box warning">
+          <p><strong>النتيجة: خسر $100، لكن عنده $900</strong></p>
+        </div>
+        
+        <h3>اليوم الثاني - الهامش المشترك:</h3>
+        
+        <div class="example-box">
+          <p><strong>أحمد لديه: $1,000</strong></p>
+        </div>
+        
+        <div class="example-box success">
+          <p><strong>الساعة 10 صباحًا:</strong></p>
+          <p>• يشتري BTC بـ $500، رافعة 20x</p>
+          <p>• السعر يرتفع 3%</p>
+          <p>• يربح: <span class="highlight">$300</span></p>
+          <p>• الرصيد: $1,300 ✅</p>
+        </div>
+        
+        <div class="example-box danger">
+          <p><strong>الساعة 3 مساءً:</strong></p>
+          <p>• يبيع ETH بـ $500، رافعة 20x</p>
+          <p>• السعر يرتفع 8% (خطأ كبير!)</p>
+          <p>• يخسر: <span class="highlight">$800</span></p>
+          <p>• النظام يأخذ من كل الأموال</p>
+          <p>• الرصيد: $500</p>
+          <p>• ⚠️ إذا استمر الخسارة → يخسر كل شيء</p>
+        </div>
+        
+        <div class="example-box danger">
+          <p><strong>النتيجة: خسر $500، خطر كبير</strong></p>
+        </div>
+      </div>
+
+      <!-- Section 7 -->
+      <div class="section">
+        <h2><span class="emoji">7️⃣</span> نصائح للمبتدئين</h2>
+        
+        <h3>✅ الطريقة الآمنة:</h3>
+        <div class="example-box success">
+          <p><strong>إذا كان لديك: $500</strong></p>
+          <p>• استخدم: <span class="highlight">الهامش المعزول</span></p>
+          <p>• الرافعة: <span class="highlight">5x أو 10x فقط</span></p>
+          <p>• كل صفقة: <span class="highlight">لا تزيد عن $100</span> (20% من المال)</p>
+          <p>• ضع وقف خسارة: <span class="highlight">-10%</span></p>
+        </div>
+        
+        <h3>📈 مثال آمن:</h3>
+        <div class="example-box">
+          <p><strong>لديك: $500</strong></p>
+          <p><strong>الصفقة 1:</strong> $100 برافعة 5x</p>
+          <p><strong>الصفقة 2:</strong> $100 برافعة 5x</p>
+          <p><strong>المال الآمن:</strong> $300</p>
+          <p style="margin-top: 10px;">✅ حتى لو خسرت صفقتين، يتبقى $300</p>
+        </div>
+      </div>
+
+      <!-- Summary Table -->
+      <div class="section">
+        <h2><span class="emoji">🎯</span> الخلاصة</h2>
+        
+        <table>
+          <thead>
+            <tr>
+              <th>الخطورة</th>
+              <th>الشرح البسيط</th>
+              <th>المصطلح</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="stars">⭐⭐⭐</span></td>
+              <td>توقع ارتفاع أو انخفاض السعر</td>
+              <td><strong>العقود</strong></td>
+            </tr>
+            <tr>
+              <td><span class="stars">⭐⭐⭐⭐⭐</span></td>
+              <td>تحويل المال القليل إلى كثير</td>
+              <td><strong>الرافعة</strong></td>
+            </tr>
+            <tr>
+              <td><span class="stars">⭐⭐⭐</span></td>
+              <td>كل صفقة منفصلة (آمن أكثر)</td>
+              <td><strong>هامش معزول</strong></td>
+            </tr>
+            <tr>
+              <td><span class="stars">⭐⭐⭐⭐⭐</span></td>
+              <td>كل الأموال معًا (خطر أكبر)</td>
+              <td><strong>هامش مشترك</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Tips Box -->
+      <div class="tips-box">
+        <h3>💡 تذكر:</h3>
+        <ul>
+          <li>ابدأ بمبالغ صغيرة</li>
+          <li>استخدم الهامش المعزول</li>
+          <li>رافعة منخفضة (5x-10x)</li>
+          <li>اتبع إشاراتنا (نسبة نجاح 86.6%)</li>
+          <li>لا تكن جشعًا!</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer">
+      <h2>🚀 انضم لقناتنا المجانية</h2>
+      <p style="margin: 15px 0;">تعلم التداول الصحيح مع فريق محترف</p>
+      <p style="font-size: 1.3em; margin: 10px 0;">نسبة نجاح: <span style="color: #10b981; font-weight: bold;">86.6%</span></p>
+      <a href="#" class="cta-button">ابدأ التعلم الآن</a>
+    </div>
+  </div>
+</body>
+</html>
