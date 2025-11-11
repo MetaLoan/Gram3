@@ -1368,9 +1368,16 @@
                 const titleFontScaled = Math.round((baseFontSize + 4) * scaleFactor);
                 const lineHeight = fontSizeScaled * 1.8;
                 
-                const titleText = template.title.replace(/{(\w+)}/g, (m,k) => data[k] || m);
-                const contentLines = template.lines.map(line => line.replace(/{(\w+)}/g, (m,k) => data[k] || m));
-                const slLineText = template.slLine.replace(/{(\w+)}/g, (m,k) => data[k] || m);
+                let titleText = template.title.replace(/{(\w+)}/g, (m,k) => data[k] || m);
+                let contentLines = template.lines.map(line => line.replace(/{(\w+)}/g, (m,k) => data[k] || m));
+                let slLineText = template.slLine.replace(/{(\w+)}/g, (m,k) => data[k] || m);
+
+                if (channel.language === 'ar') {
+                    const bidiFix = applyArabicBidiFix;
+                    titleText = bidiFix(titleText);
+                    contentLines = contentLines.map(bidiFix);
+                    slLineText = bidiFix(slLineText);
+                }
 
                 // 创建临时 canvas 用于测量文本宽度
                 const tempCanvas = document.createElement('canvas');
@@ -1438,6 +1445,7 @@
                 ctx.fillStyle = channel.textColor;
                 ctx.font = `bold ${titleFontScaled}px ${template.font}`;
                 ctx.textAlign = template.align;
+                ctx.direction = template.align === 'right' ? 'rtl' : 'ltr';
                 
                 const textX = template.align === 'right' ? 
                     canvas.width - paddingScaled - Math.round(20 * scaleFactor) : 
@@ -1546,6 +1554,18 @@
         ctx.lineTo(x, y + radius);
         ctx.quadraticCurveTo(x, y, x + radius, y);
         ctx.closePath();
+    }
+
+    function applyArabicBidiFix(text) {
+        if (!text || typeof text !== 'string') return text;
+        const LRI = '\u2066';
+        const PDI = '\u2069';
+        const LRM = '\u200E';
+        const tokenRegex = /([A-Za-z]+|\d+(?:[.,]\d+)?(?:\s*[\/\-–]\s*\d+(?:[.,]\d+)?)+|\d+(?:[.,]\d+)?(?:[%xX])?)/g;
+        return text.replace(tokenRegex, (segment) => {
+            if (!segment || segment.includes(LRI)) return segment;
+            return `${LRI}${segment}${PDI}${LRM}`;
+        });
     }
 
     function showToast(message) {
