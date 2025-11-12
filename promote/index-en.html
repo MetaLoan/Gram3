@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Spot The Best Trading Opportunities | Telegram Signals</title>
+
+  <!-- Reuse original assets so both pages share the same visual language -->
+  <link rel="stylesheet" href="./ميّز أفضل فرص التداول مع توصيات Telegram!_files/style.min.css">
+  <link rel="stylesheet" href="./ميّز أفضل فرص التداول مع توصيات Telegram!_files/main.min.css">
+  <link rel="stylesheet" href="./ميّز أفضل فرص التداول مع توصيات Telegram!_files/frontend-rtl.min.css">
+  <link rel="stylesheet" href="./ميّز أفضل فرص التداول مع توصيات Telegram!_files/global.css">
+  <link rel="stylesheet" href="hide-forms.css">
+
+  <style>
+    body{font-family:"Fira Code","Source Code Pro","Menlo",monospace;background:#050b13;color:#e8f5ff;direction:ltr;text-align:left;min-height:100vh;margin:0;}
+    a{color:#7fd1ff}
+    .video-layer{position:fixed;inset:0;z-index:-2;overflow:hidden;background:#050b13;}
+    .video-layer video{width:100%;height:100%;object-fit:cover;filter:brightness(.6);}
+    .video-overlay{position:fixed;inset:0;background:linear-gradient(120deg,rgba(5,11,19,.85) 0%,rgba(5,18,32,.55) 60%,rgba(5,11,19,.9) 100%);z-index:-1;backdrop-filter:blur(4px);}
+    .container{max-width:1100px;margin:0 auto;padding:48px 28px;position:relative;z-index:2;background:rgba(4,15,30,.68);border:1px solid rgba(126,211,255,.18);border-radius:28px;box-shadow:0 18px 40px rgba(3,9,20,.55);}
+    header{text-align:center;margin-bottom:26px}
+    .hero-title{font-size:36px;line-height:1.18;color:#9ee7ff;margin-bottom:18px;text-transform:uppercase;letter-spacing:1px}
+    .hero-text{font-size:18px;margin-bottom:26px;color:#d8eafd;max-width:780px;margin-left:auto;margin-right:auto}
+    .two-column{display:flex;flex-direction:column;gap:36px;align-items:center}
+    .left{width:100%;max-width:840px}
+    .stats{display:flex;gap:16px;margin:24px 0;flex-wrap:wrap;justify-content:center}
+    .stat{background:rgba(10,40,70,.72);padding:18px 22px;border-radius:14px;text-align:center;flex:1;min-width:180px;border:1px solid rgba(126,211,255,.22);box-shadow:0 10px 28px rgba(5,18,36,.45);}
+    .stat .num{font-size:24px;font-weight:700;color:#7bedff;margin-bottom:6px}
+    .stat div:last-child{color:#d0e8ff;font-size:14px;text-transform:uppercase;letter-spacing:.5px}
+    .section{margin-top:42px}
+    .section h2{font-size:24px;margin-bottom:14px;color:#7fd1ff;text-transform:uppercase;letter-spacing:.6px}
+    .section p{color:#dfecff;line-height:1.7;font-size:15px}
+    .feature-grid{display:flex;gap:16px;flex-wrap:wrap}
+    .feature{flex:1;min-width:220px;background:rgba(13,30,55,.78);border-radius:16px;padding:22px;text-align:center;border:1px solid rgba(126,211,255,.2);box-shadow:0 14px 30px rgba(4,16,32,.42)}
+    .feature img{height:52px;margin-bottom:12px;filter:drop-shadow(0 0 12px rgba(126,211,255,.35))}
+    .feature h3{font-size:19px;margin-bottom:10px;color:#9ee7ff;text-transform:uppercase;letter-spacing:.4px}
+    .feature p{font-size:14px;color:#d0e8ff;line-height:1.6}
+    .testimonial{background:rgba(10,28,50,.78);border:1px solid rgba(126,211,255,.2);padding:22px;border-radius:18px;margin-bottom:18px;text-align:center;box-shadow:0 18px 38px rgba(3,11,24,.55)}
+    .testimonial .avatar{width:70px;height:70px;border-radius:50%;object-fit:cover;margin-bottom:14px;border:2px solid rgba(126,211,255,.4)}
+    .testimonial .name{font-weight:700;font-size:18px;color:#9ee7ff;margin-bottom:8px;text-transform:uppercase;letter-spacing:.35px}
+    .testimonial p{color:#d6eaff;font-size:15px;margin-bottom:14px;line-height:1.6}
+    .testimonial .country{font-size:14px;color:#8fbbe6}
+    .testimonial .country img{height:18px;margin-left:6px;vertical-align:middle;border-radius:3px;box-shadow:0 0 8px rgba(126,211,255,.4)}
+    .flag-strip{margin-top:30px;display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+    .flag-strip img{height:64px;border-radius:12px;box-shadow:0 10px 22px rgba(5,18,36,.45);border:1px solid rgba(126,211,255,.25)}
+    .footer-notes{font-size:13px;color:#9bb4d2;margin-top:44px;text-align:center;line-height:1.7}
+    .footer-notes a{color:#9ee7ff}
+    .floating-actions{position:fixed;bottom:28px;right:28px;display:flex;gap:14px;z-index:3;flex-direction:column}
+    .floating-actions a{display:flex;align-items:center;gap:10px;padding:14px 20px;border-radius:999px;text-decoration:none;font-size:15px;font-weight:600;letter-spacing:.3px;color:#041522;box-shadow:0 14px 28px rgba(2,10,22,.6);transition:transform .2s ease,box-shadow .2s ease}
+    .floating-actions a img{width:26px;height:26px;border-radius:8px;object-fit:cover}
+    .floating-actions a.telegram{background:linear-gradient(135deg,#7fd1ff,#24b0ff)}
+    .floating-actions a.whatsapp{background:linear-gradient(135deg,#6bffb1,#21d883)}
+    .floating-actions a:hover{transform:translateY(-4px);box-shadow:0 20px 34px rgba(2,10,22,.7)}
+    @media (max-width:720px){
+      .floating-actions{right:16px;bottom:16px;gap:10px}
+      .floating-actions a{padding:12px 18px;font-size:14px}
+      .floating-actions a img{width:24px;height:24px}
+    }
+  </style>
+</head>
+<body>
+  <div class="video-layer" aria-hidden="true">
+    <video autoplay muted loop playsinline>
+      <source src="./vecteezy_digital-animation-of-business-stock-market-price-chart_2273297%20-%2001.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="video-overlay" aria-hidden="true"></div>
+  <div class="container">
+
+    <header>
+      <img src="./ميّز أفضل فرص التداول مع توصيات Telegram!_files/Group-138150.png" alt="Telegram Signals" style="max-width:320px;height:auto;margin:0 auto;display:block">
+      <h1 class="hero-title">Spot the Best Trading Opportunities<br> the Moment They Appear with <span style="color:#008ecb">Telegram Signals</span></h1>
+      <p class="hero-text">The most important step for successful trading is entering the market at the right time. Receive instant text alerts when exceptional opportunities arise so you can capture them in real time.</p>
+    </header>
+
+    <main class="two-column">
+      <div class="left">
+        <div class="stats" aria-hidden="true">
+          <div class="stat"><div class="num">100+</div><div>signals every month</div></div>
+          <div class="stat"><div class="num">85%</div><div>signal accuracy rate</div></div>
+          <div class="stat"><div class="num">100%</div><div>*full trial period</div></div>
+        </div>
+
+        <section class="section">
+          <h2>What We Provide</h2>
+          <p>Receive Telegram trading signals instantly. Lean on proven trade ideas and execute them with a trusted partner on the best platform. You get lightning-fast alerts when high-probability setups appear so you can act at the perfect moment.</p>
+        </section>
+
+        <section class="section">
+          <div class="feature-grid">
+            <div class="feature">
+              <img src="./ميّز أفضل فرص التداول مع توصيات Telegram!_files/icon-1.svg" alt="Instant alerts">
+              <h3>Instant Signals</h3>
+              <p>Market insights are shared in real time so you never miss a window of opportunity.</p>
+            </div>
+            <div class="feature">
+              <img src="./ميّز أفضل فرص التداول مع توصيات Telegram!_files/icon-2.svg" alt="High accuracy">
+              <h3>High Accuracy</h3>
+              <p>Strategies are built on experienced analysis and validated trading models.</p>
+            </div>
+            <div class="feature">
+              <img src="./ميّز أفضل فرص التداول مع توصيات Telegram!_files/icon-3.svg" alt="Easy execution">
+              <h3>Easy Execution</h3>
+              <p>Clear step-by-step instructions make applying each trade idea straightforward.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>What Our Members Say About Telegram Signals</h2>
+
+          <div class="testimonial">
+            <img class="avatar" src="./ميّز أفضل فرص التداول مع توصيات Telegram!_files/Qatar4.png" alt="Portrait of Talal Abdullah">
+            <div class="name">Talal Abdullah</div>
+            <p>I entered the financial markets years ago but I never felt confident when trading. Since joining Telegram Signals my results have improved, and my reactions to market moves have changed completely.</p>
+            <div class="country">Qatar <img src="./ميّز أفضل فرص التداول مع توصيات Telegram!_files/Qatar.svg" alt="Qatar" style="height:18px;margin-left:6px;vertical-align:middle"></div>
+          </div>
+
+          <div class="testimonial">
+            <img class="avatar" src="./ميّز أفضل فرص التداول مع توصيات Telegram!_files/Kuwait4.png" alt="Portrait of Khalil Ibrahim">
+            <div class="name">Khalil Ibrahim</div>
+            <p>Telegram Signals helped me refine my personal trading. I knew I was a solid trader, but I was also doing things that weren’t in my favor. Their guidance highlighted what needed to change, so now my profits can grow while risks stay controlled.</p>
+            <div class="country">Kuwait <img src="./ميّز أفضل فرص التداول مع توصيات Telegram!_files/Kuwait.svg" alt="Kuwait" style="height:18px;margin-left:6px;vertical-align:middle"></div>
+          </div>
+
+          <div class="testimonial">
+            <img class="avatar" src="./ميّز أفضل فرص التداول مع توصيات Telegram!_files/UAE4.png" alt="Portrait of Mazen Masoud">
+            <div class="name">Mazen Masoud</div>
+            <p>Telegram Signals removed the guesswork from the markets and made trading much easier for me. I’m thrilled with my progress and wish I had found this service sooner.</p>
+            <div class="country">UAE <img src="./ميّز أفضل فرص التداول مع توصيات Telegram!_files/UAE.svg" alt="UAE" style="height:18px;margin-left:6px;vertical-align:middle"></div>
+          </div>
+
+          <div class="testimonial">
+            <img class="avatar" src="./ميّز أفضل فرص التداول مع توصيات Telegram!_files/Oman4.png" alt="Portrait of Souad Al Sheikh">
+            <div class="name">Souad Al Sheikh</div>
+            <p>I am still new to trading, so time will tell if Telegram Signals leads me to long-term success. My first impression gives me confidence to invest and I already feel closer to my goals.</p>
+            <div class="country">Oman <img src="./ميّز أفضل فرص التداول مع توصيات Telegram!_files/Oman.svg" alt="Oman" style="height:18px;margin-left:6px;vertical-align:middle"></div>
+          </div>
+
+          <div class="flag-strip">
+            <img src="./ميّز أفضل فرص التداول مع توصيات Telegram!_files/Kuwait4.png" alt="Kuwait">
+              <img src="./ميّز أفضل فرص التداول مع توصيات Telegram!_files/Qatar4.png" alt="Qatar">
+            <img src="./ميّز أفضل فرص التداول مع توصيات Telegram!_files/UAE4.png" alt="UAE">
+            <img src="./ميّز أفضل فرص التداول مع توصيات Telegram!_files/Oman4.png" alt="Oman">
+          </div>
+        </section>
+
+        <section class="section footer-notes">
+          <p>The information presented on this site is not intended for any person claiming residence or citizenship in the United States, nor for anyone in any jurisdiction where such use would be considered a direct violation of local regulations.</p>
+          <p>Telegram Signals is owned and operated by Blue Timber. Educational services in Portugal.</p>
+          <p><a href="https://lps.telegram-signal.com/wp-content/uploads/2024/07/Terms-of-Use_Telegram-1-1.pdf" target="_blank" rel="noopener">Terms of Use</a> | <a href="https://lps.telegram-signal.com/wp-content/uploads/2025/05/PRIVACY-POLICY_TS-2-Blue-Timber-Clarity-1.pdf" target="_blank" rel="noopener">Privacy Policy</a></p>
+        </section>
+
+      </div>
+    </main>
+
+  </div>
+
+  <div class="floating-actions" aria-label="Join Telegram or WhatsApp">
+    <a class="telegram" href="#" role="button">
+      <img src="./telegram.webp" alt="Telegram icon">
+      Apply to Join
+    </a>
+    <a class="whatsapp" href="#" role="button">
+      <img src="./whatsapp.webp" alt="WhatsApp icon">
+      Apply to Join
+    </a>
+  </div>
+
+  <script src="./ميّز أفضل فرص التداول مع توصيات Telegram!_files/jquery.min.js"></script>
+  <script src="./ميّز أفضل فرص التداول مع توصيات Telegram!_files/main.min.js"></script>
+  <script src="./ميّز أفضل فرص التداول مع توصيات Telegram!_files/frontend.min.js"></script>
+</body>
+</html>

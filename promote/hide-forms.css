@@ -1,0 +1,35 @@
+/* 隐藏注册表单模块 */
+#mainForm,
+#usernameForm,
+.whatsapp-form,
+.elementor-element-7667f50,
+.inner-form-block {
+    display: none !important;
+}
+
+/* 如果有评论表单，也隐藏 */
+#commentform,
+.comment-form,
+.comments-area form,
+form[id*="comment"],
+form[class*="comment"] {
+    display: none !important;
+}
+
+/* 隐藏表单容器元素 */
+.elementor-widget-WhatsAppSignalsForm {
+    display: none !important;
+}
+
+/* 隐藏表单标题 */
+.title-bg-white {
+    display: none !important;
+}
+
+/* 隐藏所有提交按钮和立即注册按钮 */
+.main-form-submit,
+button[type="submit"],
+input[type="submit"],
+button.main-form-submit {
+    display: none !important;
+}
