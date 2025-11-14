@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Trading Eagle | 86%命中率的加密信号</title>
+    <style>
+      :root {
+        --bg-dark: #050608;
+        --bg-panel: rgba(8, 12, 22, 0.78);
+        --accent: #ffad0a;
+        --accent-strong: #ff5f1f;
+        --text: #f5f7ff;
+        --muted: #9ea5c7;
+        --edge: rgba(255, 255, 255, 0.12);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "Montserrat", "Alibaba PuHuiTi", "PingFang SC", sans-serif;
+        background: #050608;
+        color: var(--text);
+        line-height: 1.7;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+      }
+      main {
+        width: min(1200px, 100%);
+      }
+      .bg-video {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: -5;
+        filter: brightness(0.35);
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
+      section {
+        padding: 5rem min(5vw, 60px);
+        width: 100%;
+        margin: 0 auto;
+      }
+      h1,
+      h2,
+      h3 {
+        margin: 0 0 1rem 0;
+        line-height: 1.25;
+      }
+      .hero {
+        min-height: 100vh;
+        padding: 4rem min(5vw, 60px) 2rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 2.5rem;
+        position: relative;
+        overflow: hidden;
+        isolation: isolate;
+      }
+      .hero::before,
+      .hero::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -2;
+      }
+      .hero::before {
+        background: none;
+      }
+      .hero::after {
+        background: none;
+      }
+      .hero-card {
+        background: var(--bg-panel);
+        border: 1px solid var(--edge);
+        border-radius: 28px;
+        padding: 2.5rem;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(18px);
+        position: relative;
+        overflow: hidden;
+      }
+      .hero-card::before {
+        content: "";
+        position: absolute;
+        inset: -20%;
+        background: url("LOGO.png") center/contain no-repeat;
+        opacity: 0.3;
+        filter: blur(30px);
+        transform: scale(1.4);
+        z-index: 0;
+      }
+      .hero-card > * {
+        position: relative;
+        z-index: 1;
+      }
+      .logo {
+        width: 90px;
+        height: 90px;
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        border-radius: 50%;
+        border: 2px solid var(--accent);
+        padding: 0.35rem;
+        background: rgba(5, 8, 15, 0.8);
+        object-fit: cover;
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.45);
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.35rem 0.9rem;
+        border-radius: 999px;
+        background: rgba(255, 173, 10, 0.18);
+        color: var(--accent);
+        font-size: 0.9rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .hero-title {
+        font-size: clamp(2.4rem, 5vw, 4rem);
+        font-weight: 700;
+        margin: 1rem 0 0.5rem;
+      }
+      .lead {
+        font-size: 1.15rem;
+        color: var(--muted);
+        margin-bottom: 1.5rem;
+      }
+      .cta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+      .cta a,
+      .floating-cta {
+        padding: 0.9rem 2.6rem;
+        border-radius: 999px;
+        font-weight: 600;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+      .primary {
+        background: linear-gradient(120deg, var(--accent-strong), var(--accent));
+        color: #0a0b0e;
+        box-shadow: 0 10px 30px rgba(255, 105, 0, 0.5);
+        animation: pulseGlow 2.6s ease-in-out infinite;
+      }
+      .cta-icon {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+      }
+      .primary:hover {
+        transform: translateY(-4px);
+      }
+      .cta .ghost {
+        border: 1px solid var(--edge);
+        color: var(--text);
+      }
+      .floating-cta-wrapper {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding: 1rem 1.5rem 1.8rem;
+        display: flex;
+        justify-content: center;
+        pointer-events: none;
+        z-index: 30;
+        transition: opacity 0.35s ease, transform 0.35s ease;
+      }
+      .floating-cta-wrapper.floating-hidden {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      .floating-cta-wrapper .cta {
+        pointer-events: auto;
+        padding: 0;
+        gap: 0;
+      }
+      .floating-cta-wrapper .primary {
+        padding: 1rem 3rem;
+        max-width: calc(100vw - 3rem);
+      }
+      @media (max-width: 640px) {
+        .floating-cta-wrapper .primary {
+          padding: 0.9rem 1.6rem;
+          font-size: 0.95rem;
+        }
+      }
+      @keyframes pulseGlow {
+        0% {
+          box-shadow: 0 0 20px rgba(255, 105, 0, 0.6);
+          transform: translateY(0);
+        }
+        50% {
+          box-shadow: 0 0 35px rgba(255, 173, 10, 0.9);
+          transform: translateY(-4px) scale(1.02);
+        }
+        100% {
+          box-shadow: 0 0 20px rgba(255, 105, 0, 0.6);
+          transform: translateY(0);
+        }
+      }
+      .hero-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+      }
+      .stat {
+        padding: 1.1rem;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--edge);
+      }
+      .stat strong {
+        display: block;
+        font-size: 1.8rem;
+        color: var(--accent);
+      }
+      .hero-portrait {
+        position: relative;
+      }
+      .hero-portrait img {
+        width: 100%;
+        border-radius: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 35px 50px rgba(0, 0, 0, 0.45);
+      }
+      .hero-portrait .tagline {
+        position: absolute;
+        bottom: 1rem;
+        left: 1rem;
+        right: 1rem;
+        background: rgba(5, 8, 15, 0.65);
+        border-radius: 16px;
+        padding: 1rem;
+        border: 1px solid var(--edge);
+        backdrop-filter: blur(10px);
+      }
+      .pillars {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.6rem;
+      }
+      .pillar {
+        padding: 1.6rem;
+        border-radius: 22px;
+        border: 1px solid var(--edge);
+        background: rgba(8, 12, 24, 0.7);
+      }
+      .pillar h3 {
+        color: var(--accent);
+      }
+      .video-feature,
+      .media-wall {
+        position: relative;
+        overflow: hidden;
+      }
+      .video-card {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        align-items: center;
+        border-radius: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        padding: 2.5rem;
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, rgba(6, 9, 18, 0.9), rgba(8, 20, 42, 0.65));
+        box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55);
+      }
+      .video-card::before {
+        content: "";
+        position: absolute;
+        inset: -40% 30% 20% -20%;
+        background: radial-gradient(circle, rgba(0, 153, 255, 0.15), transparent 70%);
+        opacity: 0.7;
+      }
+      .video-card > * {
+        position: relative;
+        z-index: 1;
+      }
+      .video-card ul {
+        list-style: none;
+        padding: 0;
+        margin: 1.5rem 0;
+      }
+      .video-card ul li {
+        margin-bottom: 0.8rem;
+        padding-left: 1.8rem;
+        position: relative;
+      }
+      .video-card ul li::before {
+        content: "";
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--accent);
+        position: absolute;
+        left: 0;
+        top: 0.55rem;
+        box-shadow: 0 0 16px rgba(255, 173, 10, 0.7);
+      }
+      .video-card .signature {
+        font-size: 0.9rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+      }
+      .video-frame {
+        border-radius: 26px;
+        padding: 0.6rem;
+        background: linear-gradient(140deg, rgba(255, 173, 10, 0.25), rgba(0, 163, 255, 0.2));
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+      }
+      .video-frame video {
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+      }
+      video {
+        width: 100%;
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35);
+      }
+      .mentor-grid,
+      .slider {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.2rem;
+      }
+      .mentor-grid figure,
+      .slider .slide img,
+      .slider .slide video {
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.02);
+        position: relative;
+      }
+      .scroll-strip {
+        position: relative;
+        overflow: hidden;
+        margin-top: 2rem;
+      }
+      .scroll-strip.fade-sides {
+        -webkit-mask-image: linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%);
+        mask-image: linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%);
+      }
+      .scroll-strip:hover .strip-track {
+        animation-play-state: paused;
+      }
+      .strip-track {
+        display: flex;
+        gap: 1.5rem;
+        width: max-content;
+        animation: scroll-left 35s linear infinite;
+      }
+      .scroll-strip.fast .strip-track {
+        animation-duration: 28s;
+      }
+      .strip-track figure,
+      .strip-track img {
+        flex: 0 0 auto;
+      }
+      .strip-track figure {
+        width: min(320px, 70vw);
+        border-radius: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        overflow: hidden;
+        background: rgba(5, 8, 15, 0.7);
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+      }
+      .strip-track figure img {
+        height: 360px;
+        width: 100%;
+        object-fit: cover;
+      }
+      .strip-track figure figcaption {
+        padding: 1rem;
+        font-size: 0.9rem;
+        color: var(--muted);
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .strip-track .chat-card {
+        width: min(260px, 70vw);
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        overflow: hidden;
+        box-shadow: 0 25px 45px rgba(0, 0, 0, 0.4);
+      }
+      .strip-track .chat-card img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .strip-track .video-card {
+        width: min(240px, 60vw);
+        border-radius: 26px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 0.7rem;
+        background: rgba(5, 7, 14, 0.85);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.45);
+        flex: 0 0 auto;
+      }
+      .strip-track .video-card video {
+        width: 100%;
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        display: block;
+      }
+      @keyframes scroll-left {
+        from {
+          transform: translateX(0);
+        }
+        to {
+          transform: translateX(-50%);
+        }
+      }
+      .strip-track.paused {
+        animation-play-state: paused;
+      }
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(2, 3, 5, 0.84);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        z-index: 50;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+      .modal-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .modal {
+        width: min(720px, 90vw);
+        max-height: 85vh;
+        overflow-y: auto;
+        background: rgba(6, 9, 18, 0.95);
+        border-radius: 28px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 2rem;
+        box-shadow: 0 40px 80px rgba(0, 0, 0, 0.55);
+      }
+      .modal h3 {
+        margin-top: 0;
+        color: var(--accent);
+      }
+      .modal ul {
+        padding-left: 1.2rem;
+      }
+      .modal p,
+      .modal li {
+        color: var(--muted);
+      }
+      .modal-close {
+        margin-top: 1.5rem;
+        display: inline-flex;
+        padding: 0.6rem 1.6rem;
+        border-radius: 999px;
+        border: 1px solid var(--edge);
+        color: var(--text);
+        cursor: pointer;
+      }
+      .slider {
+        grid-template-columns: 1fr;
+      }
+      .slider .slide {
+        display: none;
+        width: 100%;
+      }
+      .slider .slide.active {
+        display: block;
+        animation: fadeIn 0.8s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .mentor-grid figure img {
+        height: 100%;
+        object-fit: cover;
+      }
+      .mentor-grid figcaption {
+        padding: 0.9rem 1rem;
+        font-size: 0.95rem;
+        color: var(--muted);
+        background: rgba(4, 5, 10, 0.8);
+      }
+      .proof-grid img {
+        width: 100%;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      }
+      .cta-section {
+        text-align: center;
+        padding-bottom: 6rem;
+        position: relative;
+      }
+      .cta-section .cta {
+        justify-content: center;
+        opacity: 0;
+        transform: translateY(40px);
+        transition: opacity 0.4s ease, transform 0.4s ease;
+      }
+      .cta-section.active .cta {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      footer {
+        text-align: center;
+        padding: 2rem;
+        font-size: 0.85rem;
+        color: var(--muted);
+        width: min(1200px, 100%);
+      }
+      @media (max-width: 900px) {
+        .hero-card {
+          padding: 2rem;
+        }
+        .hero-stats {
+          grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        }
+        section {
+          padding: 3.2rem 1.2rem;
+        }
+        .hero {
+          padding: 3rem 1.2rem;
+        }
+        body {
+          font-size: 0.95rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <video
+      class="bg-video"
+      src="vecteezy_digital-animation-of-business-stock-market-price-chart_2273297 - 01.mp4"
+      autoplay
+      muted
+      loop
+      playsinline
+    ></video>
+    <main>
+      <header class="hero" id="top">
+        <div class="hero-card">
+          <img class="logo" src="LOGO.png" alt="Trading Eagle logo" />
+          <span class="badge">86%+ 命中率 · 日更 4 条加密信号</span>
+          <h1 class="hero-title">Trading Eagle</h1>
+          <p class="lead">
+            高强度量化模型 + 人工鹰眼审核，全天候盯盘。Trading Eagle 频道把复杂行情浓缩成可以立即执行的交易策略，帮你第一时间完成高胜率获利。
+          </p>
+        <div class="cta">
+          <a class="primary" href="https://t.me/TradingEagle" target="_blank" rel="noopener"
+            ><img class="cta-icon" src="telegram.webp" alt="Telegram" />进入 Telegram 实时信号</a
+          >
+          <a class="ghost" href="#results">查看真实战果</a>
+          <a class="ghost modal-trigger" data-modal="compliance-modal" href="#">隐私政策与联系方式</a>
+        </div>
+          <div class="hero-stats">
+            <article class="stat">
+              <strong>1,280+</strong>
+              全球交易者同时在线等待下一条信号
+            </article>
+            <article class="stat">
+              <strong>$3,000+</strong>
+              最近一周跟单者平均单周可见收益
+            </article>
+            <article class="stat">
+              <strong>15min</strong>
+              从捕捉趋势到推送信号的极速反应
+            </article>
+          </div>
+        </div>
+        <div class="hero-portrait">
+          <img src="profile-gallery/workspace-shot-04.png" alt="Trading Eagle 创始人" />
+          <div class="tagline">
+            <strong>信号设计师：Omar</strong>
+            <p>前对冲基金量化主管 · 2023 LBank Trading Master · 加密货币学院创始人</p>
+          </div>
+        </div>
+      </header>
+
+      <section>
+        <h2>鹰眼战略 · 让数字货币信号立刻可执行</h2>
+        <div class="pillars">
+          <article class="pillar">
+            <h3>数据穿透力</h3>
+            <p>86% 准确率来自 42 套策略库 + 链上资金流监控，提前嗅到巨鲸调仓、CEX 热钱与期权墙变化。</p>
+          </article>
+          <article class="pillar">
+            <h3>铁律风险控制</h3>
+            <p>每条信号都配套进场区间、风控位、三档目标，让你照抄即可执行，杜绝情绪化操作。</p>
+          </article>
+          <article class="pillar">
+            <h3>执行力</h3>
+            <p>每天 4 条精选——宁缺毋滥。推送即附实时计划，保证你在波动爆发前完成布局。</p>
+          </article>
+          <article class="pillar">
+            <h3>Telegram 极速触达</h3>
+            <p>频道使用低延迟机器人 + 管理员 24/7 值守，任何市场突发都能第一时间推送到你手机。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="video-feature" id="creator">
+        <span class="badge">CREATOR ORIGIN</span>
+        <h2>关于我</h2>
+        <div class="video-card">
+          <div class="copy">
+            <p>
+              我是 Omar，多年量化/期货/加密混合背景，经历过牛熊数次切换。频道里每条信号都由我亲自复核，确保精准度与可执行性。观看下方自述，感受我在真实交易室里的决策速度与执行信念。
+            </p>
+            <ul>
+              <li>连续3年获得LBANK交易大师称号</li>
+              <li>率领链上情报、盘口深度、AI 情绪三线团队</li>
+              <li>核心理念：只推送自己愿意 All in 的 信号</li>
+            </ul>
+            <p class="signature">— Trading Eagle</p>
+          </div>
+          <div class="video-frame">
+            <video src="self-intro-video.mov" controls autoplay muted loop playsinline poster="profile-gallery/workspace-shot-03.png"></video>
+          </div>
+        </div>
+      </section>
+
+      <section class="media-wall" id="team">
+        <h2>Trading Eagle 作战室</h2>
+        <p>所有的高胜率交易策略，来自于持之以恒的研究和复盘。</p>
+        <div class="scroll-strip fade-sides" id="team-strip">
+          <div class="strip-track">
+            <figure>
+              <img src="profile-gallery/workspace-shot-01.png" alt="Trading Eagle desk 1" />
+              <figcaption>盘前调参</figcaption>
+            </figure>
+            <figure>
+              <img src="profile-gallery/workspace-shot-02.png" alt="Trading Eagle desk 2" />
+              <figcaption>分析 BTC 指数动能</figcaption>
+            </figure>
+            <figure>
+              <img src="profile-gallery/workspace-shot-03.png" alt="Trading Eagle desk 3" />
+              <figcaption>监控链上深度</figcaption>
+            </figure>
+            <figure>
+              <img src="profile-gallery/workspace-shot-04.png" alt="Trading Eagle desk 4" />
+              <figcaption>交易中枢 · 多屏幕盯防波动，确认每条信号逻辑</figcaption>
+            </figure>
+            <figure>
+              <img src="profile-gallery/workspace-shot-05.png" alt="Trading Eagle desk 5" />
+              <figcaption>持续追踪成交量与情绪热力</figcaption>
+            </figure>
+            <figure>
+              <img src="profile-gallery/workspace-shot-01.png" alt="Trading Eagle desk 1 duplicate" />
+              <figcaption>盘前调参</figcaption>
+            </figure>
+            <figure>
+              <img src="profile-gallery/workspace-shot-02.png" alt="Trading Eagle desk 2 duplicate" />
+              <figcaption>分析 BTC 指数动能</figcaption>
+            </figure>
+            <figure>
+              <img src="profile-gallery/workspace-shot-03.png" alt="Trading Eagle desk 3 duplicate" />
+              <figcaption>监控链上深度</figcaption>
+            </figure>
+            <figure>
+              <img src="profile-gallery/workspace-shot-04.png" alt="Trading Eagle desk 4 duplicate" />
+              <figcaption>交易中枢</figcaption>
+            </figure>
+            <figure>
+              <img src="profile-gallery/workspace-shot-05.png" alt="Trading Eagle desk 5 duplicate" />
+              <figcaption>持续追踪成交量与情绪热力</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+    <section id="results">
+      <h2>真实买家聊天 · 他们在 Telegram 上都说了什么</h2>
+      <p>没有夸张广告，只有醒目的成果截图。以下全部为真实学员在频道的即时反馈。</p>
+      <div class="scroll-strip fast fade-sides" id="chat-strip">
+        <div class="strip-track">
+          <div class="chat-card">
+            <img src="customer-chat-gallery/chat-feedback-01.jpg" alt="买家聊天 10-11.2" />
+          </div>
+          <div class="chat-card">
+            <img src="customer-chat-gallery/chat-feedback-02.jpg" alt="买家聊天 3" />
+          </div>
+          <div class="chat-card">
+            <img src="customer-chat-gallery/chat-feedback-03.jpg" alt="买家聊天 4" />
+          </div>
+          <div class="chat-card">
+            <img src="customer-chat-gallery/chat-feedback-04.jpg" alt="买家聊天 7" />
+          </div>
+          <div class="chat-card">
+            <img src="customer-chat-gallery/chat-feedback-05.jpg" alt="买家聊天 9" />
+          </div>
+          <div class="chat-card">
+            <img src="customer-chat-gallery/chat-feedback-01.jpg" alt="买家聊天 10-11.2 duplicate" />
+          </div>
+          <div class="chat-card">
+            <img src="customer-chat-gallery/chat-feedback-02.jpg" alt="买家聊天 3 duplicate" />
+          </div>
+          <div class="chat-card">
+            <img src="customer-chat-gallery/chat-feedback-03.jpg" alt="买家聊天 4 duplicate" />
+          </div>
+          <div class="chat-card">
+            <img src="customer-chat-gallery/chat-feedback-04.jpg" alt="买家聊天 7 duplicate" />
+          </div>
+          <div class="chat-card">
+            <img src="customer-chat-gallery/chat-feedback-05.jpg" alt="买家聊天 9 duplicate" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="video-feature">
+      <h2>学员战绩视频 · 看得见的兑现</h2>
+      <p>每个视频都是学员主动上传的战绩回传，他们因为 Trading Eagle 而刷新了自己的盈利曲线。</p>
+      <div class="scroll-strip fade-sides" id="video-strip">
+        <div class="strip-track">
+          <div class="video-card">
+            <video src="customer-testimonial-videos/testimonial-video-01.mp4" controls muted playsinline></video>
+          </div>
+          <div class="video-card">
+            <video src="customer-testimonial-videos/testimonial-video-02.mp4" controls muted playsinline></video>
+          </div>
+          <div class="video-card">
+            <video src="customer-testimonial-videos/testimonial-video-03.mp4" controls muted playsinline></video>
+          </div>
+          <div class="video-card">
+            <video src="customer-testimonial-videos/testimonial-video-04.mp4" controls muted playsinline></video>
+          </div>
+          <div class="video-card">
+            <video src="customer-testimonial-videos/testimonial-video-05.mp4" controls muted playsinline></video>
+          </div>
+          <div class="video-card">
+            <video src="customer-testimonial-videos/testimonial-video-01.mp4" controls muted playsinline></video>
+          </div>
+          <div class="video-card">
+            <video src="customer-testimonial-videos/testimonial-video-02.mp4" controls muted playsinline></video>
+          </div>
+          <div class="video-card">
+            <video src="customer-testimonial-videos/testimonial-video-03.mp4" controls muted playsinline></video>
+          </div>
+          <div class="video-card">
+            <video src="customer-testimonial-videos/testimonial-video-04.mp4" controls muted playsinline></video>
+          </div>
+          <div class="video-card">
+            <video src="customer-testimonial-videos/testimonial-video-05.mp4" controls muted playsinline></video>
+          </div>
+        </div>
+      </div>
+    </section>
+
+      <section class="cta-section">
+        <span class="badge">立即起飞</span>
+        <h2>Trading Eagle 带你撕开下一波行情</h2>
+        <p>
+          86% 命中率、每日 4 条高胜率信号、实时买家兑现——你已经看见足够多的证据。现在，只差你点开 Telegram，和我们一起执行下一笔稳准狠的交易。
+        </p>
+        <div class="cta">
+          <a class="primary" href="https://t.me/TradingEagle" target="_blank" rel="noopener"
+            ><img class="cta-icon" src="telegram.webp" alt="Telegram" />加入 Trading Eagle Telegram 频道</a
+          >
+          <a class="ghost" href="#top">回到顶部</a>
+          <a class="ghost modal-trigger" data-modal="compliance-modal" href="#">隐私政策与联系方式</a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      Trading Eagle © 2025 · 本页展示的学员反馈和战绩仅代表个人结果，交易有风险，请严格执行我们提供的风控位。
+    </footer>
+    <div class="floating-cta-wrapper">
+      <div class="cta">
+        <a class="primary" href="https://t.me/TradingEagleChannel" target="_blank" rel="noopener"
+          ><img class="cta-icon" src="telegram.webp" alt="Telegram" />加入 Trading Eagle Telegram 频道</a
+        >
+      </div>
+    </div>
+    <div class="modal-overlay" id="compliance-modal">
+      <div class="modal">
+        <h3>隐私政策 & 联系方式</h3>
+        <p>
+          我们遵循 Facebook 广告相关隐私要求。Trading Eagle 仅在以下场景使用你的数据：加入 Telegram
+          频道时收集的用户名与联系渠道、报名咨询提供的邮箱/电话。这些数据只用于向你推送信号提醒、风险提示和会员服务，不会出售或共享给第三方。
+        </p>
+        <h4>数据使用说明</h4>
+        <ul>
+          <li>只在你授权的 Telegram/邮箱/电话上发送交易信号或服务通知。</li>
+          <li>支持随时提交删除请求，48 小时内完成处理。</li>
+          <li>所有资料使用 AES256 加密存储，并由专人定期审计访问日志。</li>
+        </ul>
+        <h4>联系信息</h4>
+        <p><strong>地址：</strong> DIFC Innovation Hub, Dubai, UAE</p>
+        <p><strong>客服邮箱：</strong> support@gram3.xyz</p>
+        <p><strong>电话 / WhatsApp：</strong> +971-50-889-3610</p>
+        <p>
+          填写任何表单或加入频道即代表你同意我们使用所提供信息与您保持联系。如需更新或删除数据，请通过上述方式联系我们，
+          我们会立即为你处理。
+        </p>
+        <button class="modal-close" data-close="compliance-modal">关闭</button>
+      </div>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const videoStrip = document.querySelector("#video-strip .strip-track");
+        if (videoStrip) {
+          const videos = videoStrip.querySelectorAll("video");
+          const pauseStrip = () => videoStrip.classList.add("paused");
+          const tryResume = () => {
+            const playing = Array.from(videos).some((video) => !video.paused && !video.ended);
+            if (!playing) {
+              videoStrip.classList.remove("paused");
+            }
+          };
+          videos.forEach((video) => {
+            video.addEventListener("play", pauseStrip);
+            video.addEventListener("pause", tryResume);
+            video.addEventListener("ended", tryResume);
+          });
+        }
+
+        const openModal = (id) => {
+          const modal = document.getElementById(id);
+          if (modal) modal.classList.add("active");
+        };
+        const closeModal = (id) => {
+          const modal = document.getElementById(id);
+          if (modal) modal.classList.remove("active");
+        };
+        document.querySelectorAll(".modal-trigger").forEach((trigger) => {
+          trigger.addEventListener("click", (e) => {
+            e.preventDefault();
+            const id = trigger.dataset.modal;
+            if (id) openModal(id);
+          });
+        });
+        document.querySelectorAll(".modal-close").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const id = btn.dataset.close;
+            if (id) closeModal(id);
+          });
+        });
+        document.querySelectorAll(".modal-overlay").forEach((overlay) => {
+          overlay.addEventListener("click", (e) => {
+            if (e.target === overlay) {
+              overlay.classList.remove("active");
+            }
+          });
+        });
+
+        const floatingWrapper = document.querySelector(".floating-cta-wrapper");
+        const ctaSection = document.querySelector(".cta-section");
+        if (floatingWrapper && ctaSection) {
+          const observer = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                  floatingWrapper.classList.add("floating-hidden");
+                  ctaSection.classList.add("active");
+                } else {
+                  floatingWrapper.classList.remove("floating-hidden");
+                  ctaSection.classList.remove("active");
+                }
+              });
+            },
+            {
+              threshold: 0.4,
+            }
+          );
+          observer.observe(ctaSection);
+        }
+      });
+    </script>
+  </body>
+</html>
