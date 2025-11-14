@@ -251,14 +251,55 @@
       }
       .hero-portrait {
         position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
       }
-      .hero-portrait img {
-        width: 100%;
+      .hero-portrait-slider {
+        position: relative;
         border-radius: 30px;
         border: 1px solid rgba(255, 255, 255, 0.1);
+        overflow: hidden;
         box-shadow: 0 35px 50px rgba(0, 0, 0, 0.45);
+        aspect-ratio: 3 / 4;
+        width: 100%;
       }
-      .hero-portrait .tagline {
+      .hero-portrait-slide {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        transition: opacity 0.6s ease;
+      }
+      .hero-portrait-slide.active {
+        opacity: 1;
+      }
+      .hero-portrait-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .hero-portrait-indicators {
+        display: flex;
+        justify-content: center;
+        gap: 0.4rem;
+      }
+      .hero-portrait-indicators button {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.25);
+        padding: 0;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.3s ease;
+      }
+      .hero-portrait-indicators button.active {
+        background: var(--accent);
+        border-color: var(--accent);
+        transform: scale(1.2);
+      }
+      .hero-portrait-slider .tagline {
         position: absolute;
         bottom: 1rem;
         left: 1rem;
@@ -375,6 +416,21 @@
         overflow: hidden;
         margin-top: 2rem;
       }
+      #video-strip {
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      #video-strip.fade-sides {
+        -webkit-mask-image: none;
+        mask-image: none;
+      }
+      #video-strip::-webkit-scrollbar {
+        display: none;
+      }
       .scroll-strip.fade-sides {
         -webkit-mask-image: linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%);
         mask-image: linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%);
@@ -394,6 +450,12 @@
       .strip-track figure,
       .strip-track img {
         flex: 0 0 auto;
+      }
+      #video-strip .strip-track {
+        animation: none;
+      }
+      #video-strip .video-card {
+        scroll-snap-align: start;
       }
       .strip-track figure {
         width: min(320px, 70vw);
@@ -427,19 +489,23 @@
         display: block;
       }
       .strip-track .video-card {
-        width: min(240px, 60vw);
-        border-radius: 26px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        padding: 0.7rem;
-        background: rgba(5, 7, 14, 0.85);
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.45);
+        width: auto;
+        min-width: min(280px, 65vw);
+        max-width: min(420px, 90vw);
+        border-radius: 22px;
+        border: none;
+        padding: 0;
+        background: none;
+        box-shadow: none;
         flex: 0 0 auto;
       }
       .strip-track .video-card video {
         width: 100%;
-        border-radius: 18px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        height: auto;
+        border-radius: 22px;
+        border: none;
         display: block;
+        box-shadow: none;
       }
       @keyframes scroll-left {
         from {
@@ -617,10 +683,33 @@
           </div>
         </div>
         <div class="hero-portrait">
-          <img src="profile-gallery/workspace-shot-04.png" alt="Trading Eagle 创始人" />
-          <div class="tagline">
-            <strong>信号设计师：Omar</strong>
-            <p>前对冲基金量化主管 · 2023 LBank Trading Master · 加密货币学院创始人</p>
+          <div class="hero-portrait-slider">
+            <div class="hero-portrait-slide active">
+              <img src="profile-gallery/workspace-shot-01.png" alt="Trading Eagle 创始人" />
+            </div>
+            <div class="hero-portrait-slide">
+              <img src="profile-gallery/workspace-shot-02.png" alt="Trading Eagle 创始人" />
+            </div>
+            <div class="hero-portrait-slide">
+              <img src="profile-gallery/workspace-shot-03.png" alt="Trading Eagle 创始人" />
+            </div>
+            <div class="hero-portrait-slide">
+              <img src="profile-gallery/workspace-shot-04.png" alt="Trading Eagle 创始人" />
+            </div>
+            <div class="hero-portrait-slide">
+              <img src="profile-gallery/workspace-shot-05.png" alt="Trading Eagle 创始人" />
+            </div>
+            <div class="tagline">
+              <strong>信号设计师：Omar</strong>
+              <p>前对冲基金量化主管 · 2023 LBank Trading Master · 加密货币学院创始人</p>
+            </div>
+          </div>
+          <div class="hero-portrait-indicators">
+            <button class="active" type="button" aria-label="查看第一张形象照" data-slide="0"></button>
+            <button type="button" aria-label="查看第二张形象照" data-slide="1"></button>
+            <button type="button" aria-label="查看第三张形象照" data-slide="2"></button>
+            <button type="button" aria-label="查看第四张形象照" data-slide="3"></button>
+            <button type="button" aria-label="查看第五张形象照" data-slide="4"></button>
           </div>
         </div>
       </header>
@@ -674,44 +763,44 @@
         <div class="scroll-strip fade-sides" id="team-strip">
           <div class="strip-track">
             <figure>
-              <img src="profile-gallery/workspace-shot-01.png" alt="Trading Eagle desk 1" />
-              <figcaption>盘前调参</figcaption>
+              <img src="introduce/1.png" alt="Trading Eagle desk 1" />
+              <figcaption>每日新闻</figcaption>
             </figure>
             <figure>
-              <img src="profile-gallery/workspace-shot-02.png" alt="Trading Eagle desk 2" />
-              <figcaption>分析 BTC 指数动能</figcaption>
+              <img src="introduce/2.png" alt="Trading Eagle desk 2" />
+              <figcaption>BTC每日趋势分析</figcaption>
             </figure>
             <figure>
-              <img src="profile-gallery/workspace-shot-03.png" alt="Trading Eagle desk 3" />
-              <figcaption>监控链上深度</figcaption>
+              <img src="introduce/3.png" alt="Trading Eagle desk 3" />
+              <figcaption>ETH每日趋势分析</figcaption>
             </figure>
             <figure>
-              <img src="profile-gallery/workspace-shot-04.png" alt="Trading Eagle desk 4" />
-              <figcaption>交易中枢 · 多屏幕盯防波动，确认每条信号逻辑</figcaption>
+              <img src="introduce/4.png" alt="Trading Eagle desk 4" />
+              <figcaption>策略提前推送</figcaption>
             </figure>
             <figure>
-              <img src="profile-gallery/workspace-shot-05.png" alt="Trading Eagle desk 5" />
-              <figcaption>持续追踪成交量与情绪热力</figcaption>
+              <img src="introduce/5.png" alt="Trading Eagle desk 5" />
+              <figcaption>进场信号提醒</figcaption>
             </figure>
             <figure>
-              <img src="profile-gallery/workspace-shot-01.png" alt="Trading Eagle desk 1 duplicate" />
-              <figcaption>盘前调参</figcaption>
+              <img src="introduce/1.png" alt="Trading Eagle desk 1 duplicate" />
+              <figcaption>每日新闻</figcaption>
             </figure>
             <figure>
-              <img src="profile-gallery/workspace-shot-02.png" alt="Trading Eagle desk 2 duplicate" />
-              <figcaption>分析 BTC 指数动能</figcaption>
+              <img src="introduce/2.png" alt="Trading Eagle desk 2 duplicate" />
+              <figcaption>BTC每日趋势分析</figcaption>
             </figure>
             <figure>
-              <img src="profile-gallery/workspace-shot-03.png" alt="Trading Eagle desk 3 duplicate" />
-              <figcaption>监控链上深度</figcaption>
+              <img src="introduce/3.png" alt="Trading Eagle desk 3 duplicate" />
+              <figcaption>ETH每日趋势分析</figcaption>
             </figure>
             <figure>
-              <img src="profile-gallery/workspace-shot-04.png" alt="Trading Eagle desk 4 duplicate" />
-              <figcaption>交易中枢</figcaption>
+              <img src="introduce/4.png" alt="Trading Eagle desk 4 duplicate" />
+              <figcaption>策略提前推送</figcaption>
             </figure>
             <figure>
-              <img src="profile-gallery/workspace-shot-05.png" alt="Trading Eagle desk 5 duplicate" />
-              <figcaption>持续追踪成交量与情绪热力</figcaption>
+              <img src="introduce/5.png" alt="Trading Eagle desk 5 duplicate" />
+              <figcaption>进场信号提醒</figcaption>
             </figure>
           </div>
         </div>
@@ -762,34 +851,94 @@
       <div class="scroll-strip fade-sides" id="video-strip">
         <div class="strip-track">
           <div class="video-card">
-            <video src="customer-testimonial-videos/testimonial-video-01.mp4" controls muted playsinline></video>
+            <video
+              src="customer-testimonial-videos/testimonial-video-01.mp4"
+              poster="customer-testimonial-videos/testimonial-video-01.jpg"
+              controls
+              muted
+              playsinline
+            ></video>
           </div>
           <div class="video-card">
-            <video src="customer-testimonial-videos/testimonial-video-02.mp4" controls muted playsinline></video>
+            <video
+              src="customer-testimonial-videos/testimonial-video-02.mp4"
+              poster="customer-testimonial-videos/testimonial-video-02.jpg"
+              controls
+              muted
+              playsinline
+            ></video>
           </div>
           <div class="video-card">
-            <video src="customer-testimonial-videos/testimonial-video-03.mp4" controls muted playsinline></video>
+            <video
+              src="customer-testimonial-videos/testimonial-video-03.mp4"
+              poster="customer-testimonial-videos/testimonial-video-03.jpg"
+              controls
+              muted
+              playsinline
+            ></video>
           </div>
           <div class="video-card">
-            <video src="customer-testimonial-videos/testimonial-video-04.mp4" controls muted playsinline></video>
+            <video
+              src="customer-testimonial-videos/testimonial-video-04.mp4"
+              poster="customer-testimonial-videos/testimonial-video-04.jpg"
+              controls
+              muted
+              playsinline
+            ></video>
           </div>
           <div class="video-card">
-            <video src="customer-testimonial-videos/testimonial-video-05.mp4" controls muted playsinline></video>
+            <video
+              src="customer-testimonial-videos/testimonial-video-05.mp4"
+              poster="customer-testimonial-videos/testimonial-video-05.jpg"
+              controls
+              muted
+              playsinline
+            ></video>
           </div>
           <div class="video-card">
-            <video src="customer-testimonial-videos/testimonial-video-01.mp4" controls muted playsinline></video>
+            <video
+              src="customer-testimonial-videos/testimonial-video-01.mp4"
+              poster="customer-testimonial-videos/testimonial-video-01.jpg"
+              controls
+              muted
+              playsinline
+            ></video>
           </div>
           <div class="video-card">
-            <video src="customer-testimonial-videos/testimonial-video-02.mp4" controls muted playsinline></video>
+            <video
+              src="customer-testimonial-videos/testimonial-video-02.mp4"
+              poster="customer-testimonial-videos/testimonial-video-02.jpg"
+              controls
+              muted
+              playsinline
+            ></video>
           </div>
           <div class="video-card">
-            <video src="customer-testimonial-videos/testimonial-video-03.mp4" controls muted playsinline></video>
+            <video
+              src="customer-testimonial-videos/testimonial-video-03.mp4"
+              poster="customer-testimonial-videos/testimonial-video-03.jpg"
+              controls
+              muted
+              playsinline
+            ></video>
           </div>
           <div class="video-card">
-            <video src="customer-testimonial-videos/testimonial-video-04.mp4" controls muted playsinline></video>
+            <video
+              src="customer-testimonial-videos/testimonial-video-04.mp4"
+              poster="customer-testimonial-videos/testimonial-video-04.jpg"
+              controls
+              muted
+              playsinline
+            ></video>
           </div>
           <div class="video-card">
-            <video src="customer-testimonial-videos/testimonial-video-05.mp4" controls muted playsinline></video>
+            <video
+              src="customer-testimonial-videos/testimonial-video-05.mp4"
+              poster="customer-testimonial-videos/testimonial-video-05.jpg"
+              controls
+              muted
+              playsinline
+            ></video>
           </div>
         </div>
       </div>
@@ -849,8 +998,18 @@
       document.addEventListener("DOMContentLoaded", () => {
         const videoStrip = document.querySelector("#video-strip .strip-track");
         if (videoStrip) {
-          const videos = videoStrip.querySelectorAll("video");
-          const pauseStrip = () => videoStrip.classList.add("paused");
+          const videos = Array.from(videoStrip.querySelectorAll("video"));
+          const pauseOthers = (current) => {
+            videos.forEach((video) => {
+              if (video !== current && !video.paused) {
+                video.pause();
+              }
+            });
+          };
+          const pauseStrip = (current) => {
+            videoStrip.classList.add("paused");
+            pauseOthers(current);
+          };
           const tryResume = () => {
             const playing = Array.from(videos).some((video) => !video.paused && !video.ended);
             if (!playing) {
@@ -858,10 +1017,43 @@
             }
           };
           videos.forEach((video) => {
-            video.addEventListener("play", pauseStrip);
+            video.addEventListener("play", () => pauseStrip(video));
             video.addEventListener("pause", tryResume);
             video.addEventListener("ended", tryResume);
           });
+        }
+        const heroSlider = document.querySelector(".hero-portrait-slider");
+        const heroIndicators = document.querySelectorAll(".hero-portrait-indicators button");
+        if (heroSlider) {
+          const slides = Array.from(heroSlider.querySelectorAll(".hero-portrait-slide"));
+          let activeIndex = 0;
+          let sliderTimer;
+          const setSlide = (index) => {
+            slides.forEach((slide, idx) => {
+              slide.classList.toggle("active", idx === index);
+            });
+            heroIndicators.forEach((indicator, idx) => {
+              indicator.classList.toggle("active", idx === index);
+            });
+            activeIndex = index;
+          };
+          const nextSlide = () => {
+            const nextIndex = (activeIndex + 1) % slides.length;
+            setSlide(nextIndex);
+          };
+          const startSlider = () => {
+            clearInterval(sliderTimer);
+            sliderTimer = setInterval(nextSlide, 2000);
+          };
+          heroIndicators.forEach((indicator, idx) => {
+            indicator.addEventListener("click", () => {
+              setSlide(idx);
+              startSlider();
+            });
+          });
+          if (slides.length > 1) {
+            startSlider();
+          }
         }
 
         const openModal = (id) => {
