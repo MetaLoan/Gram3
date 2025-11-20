@@ -524,3 +524,28 @@ footer {
     .hero h2 { font-size: 1.5rem; }
     .cta-group { flex-direction: column; }
 }
+
+@media (max-width: 992px) {
+    .hero {
+        min-height: 100vh;
+        height: auto;
+        align-items: flex-start;
+        padding: 220px 20px 60px;
+    }
+
+    .hero .content {
+        margin-top: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .site-logo {
+        width: 160px;
+        height: 160px;
+        top: 20px;
+    }
+
+    .hero {
+        padding-top: 200px;
+    }
+}
