@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="70" height="70" viewBox="0 0 70 70">
+  <g id="UAE" transform="translate(-2.032 -101.665)">
+    <g id="Group_138216" data-name="Group 138216" transform="translate(2.032 101.665)">
+      <g id="Group_138213" data-name="Group 138213">
+        <g id="Group_138217" data-name="Group 138217">
+          <path id="Path_102849" data-name="Path 102849" d="M24.394,1.972v66.7a35.011,35.011,0,0,1,0-66.7" transform="translate(-0.039 -0.322)" fill="red"></path>
+          <path id="Path_102850" data-name="Path 102850" d="M44.03,2.545a35.065,35.065,0,0,1-33,23.333A34.177,34.177,0,0,1,.349,24.228V2.545Z" transform="translate(24.006 44.122)"></path>
+          <path id="Path_102851" data-name="Path 102851" d="M44.03,25.284H.349V3.6a34.176,34.176,0,0,1,10.685-1.65,35.065,35.065,0,0,1,33,23.333" transform="translate(24.006 -1.951)" fill="#00732f"></path>
+          <path id="Path_102852" data-name="Path 102852" d="M45.994,13.875A36.235,36.235,0,0,1,44.03,25.581H.349V2.248H44.03a35.407,35.407,0,0,1,1.964,11.627" transform="translate(24.006 21.085)" fill="#fff"></path>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
