@@ -1,5 +1,50 @@
 document.addEventListener('DOMContentLoaded', function() {
     
+    // --- Channel Tracking & Dynamic Link Update ---
+    const urlParams = new URLSearchParams(window.location.search);
+    const startParam = urlParams.get('start');
+    
+    // Update Telegram links with channel parameter
+    if (startParam) {
+        const telegramFloatBtn = document.getElementById('telegramFloatBtn');
+        if (telegramFloatBtn) {
+            const telegramUrl = new URL(telegramFloatBtn.href);
+            telegramUrl.searchParams.set('start', startParam);
+            telegramFloatBtn.href = telegramUrl.toString();
+        }
+    }
+    
+    // Track button clicks
+    function trackEvent(eventName, params) {
+        if (typeof gtag !== 'undefined') {
+            const channel = sessionStorage.getItem('channel') || 'direct';
+            gtag('event', eventName, {
+                ...params,
+                'channel': channel
+            });
+        }
+    }
+    
+    // Track CTA clicks
+    document.querySelectorAll('.btn-primary').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            trackEvent('cta_click', {
+                'button_text': this.textContent.trim(),
+                'button_location': 'hero'
+            });
+        });
+    });
+    
+    // Track Telegram button clicks
+    const telegramBtns = document.querySelectorAll('a[href*="t.me"]');
+    telegramBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            trackEvent('telegram_click', {
+                'button_location': this.classList.contains('telegram-float') ? 'float' : 'inline'
+            });
+        });
+    });
+    
     // --- Dynamic Content Loading ---
 
     // 1. Load Student Videos

@@ -4,6 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manish - Pocket Option Trading Master</title>
+    
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RZW596E4VE"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RZW596E4VE');
+        
+        // Track URL parameter for different channels
+        const urlParams = new URLSearchParams(window.location.search);
+        const startParam = urlParams.get('start');
+        if (startParam) {
+            gtag('event', 'page_view', {
+                'channel': startParam,
+                'page_location': window.location.href
+            });
+            // Store in sessionStorage for later use
+            sessionStorage.setItem('channel', startParam);
+        }
+    </script>
+    
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -11,7 +33,7 @@
 <body>
 
     <!-- Floating Telegram Button -->
-    <a href="https://t.me/manish_yes_bot?start=meta01" target="_blank" class="telegram-float">
+    <a href="https://t.me/manish_yes_bot?start=meta01" target="_blank" class="telegram-float" id="telegramFloatBtn">
         <i class="fab fa-telegram-plane"></i>
         <span>Chat Now</span>
     </a>
