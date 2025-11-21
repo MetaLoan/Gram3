@@ -164,7 +164,8 @@ img {
 
 /* Hero Section */
 .hero {
-    height: 100vh;
+    min-height: 100vh;
+    padding-top: 100px;
     background-image: url('assets/images/hero-bg.jpg');
     background-size: cover;
     background-position: center;
